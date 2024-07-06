@@ -1,0 +1,9 @@
+.add-new-test-form-container {
+    position: relative;
+}
+
+.step-buttons-container {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+}

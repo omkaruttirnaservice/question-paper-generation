@@ -1,0 +1,23 @@
+.notification-modal {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Initially off-screen on the right */
+    width: 300px;
+    background-color: #f0f0f0;
+    padding: 15px;
+    border: 1px solid #ccc;
+    transition: right 0.5s ease-in-out; /* Animation for sliding in and out */
+  }
+  
+  .notification-modal.visible {
+    right: 0;
+  }
+  
+  .notification-modal.hidden {
+    right: -100%; /* Off-screen on the right when hidden */
+  }
+  
+  .notification-content {
+    /* Add any additional styling for your notification content */
+  }
+  

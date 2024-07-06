@@ -1,0 +1,24 @@
+.menu-button-list {
+    display: flex;
+    flex-direction: column;
+}
+.menu-button-item {
+    cursor: pointer;
+    color: #fefefe;
+
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem !important;
+
+    font-size: 1.2rem;
+
+    text-decoration: none;
+}
+
+.menu-button-item.active {
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+    color: #4c7bb6;
+}

@@ -1,0 +1,19 @@
+{
+	"name": "master-panel-th",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"startfb": "concurrently \" cd web && npm start \"  \"cd api && npm start\""
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@reduxjs/toolkit": "^2.0.1",
+		"concurrently": "^8.2.2",
+		"redux": "^5.0.0",
+		"sweetalert2": "^11.12.1"
+	}
+}

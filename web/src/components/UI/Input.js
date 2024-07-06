@@ -1,0 +1,20 @@
+export default function Input({ name, value = "", onChange }) {
+  return (
+    <div className="relative ">
+      <input
+        type="text"
+        id={name}
+        className="!w-full border peer py-4 px-5 rounded-full placeholder-transparent focus:outline-primary-tint-1 focus:outline-4 focus:outline-offset-1 outline-none transition-all duration-300"
+        placeholder={`${name.slice(0, 1).toUpperCase()}${name.slice(1)}`}
+        name={name}
+        value={value}
+        onChange={onChange}
+      />
+      <label
+        htmlFor={name}
+        className="absolute left-7 -top-7 transition-all duration-300 text-gray-400 peer-placeholder-shown:top-4 peer-focus:-top-7 peer-focus:text-sm peer-focus:text-gray-500">
+        {`${name.slice(0, 1).toUpperCase()}${name.slice(1)}`}
+      </label>
+    </div>
+  );
+}
