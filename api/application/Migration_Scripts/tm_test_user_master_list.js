@@ -8,7 +8,7 @@ const tm_test_user_master_list = sequelize.define('tm_test_user_master_list', {
 		primaryKey: true,
 		autoIncrement: true,
 	},
-	mt_name: { type: Sequelize.TEXT('medium') },
+	mt_name: { type: Sequelize.TEXT('medium'), allowNull: false },
 	mt_added_date: { type: Sequelize.DATEONLY },
 	mt_descp: { type: Sequelize.TEXT('medium') },
 	mt_added_time: { type: Sequelize.TIME },

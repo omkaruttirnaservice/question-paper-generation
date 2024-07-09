@@ -51,41 +51,42 @@
   maq_page_number = `page number of the book`
 
 -tm_test_user_master_list = `stores the created tests`
-mt_name =
-mt_added_date =
-mt_descp =
-mt_added_time =
-mt_is_live =
-mt_time_stamp =
-mt_type =
-tm_aouth_id =
-mt_test_time =
+mt_name = `actual test name`
+mt_added_date = `date`
+mt_descp = `description of the test`
+mt_added_time = `time`
+mt_is_live = `live status 1=live, 0=not live`
+mt_time_stamp = `time stamp`
+mt_type = `test type 1=mcq`
+tm_aouth_id = `1=admin`
+mt_test_time = `test duration`
 mt_total_test_takan =
-mt_is_negative =
-mt_negativ_mark =
-mt_mark_per_question =
-mt_passing_out_of =
-mt_total_marks =
+mt_is_negative = `does test have negative marking 1=yes, 0=no`
+mt_negativ_mark = `if test have negative marking, then what is the value of negative marking`
+mt_mark_per_question = `marks per question`
+mt_passing_out_of = `passing marks of test`
+mt_total_marks = `total test marks`
 mt_pattern_type =
-mt_total_test_question =
+mt_total_test_question = `total questions in test`
 
+============================================================================================
 -tm_test_question_sets = `question list of the created test this is linked with tqs_test_id`
-id
-q_id
-tqs_test_id
-section_id
-section_name
-sub_topic_id
-sub_topic_section
-main_topic_id
-main_topic_name
-q longtext
-q_a longtext
-q_b longtext
-q_c longtext
-q_d longtext
-q_e longtext
-q_display_type
+
+q_id = `question id`
+tqs_test_id = `id of table=tm_test_user_master_list`
+section_id =
+section_name =
+sub_topic_id = `id of table=tm_sub_topic_list (this is the topic id)`
+sub_topic_section = `name of the topic`
+main_topic_id = `id of table=tm_main_topic_list (this is the subject id)`
+main_topic_name = `name of the subject`
+q = `actual question`
+q_a = `option A`
+q_b = `option B`
+q_c = `option C`
+q_d = `option D`
+q_e = `option E`
+q_display_type =
 q_ask_in
 q_data_type
 q_mat_data
@@ -109,8 +110,8 @@ q_col_display_type
 question_no
 mark_per_question
 tqs_question_id
-tqs_chapter_id
-tqs_section_id
-pub_name
-book_name
-page_name
+tqs_chapter_id =
+tqs_section_id =
+pub_name = `publication name`
+book_name = `book name`
+page_name = `page no of the book`

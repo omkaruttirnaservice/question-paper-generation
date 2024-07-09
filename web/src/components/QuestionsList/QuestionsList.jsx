@@ -7,6 +7,7 @@ import {
 	getPostListThunk,
 	getSubjectsListThunk,
 	getTopicsListThunk,
+	QuestionFormActions,
 } from '../../Store/question-form-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import PostListDropdown from '../QuestionForm/PostListDropdown/PostListDropdown.jsx';
@@ -20,6 +21,7 @@ import { ModalActions } from '../../Store/modal-slice.jsx';
 import CModal from '../UI/CModal.jsx';
 import { FaFloppyDisk } from 'react-icons/fa6';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
+import Swal from 'sweetalert2';
 
 const ALL_QUESTION = 'all-question';
 const SELECTED_QUESTION = 'selected-question';
@@ -48,7 +50,6 @@ function QuestionsList() {
 		postsList,
 		subjectsList,
 		topicsList,
-		isEdit,
 	} = useSelector((state) => state.questionForm);
 
 	useEffect(() => {
@@ -65,7 +66,27 @@ function QuestionsList() {
 	useEffect(() => {
 		dispatch(getTopicsListThunk(_formData.subject_id, sendRequest));
 		setQuestionList([]);
+
+		let selectedSubject = subjectsList.filter(
+			(el) => el.id == _formData.subject_id
+		);
+		if (selectedSubject.length !== 0) {
+			dispatch(QuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
+		}
 	}, [_formData.subject_id]);
+
+	useEffect(() => {
+		if (!_formData.topic_id && !_formData.subject_id && !_formData.topic_id) {
+			return;
+		}
+
+		let selectedTopic = topicsList.filter((el) => el.id == _formData.topic_id);
+		if (selectedTopic.length !== 0) {
+			dispatch(QuestionFormActions.setTopicName(selectedTopic[0].topic_name));
+		}
+
+		getQuestions();
+	}, [_formData.topic_id]);
 
 	async function getQuestions() {
 		let reqData = {
@@ -82,13 +103,6 @@ function QuestionsList() {
 		});
 	}
 
-	useEffect(() => {
-		if (!_formData.topic_id && !_formData.subject_id && !_formData.topic_id) {
-			return;
-		}
-		getQuestions();
-	}, [_formData.topic_id]);
-
 	const handleAddQuestionToList = (id) => {
 		const questionIdx = questionList.findIndex((el) => el.id === id);
 
@@ -99,7 +113,6 @@ function QuestionsList() {
 		}
 
 		setQuestionList([...questionList]);
-		console.log(questionList);
 	};
 
 	useEffect(() => {
@@ -121,20 +134,26 @@ function QuestionsList() {
 	};
 
 	const finalTestSubmitHandler = () => {
-		console.log('hereerererer');
-		let testQuestions = questionList.filter((el) => el.isAdded);
-
 		let requestData = {
 			url: '/api/test/create',
 			method: 'POST',
 			body: JSON.stringify({
 				test,
-				testQuestions,
+				testQuestions: questionList.filter((el) => el.isAdded),
+				_formData,
 			}),
 		};
 
-		sendRequest(requestData, (data) => {
-			console.log(data);
+		sendRequest(requestData, ({ success, data }) => {
+			if (success) {
+				Swal.fire({
+					title: 'Success!',
+					text: data,
+					icon: 'success',
+				});
+
+				dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
+			}
 		});
 	};
 
@@ -261,6 +280,7 @@ function QuestionsList() {
 }
 
 function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
+	const { isLoading } = useSelector((state) => state.loader);
 	return (
 		<CModal id="create-exam-preview-modal" title="Create Exam">
 			<table className="w-full">
@@ -302,7 +322,9 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
 				</tbody>
 			</table>
 			<div className="flex justify-center mt-4">
-				<CButton onClick={finalTestSubmitHandler}>Submit</CButton>
+				<CButton isLoading={isLoading} onClick={finalTestSubmitHandler}>
+					Submit
+				</CButton>
 			</div>
 		</CModal>
 	);

@@ -5,8 +5,11 @@ import { loaderActions } from './loader-slice.jsx';
 let initialState = {
 	data: {
 		post_id: null,
+		post_name: null,
 		subject_id: null,
+		subject_name: null,
 		topic_id: null,
+		topic_name: null,
 		pub_name: null,
 		book_name: null,
 		pg_no: null,
@@ -85,9 +88,17 @@ const QuestionFormSlice = createSlice({
 			state.subjectsList = _subjectsList;
 		},
 
+		setSubjectName(state, action) {
+			state.data.subject_name = action.payload;
+		},
+
 		setTopicsList(state, action) {
 			// state.data.topic_id = null;
 			state.topicsList = action.payload;
+		},
+
+		setTopicName(state, action) {
+			state.data.topic_name = action.payload;
 		},
 
 		setQuestionNumber(state, action) {
