@@ -14,7 +14,7 @@ app.use(json({ limit: '1024mb' }));
 app.use(urlencoded({ extended: true, limit: '1024mb' }));
 app.use(cookieParser());
 
-app.use('/', indexRoutes);
+app.use('/api', indexRoutes);
 
 app.listen(process.env.PORT, () => {
 	console.log('Server started on', process.env.PORT);

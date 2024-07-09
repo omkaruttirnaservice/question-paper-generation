@@ -1,11 +1,11 @@
 import sequelize from '../application/config/db-connect-migration.js';
-import subject from '../application/Migration_Scripts/subject.js';
-import topic from '../application/Migration_Scripts/topic.js';
-import question from '../application/Migration_Scripts/question.js';
 import tm_master_test_list from '../application/Migration_Scripts/tm_master_test_list.js';
 import tm_mega_question_set from '../application/Migration_Scripts/tm_mega_question_set.js';
 import tm_main_topic_list from '../application/Migration_Scripts/tm_main_topic_list.js';
 import tm_sub_topic_list from '../application/Migration_Scripts/tm_sub_topic_list.js';
+
+import tm_test_user_master_list from '../application/Migration_Scripts/tm_test_user_master_list.js';
+import tm_test_question_sets from '../application/Migration_Scripts/tm_test_question_sets.js';
 
 const getSync = () => {
 	sequelize

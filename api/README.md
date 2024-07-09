@@ -49,3 +49,68 @@
   msq_publication = `publication name of questin`
   msq_book_name = `book name from where question is taken`
   maq_page_number = `page number of the book`
+
+-tm_test_user_master_list = `stores the created tests`
+mt_name =
+mt_added_date =
+mt_descp =
+mt_added_time =
+mt_is_live =
+mt_time_stamp =
+mt_type =
+tm_aouth_id =
+mt_test_time =
+mt_total_test_takan =
+mt_is_negative =
+mt_negativ_mark =
+mt_mark_per_question =
+mt_passing_out_of =
+mt_total_marks =
+mt_pattern_type =
+mt_total_test_question =
+
+-tm_test_question_sets = `question list of the created test this is linked with tqs_test_id`
+id
+q_id
+tqs_test_id
+section_id
+section_name
+sub_topic_id
+sub_topic_section
+main_topic_id
+main_topic_name
+q longtext
+q_a longtext
+q_b longtext
+q_c longtext
+q_d longtext
+q_e longtext
+q_display_type
+q_ask_in
+q_data_type
+q_mat_data
+q_col_a
+q_col_b
+q_mat_id
+q_i_a
+q_i_b
+q_i_c
+q_i_d
+q_i_e
+q_i_q
+q_i_sol
+stl_topic_number
+sl_section_no
+q_sol
+q_ans
+q_mat_ans
+q_mat_ans_row
+q_col_display_type
+question_no
+mark_per_question
+tqs_question_id
+tqs_chapter_id
+tqs_section_id
+pub_name
+book_name
+page_name
