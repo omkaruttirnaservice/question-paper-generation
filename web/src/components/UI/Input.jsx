@@ -4,6 +4,7 @@ export default function Input({
 	value = '',
 	onChange,
 	className,
+	disabled = false,
 }) {
 	return (
 		<div className={`relative ${className}`}>
@@ -15,11 +16,12 @@ export default function Input({
 			<input
 				type="text"
 				id={name}
-				className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300"
+				className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
 				placeholder={label}
 				name={name}
 				value={value}
 				onChange={onChange}
+				disabled={disabled}
 			/>
 		</div>
 	);

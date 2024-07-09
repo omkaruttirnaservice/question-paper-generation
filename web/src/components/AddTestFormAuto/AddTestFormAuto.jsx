@@ -7,7 +7,7 @@ import CModal from '../UI/CModal.jsx';
 import Input from '../UI/Input.jsx';
 import { useNavigate } from 'react-router-dom';
 
-function AddTestForm() {
+function AddTestFormAuto() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { test } = useSelector((state) => state.tests);
@@ -17,14 +17,15 @@ function AddTestForm() {
 	};
 
 	const createTestSubmitHandler = (e) => {
-		navigate('/create-test/manual');
+		navigate('/create-test/auto');
 	};
+
 	return (
 		<div>
-			<CModal id="create-test-modal" title={'Create New Test (Manual)'}>
+			<CModal id="create-test-modal-auto" title={'Create New Test (Auto)'}>
 				<form
 					action=""
-					id="create-test-form"
+					id="create-test-form-auto"
 					onSubmit={createTestSubmitHandler}>
 					<div className="grid grid-cols-3 gap-3 mb-5">
 						<Input
@@ -44,6 +45,32 @@ function AddTestForm() {
 							name="marks_per_question"
 							onChange={inputChangeHandler}></Input>
 
+						<div>
+							<label
+								htmlFor=""
+								className="transition-all duration-300 text-gray-700 !mb-1  block">
+								Negative Marking
+							</label>
+							<select
+								name="is_negative_marking"
+								id=""
+								value={test.is_negative_marking}
+								onChange={inputChangeHandler}
+								className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300">
+								<option value="">-- Select -- </option>
+								<option value="1">Yes</option>
+								<option value="0">No</option>
+							</select>
+						</div>
+
+						<Input
+							label={'Negative Marks'}
+							onChange={inputChangeHandler}
+							name={'negative_mark'}
+							value={test.negative_mark}
+							disabled={test.is_negative_marking != 1 ? true : false}
+						/>
+
 						<Input
 							value={test.test_passing_mark}
 							label={'Passing marks'}
@@ -62,4 +89,4 @@ function AddTestForm() {
 	);
 }
 
-export default AddTestForm;
+export default AddTestFormAuto;

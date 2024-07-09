@@ -1,39 +1,32 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { FaGripLinesVertical } from 'react-icons/fa';
 
+import './QuestionsListAutoTest.css';
+
 import { FaAngleRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import {
 	getPostListThunk,
 	getSubjectsListThunk,
-	getTopicsListThunk,
 	QuestionFormActions,
 } from '../../Store/question-form-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import PostListDropdown from '../QuestionForm/PostListDropdown/PostListDropdown.jsx';
 import SubjectListDropdown from '../QuestionForm/SubjectListDropdown/SubjectListDropdown.jsx';
-import TopicListDropdown from '../QuestionForm/TopicListDropdown/TopicListDropdown.jsx';
 
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
-import CButton from '../UI/CButton.jsx';
-import { ModalActions } from '../../Store/modal-slice.jsx';
-import CModal from '../UI/CModal.jsx';
-import { FaFloppyDisk } from 'react-icons/fa6';
-import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import Swal from 'sweetalert2';
+import { ModalActions } from '../../Store/modal-slice.jsx';
+import CButton from '../UI/CButton.jsx';
+import CModal from '../UI/CModal.jsx';
 
-const ALL_QUESTION = 'all-question';
-const SELECTED_QUESTION = 'selected-question';
-
-function QuestionsList() {
+function QuestionsListAutoTest() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { test } = useSelector((state) => state.tests);
 
-	const [questionList, setQuestionList] = useState([]);
-	const [filteredQuestionList, setFilteredQuestionList] = useState([]);
-	const [showList, setShowList] = useState(ALL_QUESTION);
+	const [topicList, setTopicList] = useState([]);
 
 	const { isLoading } = useSelector((state) => state.loader);
 
@@ -60,12 +53,14 @@ function QuestionsList() {
 
 	useEffect(() => {
 		dispatch(getSubjectsListThunk(_formData.post_id, sendRequest));
-		setQuestionList([]);
+		setTopicList([]);
 	}, [_formData.post_id]);
 
 	useEffect(() => {
-		dispatch(getTopicsListThunk(_formData.subject_id, sendRequest));
-		setQuestionList([]);
+		setTopicList([]);
+		// dispatch(getTopicsListThunk(_formData.subject_id, sendRequest));
+
+		getTopicAndQuestionCount(_formData.subject_id);
 
 		let selectedSubject = subjectsList.filter(
 			(el) => el.id == _formData.subject_id
@@ -74,6 +69,20 @@ function QuestionsList() {
 			dispatch(QuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
 		}
 	}, [_formData.subject_id]);
+
+	function getTopicAndQuestionCount(subjectId) {
+		let reqData = {
+			url: '/api/get-topic-list-and-question-count',
+			method: 'POST',
+			body: JSON.stringify({
+				subjectId,
+			}),
+		};
+		sendRequest(reqData, ({ data }) => {
+			setTopicList(data);
+			console.log(data, '==data==');
+		});
+	}
 
 	useEffect(() => {
 		if (!_formData.topic_id && !_formData.subject_id && !_formData.topic_id) {
@@ -99,48 +108,52 @@ function QuestionsList() {
 			}),
 		};
 		sendRequest(reqData, (data) => {
-			setQuestionList(data.data);
+			console.log(data, '==data==');
 		});
 	}
 
-	const handleAddQuestionToList = (id) => {
-		const questionIdx = questionList.findIndex((el) => el.id === id);
+	const topicListCheckboxHandler = (e) => {
+		console.log(e.target.checked);
+		let isChecked = e.target.checked;
+		if (!isChecked) {
+			let topicIdx = topicList.findIndex((el) => el.id == e.target.value);
+			topicList[topicIdx].selectedCount = 0;
+			topicList[topicIdx].isChecked = true;
+			setTopicList([...topicList]);
+		}
+		// dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
+	};
 
-		if (questionIdx !== -1) {
-			questionList[questionIdx].isAdded = questionList[questionIdx].isAdded
-				? 0
-				: 1;
+	const questionCountChangeHandler = (e) => {
+		const { value, name } = e.target;
+
+		if (isNaN(value)) {
+			e.target.value = '';
+			return false;
 		}
 
-		setQuestionList([...questionList]);
-	};
+		const topicIdx = topicList.findIndex((el) => +el.id === +name);
+		if (topicIdx === -1) return false;
 
-	useEffect(() => {
-		let count = 0;
-		questionList.forEach((el) => {
-			if (el.isAdded == 1) {
-				count++;
-			}
-		});
-		dispatch(testsSliceActions.updateTotalQuestionsCount(count));
-	}, [questionList]);
+		const maxQuestionCount = topicList[topicIdx].question_count;
 
-	const viewQuestionListChangeHandler = (type) => {
-		setShowList(type);
-	};
+		if (+value > maxQuestionCount) {
+			e.target.value = maxQuestionCount.toString();
+		}
 
-	const createExamHandler = () => {
-		dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
+		topicList[topicIdx].selectedCount = e.target.value;
+
+		setTopicList([...topicList]);
 	};
 
 	const finalTestSubmitHandler = () => {
 		let requestData = {
-			url: '/api/test/create',
+			url: '/api/test/create-auto',
 			method: 'POST',
 			body: JSON.stringify({
 				test,
-				testQuestions: questionList.filter((el) => el.isAdded),
 				_formData,
+				topicList: topicList.filter((el) => el?.selectedCount >= 1),
 			}),
 		};
 
@@ -152,17 +165,17 @@ function QuestionsList() {
 					icon: 'success',
 				});
 
-				dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
+				// dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
 			}
 		});
 	};
 
 	return (
 		<>
-			<CreatePreSubmitView
+			{/* <CreatePreSubmitView
 				test={test}
 				finalTestSubmitHandler={finalTestSubmitHandler}
-			/>
+			/> */}
 			<div className="container mx-auto mt-6">
 				<div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
 					<div className="grid grid-cols-5 items-center gap-3">
@@ -221,64 +234,63 @@ function QuestionsList() {
 					<div className="grid grid-cols-5 gap-3 ">
 						<PostListDropdown isShowAddNewBtn={false} />
 						<SubjectListDropdown isShowAddNewBtn={false} />
-						<TopicListDropdown isShowAddNewBtn={false} />
-
-						{test.total_questions >= 1 && (
-							<CButton
-								className={'btn--success w-fit h-fit self-end'}
-								onClick={createExamHandler}>
-								Create Exam
-							</CButton>
-						)}
 					</div>
 				</div>
 			</div>
 
-			<div className="container mx-auto flex justify-center gap-4 mt-5">
-				<CButton
-					className={''}
-					onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
-					All Questions
-				</CButton>
-				<CButton
-					className={'btn--danger'}
-					onClick={viewQuestionListChangeHandler.bind(null, SELECTED_QUESTION)}>
-					Question Paper ( {test.total_questions} )
-				</CButton>
-			</div>
-
 			<div className="container mx-auto mt-6">
-				<div>
-					{questionList.length >= 1 &&
-						showList == ALL_QUESTION &&
-						questionList.map((el, idx) => {
-							return (
-								<AllQuestionsPreview
-									el={el}
-									idx={idx}
-									handleAddQuestionToList={handleAddQuestionToList}
-								/>
-							);
-						})}
-
-					{showList == SELECTED_QUESTION &&
-						questionList.map((el, idx) => {
-							return (
-								el.isAdded == 1 && (
-									<SelectedQuestionPreview
-										el={el}
-										idx={idx}
-										handleAddQuestionToList={handleAddQuestionToList}
-									/>
-								)
-							);
-						})}
-				</div>
+				<form action="">
+					<table className="w-full" id="questions-list-table">
+						<thead>
+							<tr className="bg-blue-300">
+								<td className="p-2 text-center">#</td>
+								<td className="p-2">Check/Unckeck</td>
+								<td className="p-2">Section Name</td>
+								<td className="p-2">Select Question</td>
+								<td className="p-2">Question</td>
+							</tr>
+						</thead>
+						<tbody>
+							{topicList.length >= 1 &&
+								topicList.map((el, idx) => {
+									return (
+										<tr className="border-b hover:bg-gray-100">
+											<td className="p-2 text-center">{idx + 1}</td>
+											<td className="p-2 text-center" width={'5%'}>
+												<input
+													type="checkbox"
+													name={el.id}
+													value={el.id}
+													onChange={topicListCheckboxHandler}
+												/>
+											</td>
+											<td className="p-2">{el.topic_name}</td>
+											<td className="p-2">{el.question_count}</td>
+											<td>
+												<input
+													type="number"
+													className="border w-16 p-1"
+													name={el.id}
+													value={el.selectedCount ? el.selectedCount : 0}
+													onChange={questionCountChangeHandler}
+												/>
+											</td>
+										</tr>
+									);
+								})}
+						</tbody>
+					</table>
+					<CButton
+						className={'btn--success mt-6'}
+						onClick={finalTestSubmitHandler}>
+						Create Exam
+					</CButton>
+				</form>
 
 				{isLoading && (
 					<AiOutlineLoading3Quarters className="animate-spin text-2xl m-3 mx-auto" />
 				)}
-				{!isLoading && questionList.length === 0 && (
+				{!isLoading && topicList.length === 0 && (
 					<p className="text-center text-[#555]">Woops! no questions found!</p>
 				)}
 			</div>
@@ -447,120 +459,12 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 	);
 }
 
-function SelectedQuestionPreview({ el, idx, handleAddQuestionToList }) {
-	return (
-		<div
-			className={`border mb-2 h-[10rem] hover:h-full transition-all duration-300  overflow-y-scroll `}
-			onClick={handleAddQuestionToList.bind(null, el.id)}
-			key={idx}>
-			<div className="py-3 px-4 text-start">
-				<div className="py-3">
-					<p className="font-bold text-[#555] mb-4 block text-start">
-						Q. {el.id})
-					</p>
-					<p
-						className="text-start"
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_question,
-						}}></p>
-				</div>
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option A
-					</span>
-
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_one,
-						}}></p>
-				</div>
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option B
-					</span>
-
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_two,
-						}}></p>
-				</div>
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option C
-					</span>
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_three,
-						}}></p>
-				</div>
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option D
-					</span>
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_four,
-						}}></p>
-				</div>
-
-				<hr />
-
-				{el.mqs_opt_five && (
-					<div className="py-3">
-						<span className="font-bold text-[#555] mb-4 block text-start">
-							Option E
-						</span>
-						<p
-							dangerouslySetInnerHTML={{
-								__html: el.mqs_opt_five,
-							}}></p>
-					</div>
-				)}
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 me-3">
-						Correct Option
-					</span>
-					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.mqs_ans}</span>
-				</div>
-
-				<hr />
-
-				{el.mqs_solution && (
-					<div className="py-3">
-						<span className="font-bold text-[#555] my-4 block text-start">
-							Solution
-						</span>
-						<p
-							className="text-start"
-							dangerouslySetInnerHTML={{
-								__html: el.mqs_solution,
-							}}></p>
-					</div>
-				)}
-			</div>
-		</div>
-	);
-}
-
-export default QuestionsList;
+export default QuestionsListAutoTest;
 
 {
 	/* <Accordion allowZeroExpanded={true} onChange={handleAccordionChange}>
-					{questionList.length >= 1 &&
-						questionList.map((el, idx) => {
+					{topicList.length >= 1 &&
+						topicList.map((el, idx) => {
 							return (
 								<AccordionItem className="border  mb-1" key={idx} uuid={idx}>
 									<AccordionItemHeading

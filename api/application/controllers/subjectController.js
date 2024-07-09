@@ -50,6 +50,18 @@ const subjectController = {
 		}
 	},
 
+	getTopicListAndQuestionCount: async function (req, res) {
+		try {
+			const { subjectId } = req.body;
+			const response = await subjectModel.getTopicListAndQuestionCount(
+				subjectId
+			);
+			sendSuccess(res, response[0]);
+		} catch (error) {
+			sendError(res, error);
+		}
+	},
+
 	addTopic: async function (req, res) {
 		try {
 			const { postId, subjectId, topicName } = req.body;

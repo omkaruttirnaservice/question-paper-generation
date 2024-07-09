@@ -6,6 +6,12 @@ router.post('/get-subject-list', subjectController.getSubjectList);
 router.post('/add-subject', subjectController.addSubject);
 
 router.post('/get-topic-list', subjectController.getTopicList);
+
+router.post(
+	'/get-topic-list-and-question-count',
+	subjectController.getTopicListAndQuestionCount
+);
+
 router.post('/add-topic', subjectController.addTopic);
 
 export default router;

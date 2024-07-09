@@ -8,9 +8,10 @@ const testsSlice = createSlice({
 			test_duration: null,
 			marks_per_question: null,
 			total_questions: null,
-			is_negative_marking: 0,
+			is_negative_marking: null,
 			negative_mark: 0,
 			test_passing_mark: null,
+			test_creation_type: null,
 		},
 		errors: [],
 	},
@@ -21,6 +22,10 @@ const testsSlice = createSlice({
 		},
 		updateTotalQuestionsCount: (state, action) => {
 			state.test.total_questions = action.payload;
+		},
+
+		setTestCreationType: (state, action) => {
+			state.test.test_creation_type = action.payload;
 		},
 	},
 });

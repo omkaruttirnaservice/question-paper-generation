@@ -16,6 +16,16 @@ const testsController = {
 			return sendError(res, error.message);
 		}
 	},
+	createTestAuto: async (req, res) => {
+		console.log(req.body, 'createTestAuto');
+		let { test: _t, topicList: _top, _formData: _fd } = req.body;
+		try {
+			console.log({ test: _t, topicList: _top, _formData: _fd });
+		} catch (error) {
+			console.log(error);
+			return sendError(res, error.message);
+		}
+	},
 };
 
 export default testsController;

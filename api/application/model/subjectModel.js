@@ -46,6 +46,23 @@ const subjectModel = {
 		);
 	},
 
+	getTopicListAndQuestionCount: function (subjectId) {
+		return db.query(
+			`SELECT 
+						mtl.id id, 
+						stl_name topic_name, 
+						COUNT(mqs.id) question_count
+				FROM
+						tm_sub_topic_list mtl
+								LEFT JOIN
+						tm_mega_question_set mqs ON mtl.id = mqs.mqs_chapter_id
+				WHERE
+						mtl.stl_main_topic_list_id = ?
+				GROUP BY stl_name;`,
+			+subjectId
+		);
+	},
+
 	addTopic: function (d) {
 		return db.query(
 			`INSERT INTO 
