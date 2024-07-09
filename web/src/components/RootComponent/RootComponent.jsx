@@ -4,8 +4,6 @@ import MenuBar from '../MenuBar/MenuBar';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import './RootComponent.css';
-
 function RootComponent() {
 	return (
 		<>
