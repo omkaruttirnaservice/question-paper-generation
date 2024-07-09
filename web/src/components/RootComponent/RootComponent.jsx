@@ -9,12 +9,8 @@ function RootComponent() {
 		<>
 			<ToastContainer autoClose={2000} />
 			<div className="">
-				<div className=" menubar ">
-					<MenuBar />
-				</div>
-				<div className="">
-					<Outlet />
-				</div>
+				<MenuBar />
+				<Outlet />
 			</div>
 		</>
 	);
