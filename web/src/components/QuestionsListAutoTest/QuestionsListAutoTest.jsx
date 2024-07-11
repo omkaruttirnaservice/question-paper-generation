@@ -17,20 +17,17 @@ import SubjectListDropdown from '../QuestionForm/SubjectListDropdown/SubjectList
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { ModalActions } from '../../Store/modal-slice.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 
 function QuestionsListAutoTest() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { test } = useSelector((state) => state.tests);
-
-	const [topicList, setTopicList] = useState([]);
-
-	const { isLoading } = useSelector((state) => state.loader);
-
 	const { sendRequest } = useHttp();
+
+	const { test } = useSelector((state) => state.tests);
+	const { isLoading } = useSelector((state) => state.loader);
+	const [topicList, setTopicList] = useState([]);
 
 	useLayoutEffect(() => {
 		if (!test.test_name) {
@@ -58,7 +55,6 @@ function QuestionsListAutoTest() {
 
 	useEffect(() => {
 		setTopicList([]);
-		// dispatch(getTopicsListThunk(_formData.subject_id, sendRequest));
 
 		getTopicAndQuestionCount(_formData.subject_id);
 
@@ -80,35 +76,6 @@ function QuestionsListAutoTest() {
 		};
 		sendRequest(reqData, ({ data }) => {
 			setTopicList(data);
-			console.log(data, '==data==');
-		});
-	}
-
-	useEffect(() => {
-		if (!_formData.topic_id && !_formData.subject_id && !_formData.topic_id) {
-			return;
-		}
-
-		let selectedTopic = topicsList.filter((el) => el.id == _formData.topic_id);
-		if (selectedTopic.length !== 0) {
-			dispatch(QuestionFormActions.setTopicName(selectedTopic[0].topic_name));
-		}
-
-		getQuestions();
-	}, [_formData.topic_id]);
-
-	async function getQuestions() {
-		let reqData = {
-			url: '/api/questions/list',
-			method: 'POST',
-			body: JSON.stringify({
-				post_id: _formData.post_id,
-				subject_id: _formData.subject_id,
-				topic_id: _formData.topic_id,
-			}),
-		};
-		sendRequest(reqData, (data) => {
-			console.log(data, '==data==');
 		});
 	}
 
@@ -327,7 +294,8 @@ function QuestionsListAutoTest() {
 					{_formData.subject_id && (
 						<CButton
 							className={'btn--success mt-6'}
-							onClick={finalTestSubmitHandler}>
+							onClick={finalTestSubmitHandler}
+							isLoading={isLoading}>
 							Create Exam
 						</CButton>
 					)}
