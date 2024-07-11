@@ -113,15 +113,21 @@ function QuestionsListAutoTest() {
 	}
 
 	const topicListCheckboxHandler = (e) => {
-		console.log(e.target.checked);
-		let isChecked = e.target.checked;
-		if (!isChecked) {
-			let topicIdx = topicList.findIndex((el) => el.id == e.target.value);
-			topicList[topicIdx].selectedCount = 0;
-			topicList[topicIdx].isChecked = true;
-			setTopicList([...topicList]);
-		}
-		// dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
+		const isChecked = e.target.checked;
+		const topicId = parseInt(e.target.dataset.id);
+
+		const updatedList = topicList.map((topic) => {
+			if (topic.id === topicId) {
+				return {
+					...topic,
+					isChecked: isChecked,
+					selectedCount: isChecked ? topic.selectedCount : 0,
+				};
+			}
+			return topic;
+		});
+
+		setTopicList(updatedList);
 	};
 
 	const questionCountChangeHandler = (e) => {
@@ -141,18 +147,20 @@ function QuestionsListAutoTest() {
 			e.target.value = maxQuestionCount.toString();
 		}
 
-		topicList[topicIdx].selectedCount = e.target.value;
+		topicList[topicIdx].selectedCount = parseInt(e.target.value);
 
 		setTopicList([...topicList]);
 	};
 
 	const finalTestSubmitHandler = () => {
+		let isValid = validateQuestionsSelection();
+		if (!isValid) return false;
+
 		let requestData = {
 			url: '/api/test/create-auto',
 			method: 'POST',
 			body: JSON.stringify({
 				test,
-				_formData,
 				topicList: topicList.filter((el) => el?.selectedCount >= 1),
 			}),
 		};
@@ -168,6 +176,40 @@ function QuestionsListAutoTest() {
 				// dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
 			}
 		});
+	};
+
+	const validateQuestionsSelection = (cb) => {
+		let isValid = false;
+		let checkedCount = 0;
+
+		for (let i = 0; i < topicList.length; i++) {
+			let el = topicList[i];
+			if (el.isChecked) {
+				checkedCount += 1;
+
+				if (el.selectedCount == 0 || !el.selectedCount) {
+					Swal.fire({
+						title: 'Oops!',
+						text: 'Please enter total questions',
+						icon: 'warning',
+					});
+					return false;
+				}
+				isValid = true;
+			}
+			el = null;
+		}
+
+		if (checkedCount == 0) {
+			Swal.fire({
+				title: 'Oops!',
+				text: 'Please select question',
+				icon: 'warning',
+			});
+			isValid = false;
+		}
+
+		return isValid;
 	};
 
 	return (
@@ -260,7 +302,8 @@ function QuestionsListAutoTest() {
 												<input
 													type="checkbox"
 													name={el.id}
-													value={el.id}
+													value=""
+													data-id={el.id}
 													onChange={topicListCheckboxHandler}
 												/>
 											</td>
@@ -268,11 +311,12 @@ function QuestionsListAutoTest() {
 											<td className="p-2">{el.question_count}</td>
 											<td>
 												<input
-													type="number"
+													type=""
 													className="border w-16 p-1"
 													name={el.id}
 													value={el.selectedCount ? el.selectedCount : 0}
 													onChange={questionCountChangeHandler}
+													disabled={!el.isChecked}
 												/>
 											</td>
 										</tr>
@@ -280,11 +324,13 @@ function QuestionsListAutoTest() {
 								})}
 						</tbody>
 					</table>
-					<CButton
-						className={'btn--success mt-6'}
-						onClick={finalTestSubmitHandler}>
-						Create Exam
-					</CButton>
+					{_formData.subject_id && (
+						<CButton
+							className={'btn--success mt-6'}
+							onClick={finalTestSubmitHandler}>
+							Create Exam
+						</CButton>
+					)}
 				</form>
 
 				{isLoading && (

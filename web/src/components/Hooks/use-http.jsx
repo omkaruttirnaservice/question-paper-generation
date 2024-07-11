@@ -27,9 +27,9 @@ const useHttp = () => {
 		} catch (err) {
 			console.log(err);
 			dispatch(loaderActions.hideLoader());
-			if ((err.message = 'Failed to fetch')) {
+			if (err.message == 'Failed to fetch') {
 				console.log('Unable to connect to backend');
-				toast(err.message);
+				alert(err.message);
 			} else {
 				toast('Something went wrong.');
 			}

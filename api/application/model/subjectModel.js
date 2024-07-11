@@ -49,8 +49,9 @@ const subjectModel = {
 	getTopicListAndQuestionCount: function (subjectId) {
 		return db.query(
 			`SELECT 
-						mtl.id id, 
-						stl_name topic_name, 
+						mtl.id id,
+						stl_name topic_name,
+						mqs.mqs_section_id subject_id,
 						COUNT(mqs.id) question_count
 				FROM
 						tm_sub_topic_list mtl
