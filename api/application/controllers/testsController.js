@@ -12,6 +12,21 @@ const testsController = {
 		}
 	},
 
+	deleteTest: async (req, res) => {
+		try {
+			let { deleteId } = req.body;
+
+			if (!deleteId) {
+				throw new Error('Invalid delete id passed');
+			}
+
+			let _deleteRes = await testsModel.deleteTest(deleteId);
+			return sendSuccess(res, _deleteRes);
+		} catch (error) {
+			return sendError(res, error.message);
+		}
+	},
+
 	createTest: async (req, res) => {
 		console.log(req.body, 'createTest');
 		let { test: _t, testQuestions: _q, _formData: _fd } = req.body;

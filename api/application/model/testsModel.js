@@ -8,6 +8,25 @@ const testsModel = {
 	getList: async () => {
 		return tm_test_user_master_list.findAll({ raw: true });
 	},
+
+	deleteTest: async (deleteId) => {
+		let transact = await sequelize.transaction();
+		try {
+			await tm_test_user_master_list.destroy({ where: { id: +deleteId } });
+			await tm_test_question_sets.destroy({
+				where: { tqs_test_id: +deleteId },
+			});
+
+			await transact.commit();
+			return {
+				message: 'Deleted successful',
+			};
+		} catch (error) {
+			console.log(error, '==error==');
+			await transact.rollback();
+		}
+	},
+
 	createTest: async (_t, _q, _fd) => {
 		console.log(_q, 'Q===============================================');
 		console.log(_t, '==_t==');

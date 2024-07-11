@@ -6,5 +6,6 @@ let testsRouter = express.Router();
 testsRouter.get('/list', testsController.getList);
 testsRouter.post('/create', testsController.createTest);
 testsRouter.post('/create-auto', testsController.createTestAuto);
+testsRouter.delete('/delete', testsController.deleteTest);
 
 export default testsRouter;
