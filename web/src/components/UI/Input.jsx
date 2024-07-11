@@ -5,6 +5,7 @@ export default function Input({
 	onChange,
 	className,
 	disabled = false,
+	type = 'text',
 }) {
 	return (
 		<div className={`relative ${className}`}>
@@ -14,7 +15,7 @@ export default function Input({
 				{label}
 			</label>
 			<input
-				type="text"
+				type={type}
 				id={name}
 				className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
 				placeholder={label}
