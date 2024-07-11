@@ -9,9 +9,14 @@ import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
 import './TestsList.css';
+import Swal from 'sweetalert2';
 
 function TestsList() {
 	const [batchCount, setBatchCount] = useState([]);
+	const [publishExamForm, setPublishExamForm] = useState({
+		batch: null,
+		publish_date: null,
+	});
 
 	useEffect(() => {
 		let _bList = [];
@@ -43,6 +48,38 @@ function TestsList() {
 	const handlePublishExam = (id) => {
 		dispatch(ModalActions.toggleModal('publish-exam-modal'));
 	};
+
+	const handleDeleteTest = (id) => {
+		if (!id) return false;
+		let reqData = {
+			url: '/api/test/delete',
+			method: 'DELETE',
+			body: JSON.stringify({ deleteId: id }),
+		};
+
+		sendRequest(reqData, ({ success }) => {
+			if (success == 1) {
+				Swal.fire({
+					title: 'Success!',
+					text: 'Deleted successfully',
+					icon: 'success',
+				});
+			}
+		});
+	};
+
+	const handleChange = (e) => {
+		console.log(e, '==e==');
+		let { name, value } = e.target;
+		console.log(name, value, '==name, value==');
+		setPublishExamForm((prev) => {
+			return {
+				...prev,
+				[name]: value,
+			};
+		});
+		console.log(publishExamForm);
+	};
 	return (
 		<>
 			<CModal id="publish-exam-modal" title={'Publish Exam'}>
@@ -54,7 +91,18 @@ function TestsList() {
 							Select Publish Date
 						</label>
 						<DatePicker
+							onChange={(date) => {
+								setPublishExamForm((prev) => {
+									return {
+										...prev,
+										publish_date: `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
+									};
+								});
+							}}
 							placeholderText="select date"
+							defaultValue
+							name="publish_date"
+							value={publishExamForm.publish_date}
 							className="block !w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
 						/>
 					</div>
@@ -66,8 +114,9 @@ function TestsList() {
 							Batch No
 						</label>
 						<select
-							name=""
+							name="batch"
 							id=""
+							onChange={handleChange}
 							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40">
 							<option value="">-- Select -- </option>
 
@@ -100,13 +149,13 @@ function TestsList() {
 					</thead>
 					<tbody>
 						{testsList.length >= 1 &&
-							testsList.map((el) => {
+							testsList.map((el, idx) => {
 								return (
 									<tr className="border-b-gray-300 border hover:bg-gray-100 text-center cursor-pointer">
-										<td className="p-2">#</td>
+										<td className="p-2">{idx + 1}</td>
 										<td className="p-2">{el.mt_name}</td>
 										<td className="p-2">{el.mt_test_time} Min</td>
-										<td className="p-2">{el.mt_total_test_questions}</td>
+										<td className="p-2">{el.mt_total_test_question}</td>
 										<td className="p-2">{el.mt_mark_per_question}</td>
 										<td className="p-2">
 											{el.mt_is_negative == 1 ? 'Yes' : 'No'}
@@ -126,7 +175,7 @@ function TestsList() {
 											<div className="flex gap-2 items-center justify-center">
 												<CButton
 													className="btn--danger m-0"
-													onClick={handlePublishExam.bind(null, el.id)}
+													onClick={handleDeleteTest.bind(null, el.id)}
 													icon={<FaTrash />}></CButton>
 												<CButton
 													className="btn--info m-0"
