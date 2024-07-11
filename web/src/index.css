@@ -53,11 +53,11 @@
 	}
 
 	.cd-btn {
-		@apply shadow-md py-1 px-2 text-base hover:shadow-lg transition-all duration-75 active:scale-75 font-medium;
+		@apply shadow-md py-1 px-2 text-base hover:shadow-lg transition-all duration-75 active:scale-75 font-medium focus:outline-none focus:ring;
 	}
 
 	.btn--primary {
-		@apply bg-gradient-to-tr from-blue-500 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white;
+		@apply bg-gradient-to-tr from-blue-500 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white focus:ring-violet-400;
 	}
 
 	.btn--secondary {
@@ -65,19 +65,19 @@
 	}
 
 	.btn--success {
-		@apply bg-gradient-to-tr from-green-500 to-green-400 hover:from-green-400 hover:to-green-500;
+		@apply bg-gradient-to-tr from-green-500 to-green-400 hover:from-green-400 hover:to-green-500 focus:ring-green-300;
 	}
 
 	.btn--danger {
-		@apply bg-gradient-to-tr from-red-500 to-red-400 hover:from-red-400 hover:to-red-500;
+		@apply bg-gradient-to-tr from-red-500 to-red-400 hover:from-red-400 hover:to-red-500 focus:ring-red-300;
 	}
 
 	.btn--warning {
-		@apply bg-gradient-to-tr from-yellow-300 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300;
+		@apply bg-gradient-to-tr from-yellow-300 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 focus:ring-yellow-300;
 	}
 
 	.btn--info {
-		@apply bg-gradient-to-tr from-cyan-300 to-cyan-200 hover:from-cyan-200 hover:to-cyan-300;
+		@apply bg-gradient-to-tr from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-[#fff] focus:ring-cyan-300;
 	}
 
 	.accent-text {
@@ -93,27 +93,27 @@
 	}
 
 	.heading-1__light {
-		@apply text-3xl lg:text-3xl font-semibold mb-5 text-[#fff];
+		@apply text-xl lg:text-2xl font-semibold mb-3.5 text-[#fff];
 	}
 
 	.heading-1__dark {
-		@apply text-3xl lg:text-3xl font-semibold mb-5 text-[#333];
+		@apply text-xl lg:text-2xl font-semibold mb-3.5 text-[#333];
 	}
 
 	.heading-2__light {
-		@apply text-xl md:text-2xl font-semibold mb-3 md:mb-5 !text-[#fff];
+		@apply text-xl md:text-2xl font-semibold mb-3 md:mb-3 !text-[#fff];
 	}
 
 	.heading-2__dark {
-		@apply text-xl md:text-2xl font-semibold mb-3 md:mb-5 text-[#333];
+		@apply text-xl md:text-xl font-semibold mb-2 md:mb-3 text-[#333];
 	}
 
 	.heading-3__light {
-		@apply text-sm md:text-lg font-semibold mb-3 md:mb-5 text-[#fff];
+		@apply text-sm md:text-base font-semibold mb-1 md:mb-3 text-[#fff];
 	}
 
 	.heading-3__dark {
-		@apply text-sm md:text-lg font-semibold mb-3 md:mb-5 text-[#333];
+		@apply text-sm md:text-base font-semibold mb-1 md:mb-3 text-[#333];
 	}
 
 	.heading_2_1_overlay {
