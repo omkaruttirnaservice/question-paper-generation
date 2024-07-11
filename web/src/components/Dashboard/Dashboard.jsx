@@ -3,11 +3,14 @@ import { FaListUl } from 'react-icons/fa6';
 import { IoCreateOutline } from 'react-icons/io5';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { ModalActions } from '../../Store/modal-slice.jsx';
+import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import AddTestForm from '../AddTestForm/AddTestForm.jsx';
 import AddTestFormAuto from '../AddTestFormAuto/AddTestFormAuto.jsx';
 import CButton from '../UI/CButton.jsx';
-import { ModalActions } from '../../Store/modal-slice.jsx';
-import { testsSliceActions } from '../../Store/tests-slice.jsx';
+
+const MANUAL_TEST = 'manual';
+const AUTO_TEST = 'auto';
 
 function Dashboard() {
 	const dispatch = useDispatch();
@@ -15,7 +18,6 @@ function Dashboard() {
 
 	const createTestHandler = () => {
 		dispatch(ModalActions.toggleModal('create-test-modal'));
-
 		dispatch(testsSliceActions.setTestCreationType(MANUAL_TEST));
 	};
 
