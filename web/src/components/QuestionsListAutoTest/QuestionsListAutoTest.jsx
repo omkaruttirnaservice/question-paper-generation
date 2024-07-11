@@ -139,6 +139,7 @@ function QuestionsListAutoTest() {
 					text: data,
 					icon: 'success',
 				});
+				navigate('/dashboard');
 
 				// dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
 			}

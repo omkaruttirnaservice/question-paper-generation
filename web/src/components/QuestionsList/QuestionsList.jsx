@@ -16,12 +16,11 @@ import TopicListDropdown from '../QuestionForm/TopicListDropdown/TopicListDropdo
 
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
-import CButton from '../UI/CButton.jsx';
-import { ModalActions } from '../../Store/modal-slice.jsx';
-import CModal from '../UI/CModal.jsx';
-import { FaFloppyDisk } from 'react-icons/fa6';
-import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import Swal from 'sweetalert2';
+import { ModalActions } from '../../Store/modal-slice.jsx';
+import { testsSliceActions } from '../../Store/tests-slice.jsx';
+import CButton from '../UI/CButton.jsx';
+import CModal from '../UI/CModal.jsx';
 
 const ALL_QUESTION = 'all-question';
 const SELECTED_QUESTION = 'selected-question';
@@ -153,6 +152,7 @@ function QuestionsList() {
 				});
 
 				dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
+				navigate('/dashboard');
 			}
 		});
 	};
