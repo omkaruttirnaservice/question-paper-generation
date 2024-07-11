@@ -2,6 +2,16 @@ import testsModel from '../model/testsModel.js';
 import { sendError, sendSuccess } from '../utils/commonFunctions.js';
 
 const testsController = {
+	getList: async (req, res) => {
+		try {
+			let _testsList = await testsModel.getList();
+			console.log(_testsList, '==_testsList==');
+			return sendSuccess(res, _testsList);
+		} catch (error) {
+			return sendError(res, error.message);
+		}
+	},
+
 	createTest: async (req, res) => {
 		console.log(req.body, 'createTest');
 		let { test: _t, testQuestions: _q, _formData: _fd } = req.body;

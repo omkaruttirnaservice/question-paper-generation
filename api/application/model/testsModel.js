@@ -5,6 +5,9 @@ import tm_test_question_sets from '../Migration_Scripts/tm_test_question_sets.js
 import tm_test_user_master_list from '../Migration_Scripts/tm_test_user_master_list.js';
 
 const testsModel = {
+	getList: async () => {
+		return tm_test_user_master_list.findAll({ raw: true });
+	},
 	createTest: async (_t, _q, _fd) => {
 		console.log(_q, 'Q===============================================');
 		console.log(_t, '==_t==');
