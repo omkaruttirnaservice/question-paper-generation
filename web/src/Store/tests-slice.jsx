@@ -8,12 +8,12 @@ const testsSlice = createSlice({
 			test_duration: null,
 			marks_per_question: null,
 			total_questions: null,
-			is_negative_marking: null,
+			is_negative_marking: 0,
 			negative_mark: 0,
 			test_passing_mark: null,
 			test_creation_type: null,
 		},
-		errors: [],
+		errors: {},
 	},
 	reducers: {
 		setTestDetails: (state, action) => {
@@ -26,6 +26,11 @@ const testsSlice = createSlice({
 
 		setTestCreationType: (state, action) => {
 			state.test.test_creation_type = action.payload;
+		},
+
+		setErrors: (state, action) => {
+			console.log(action.payload, '==action.payload==');
+			state.errors = action.payload;
 		},
 	},
 });
