@@ -11,12 +11,12 @@ export default function CButton({
 	return (
 		<>
 			<button
-				className={`cd-btn flex items-center gap-1 ${className} ${varient} disabled:hover:cursor-wait`}
+				className={`cd-btn flex justify-center items-center gap-1 ${className} ${varient} disabled:hover:cursor-wait`}
 				type={type}
 				onClick={onClick}
 				disabled={isLoading}>
-				<span className="flex items-center gap-2">
-					{children} {!icon ? '' : icon}
+				<span className="flex items-center gap-2 justify-center">
+					{!icon ? '' : icon} {children}
 				</span>
 				{isLoading && <AiOutlineLoading3Quarters className="animate-spin" />}
 			</button>
