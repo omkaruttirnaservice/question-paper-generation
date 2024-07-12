@@ -7,6 +7,8 @@ import tm_sub_topic_list from '../application/Migration_Scripts/tm_sub_topic_lis
 import tm_test_user_master_list from '../application/Migration_Scripts/tm_test_user_master_list.js';
 import tm_test_question_sets from '../application/Migration_Scripts/tm_test_question_sets.js';
 
+import tm_publish_test_list from '../application/Migration_Scripts/tm_publish_test_list.js';
+
 const getSync = () => {
 	sequelize
 		.sync({ alter: true })
