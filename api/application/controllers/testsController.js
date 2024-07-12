@@ -101,6 +101,41 @@ const testsController = {
 			return sendError(res, error.message);
 		}
 	},
+
+	// test keys
+	checkForDuplicateTestKey: async (req, res) => {
+		try {
+			let { testKey } = req.body;
+
+			if (!testKey) {
+				throw new Error('No test key passed to check');
+			}
+
+			let _checkRes = await testsModel.checkForDuplicateTestKey(testKey);
+			console.log(_checkRes, '==_checkRes==');
+			if (_checkRes.length === 1) {
+				return res.status(200).json({
+					_message: 'Test key already exsists',
+					_success: 2,
+				});
+			} else {
+				return res.status(200).json({
+					_message: 'Unique key',
+					_success: 1,
+				});
+			}
+		} catch (error) {
+			return sendError(res, error.message);
+		}
+	},
+
+	publishTest: (req, res) => {
+		try {
+			let { test_id_for_publish, batch, publish_date, test_key } = req.body;
+		} catch (error) {
+			return sendError(res, error.message);
+		}
+	},
 };
 
 export default testsController;

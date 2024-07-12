@@ -1,6 +1,7 @@
 import sequelize from '../config/db-connect-migration.js';
 import db from '../config/db.connect.js';
 import { myDate } from '../config/utils.js';
+import tm_publish_test_list from '../Migration_Scripts/tm_publish_test_list.js';
 import tm_test_question_sets from '../Migration_Scripts/tm_test_question_sets.js';
 import tm_test_user_master_list from '../Migration_Scripts/tm_test_user_master_list.js';
 
@@ -249,6 +250,17 @@ const testsModel = {
 			});
 		});
 		return await tm_test_question_sets.bulkCreate(questionsData);
+	},
+
+	// tests key
+	checkForDuplicateTestKey: (testKey) => {
+		return tm_publish_test_list.findAll({
+			where: {
+				ptl_link_1: testKey,
+			},
+			raw: true,
+			limit: 1,
+		});
 	},
 };
 
