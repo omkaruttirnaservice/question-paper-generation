@@ -13,16 +13,20 @@ import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
 import Input from '../UI/Input.jsx';
 import './TestsList.css';
-import TestListSchemaYUP from './TestsListSchemaYUP.jsx';
+import TestListSchemaYUP from '../TestsList/TestsListSchemaYUP.jsx';
 
 function TestsList() {
-	const [batchCount, setBatchCount] = useState([]);
-	const [publishExamForm, setPublishExamForm] = useState({
+	let initialStatePublishForm = {
 		test_id_for_publish: null,
 		batch: null,
 		publish_date: null,
 		test_key: null,
-	});
+		test_details: null,
+	};
+	const [batchCount, setBatchCount] = useState([]);
+	const [publishExamForm, setPublishExamForm] = useState(
+		initialStatePublishForm
+	);
 
 	const [errors, setErrors] = useState({});
 
@@ -54,12 +58,13 @@ function TestsList() {
 		});
 	}
 
-	const handlePublishExam = (id) => {
-		if (!id) return;
+	const handlePublishExam = (el) => {
+		if (!el.id) return;
 		setPublishExamForm((prev) => {
 			return {
 				...prev,
-				test_id_for_publish: id,
+				test_id_for_publish: el.id,
+				test_details: el,
 			};
 		});
 		dispatch(ModalActions.toggleModal('publish-exam-modal'));
@@ -87,15 +92,6 @@ function TestsList() {
 	const handleChange = (e) => {
 		let { name, value } = e.target;
 
-		setPublishExamForm((prev) => {
-			return {
-				...prev,
-				[name]: value,
-			};
-		});
-	};
-
-	useEffect(() => {
 		TestListSchemaYUP.validate(publishExamForm, { abortEarly: false })
 			.then(() => {})
 			.catch((error) => {
@@ -105,7 +101,26 @@ function TestsList() {
 				});
 				setErrors(_err);
 			});
-	}, [publishExamForm]);
+
+		setPublishExamForm((prev) => {
+			return {
+				...prev,
+				[name]: value,
+			};
+		});
+	};
+
+	const validatePublishExam = () => {
+		TestListSchemaYUP.validate(publishExamForm, { abortEarly: false })
+			.then(() => {})
+			.catch((error) => {
+				let _err = {};
+				error.inner.forEach((err) => {
+					_err[err.path] = err.message;
+				});
+				setErrors(_err);
+			});
+	};
 
 	const handleGenerateTestKey = async (e) => {
 		e.preventDefault();
@@ -186,6 +201,30 @@ function TestsList() {
 	const handleFinalPublishExam = async () => {
 		try {
 			await TestListSchemaYUP.validate(publishExamForm, { abortEarly: false });
+			alert('All valid');
+			setErrors({});
+
+			console.log(publishExamForm, '==publishExamForm==');
+
+			let _req = {
+				url: '/api/test/publish',
+				method: 'POST',
+				body: JSON.stringify(publishExamForm),
+			};
+
+			sendRequest(_req, ({ success, data }) => {
+				console.log(data, '==data==');
+				if (success == 1) {
+					Swal.fire({
+						title: 'Success',
+						text: data.message,
+						icon: 'success',
+					});
+
+					dispatch(ModalActions.toggleModal('publish-exam-modal'));
+					setPublishExamForm(initialStatePublishForm);
+				}
+			});
 		} catch (error) {
 			let _err = {};
 			error.inner.forEach((err) => {
@@ -193,15 +232,6 @@ function TestsList() {
 			});
 			setErrors(_err);
 		}
-		// let _req = {
-		// 	url: '/api/test/publish',
-		// 	method: 'POST',
-		// 	body: JSON.stringify(publishExamForm),
-		// };
-
-		// sendRequest(_req, (data) => {
-		// 	console.log(data, '==data==');
-		// });
 	};
 
 	return (
@@ -215,11 +245,14 @@ function TestsList() {
 							Select Publish Date
 						</label>
 						<DatePicker
+							autoComplete="off"
 							onChange={(date) => {
 								setPublishExamForm((prev) => {
 									return {
 										...prev,
-										publish_date: `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
+										publish_date: `${date.getDate()}-${
+											date.getMonth() + 1
+										}-${date.getFullYear()}`,
 									};
 								});
 							}}
@@ -244,6 +277,7 @@ function TestsList() {
 							name="batch"
 							id=""
 							onChange={handleChange}
+							value={publishExamForm.batch}
 							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40">
 							<option value="">-- Select -- </option>
 
@@ -313,7 +347,7 @@ function TestsList() {
 												<div className="flex justify-center">
 													<CButton
 														className="btn--primary"
-														onClick={handlePublishExam.bind(null, el.id)}>
+														onClick={handlePublishExam.bind(null, el)}>
 														Publish
 													</CButton>
 												</div>

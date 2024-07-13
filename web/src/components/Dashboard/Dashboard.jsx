@@ -8,6 +8,7 @@ import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import AddTestForm from '../AddTestForm/AddTestForm.jsx';
 import AddTestFormAuto from '../AddTestFormAuto/AddTestFormAuto.jsx';
 import CButton from '../UI/CButton.jsx';
+import { MdChecklist } from 'react-icons/md';
 
 const MANUAL_TEST = 'manual';
 const AUTO_TEST = 'auto';
@@ -26,9 +27,9 @@ function Dashboard() {
 		dispatch(testsSliceActions.setTestCreationType(AUTO_TEST));
 	};
 
-	const testsListHandler = () => {
-		navigate('/tests-list');
-	};
+	const testsListHandler = () => navigate('/tests-list');
+
+	const publishedTestsListHandler = () => navigate('/published-test');
 
 	return (
 		<div className="container mx-auto mt-6 flex gap-6">
@@ -36,7 +37,14 @@ function Dashboard() {
 				className={'btn--info'}
 				onClick={testsListHandler}
 				icon={<FaListUl />}>
-				Tests List
+				All Tests List
+			</CButton>
+
+			<CButton
+				className={'btn--danger'}
+				onClick={publishedTestsListHandler}
+				icon={<MdChecklist />}>
+				Published Tests List
 			</CButton>
 
 			<CButton onClick={createTestHandler} icon={<IoCreateOutline />}>
