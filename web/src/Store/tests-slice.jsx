@@ -14,6 +14,7 @@ const testsSlice = createSlice({
 			test_creation_type: null,
 		},
 		errors: {},
+		selectedQuestionsList: [],
 	},
 	reducers: {
 		setTestDetails: (state, action) => {
@@ -21,7 +22,7 @@ const testsSlice = createSlice({
 			state.test[key] = value;
 		},
 		updateTotalQuestionsCount: (state, action) => {
-			state.test.total_questions = action.payload;
+			state.test.total_questions = state.selectedQuestionsList.length;
 		},
 
 		setTestCreationType: (state, action) => {
@@ -29,8 +30,11 @@ const testsSlice = createSlice({
 		},
 
 		setErrors: (state, action) => {
-			console.log(action.payload, '==action.payload==');
 			state.errors = action.payload;
+		},
+
+		setSelectedQuestionsList: (state, action) => {
+			state.selectedQuestionsList = action.payload;
 		},
 	},
 });

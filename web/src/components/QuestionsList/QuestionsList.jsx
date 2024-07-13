@@ -28,10 +28,9 @@ const SELECTED_QUESTION = 'selected-question';
 function QuestionsList() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { test } = useSelector((state) => state.tests);
+	const { test, selectedQuestionsList } = useSelector((state) => state.tests);
 
-	const [questionList, setQuestionList] = useState([]);
-	const [filteredQuestionList, setFilteredQuestionList] = useState([]);
+	const [temp_QuestionList, set_temp_QuestionList] = useState([]);
 	const [showList, setShowList] = useState(ALL_QUESTION);
 
 	const { isLoading } = useSelector((state) => state.loader);
@@ -59,12 +58,12 @@ function QuestionsList() {
 
 	useEffect(() => {
 		dispatch(getSubjectsListThunk(_formData.post_id, sendRequest));
-		setQuestionList([]);
+		set_temp_QuestionList([]);
 	}, [_formData.post_id]);
 
 	useEffect(() => {
 		dispatch(getTopicsListThunk(_formData.subject_id, sendRequest));
-		setQuestionList([]);
+		set_temp_QuestionList([]);
 
 		let selectedSubject = subjectsList.filter(
 			(el) => el.id == _formData.subject_id
@@ -98,31 +97,23 @@ function QuestionsList() {
 			}),
 		};
 		sendRequest(reqData, (data) => {
-			setQuestionList(data.data);
+			set_temp_QuestionList(data.data);
 		});
 	}
 
-	const handleAddQuestionToList = (id) => {
-		const questionIdx = questionList.findIndex((el) => el.id === id);
+	const handleAddQuestionToList = (_addEl) => {
+		let insertArray = [...selectedQuestionsList];
+		let _index = insertArray.findIndex((el) => el.id == _addEl.id);
 
-		if (questionIdx !== -1) {
-			questionList[questionIdx].isAdded = questionList[questionIdx].isAdded
-				? 0
-				: 1;
+		if (_index != -1) {
+			insertArray.splice(_index, 1);
+		} else {
+			insertArray.push(_addEl);
 		}
 
-		setQuestionList([...questionList]);
+		dispatch(testsSliceActions.setSelectedQuestionsList(insertArray));
+		dispatch(testsSliceActions.updateTotalQuestionsCount());
 	};
-
-	useEffect(() => {
-		let count = 0;
-		questionList.forEach((el) => {
-			if (el.isAdded == 1) {
-				count++;
-			}
-		});
-		dispatch(testsSliceActions.updateTotalQuestionsCount(count));
-	}, [questionList]);
 
 	const viewQuestionListChangeHandler = (type) => {
 		setShowList(type);
@@ -138,7 +129,7 @@ function QuestionsList() {
 			method: 'POST',
 			body: JSON.stringify({
 				test,
-				testQuestions: questionList.filter((el) => el.isAdded),
+				testQuestions: selectedQuestionsList,
 				_formData,
 			}),
 		};
@@ -165,7 +156,7 @@ function QuestionsList() {
 			/>
 			<div className="container mx-auto mt-6">
 				<div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
-					<div className="grid grid-cols-5 items-center gap-3">
+					<div className="grid grid-cols-4 items-center gap-1">
 						<div className="flex items-center gap-1">
 							<FaGripLinesVertical />
 							<p>Test Type</p>
@@ -195,7 +186,7 @@ function QuestionsList() {
 						</div>
 					</div>
 
-					<div className="grid grid-cols-5 items-center py-3 gap-3">
+					<div className="grid grid-cols-4 items-center py-3 gap-1">
 						<div className="flex items-center gap-1">
 							<FaGripLinesVertical />
 							<p>Total posts</p>
@@ -234,24 +225,29 @@ function QuestionsList() {
 				</div>
 			</div>
 
-			<div className="container mx-auto flex justify-center gap-4 mt-5">
-				<CButton
-					className={''}
-					onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
-					All Questions
-				</CButton>
-				<CButton
-					className={'btn--danger'}
-					onClick={viewQuestionListChangeHandler.bind(null, SELECTED_QUESTION)}>
-					Question Paper ( {test.total_questions} )
-				</CButton>
-			</div>
+			{temp_QuestionList.length >= 1 && (
+				<div className="container mx-auto flex justify-center gap-4 mt-5">
+					<CButton
+						className={''}
+						onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
+						All Questions
+					</CButton>
+					<CButton
+						className={'btn--danger'}
+						onClick={viewQuestionListChangeHandler.bind(
+							null,
+							SELECTED_QUESTION
+						)}>
+						Question Paper ( {selectedQuestionsList.length} )
+					</CButton>
+				</div>
+			)}
 
 			<div className="container mx-auto mt-6">
 				<div>
-					{questionList.length >= 1 &&
+					{temp_QuestionList.length >= 1 &&
 						showList == ALL_QUESTION &&
-						questionList.map((el, idx) => {
+						temp_QuestionList.map((el, idx) => {
 							return (
 								<AllQuestionsPreview
 									el={el}
@@ -262,25 +258,32 @@ function QuestionsList() {
 						})}
 
 					{showList == SELECTED_QUESTION &&
-						questionList.map((el, idx) => {
-							return (
-								el.isAdded == 1 && (
-									<SelectedQuestionPreview
-										el={el}
-										idx={idx}
-										handleAddQuestionToList={handleAddQuestionToList}
-									/>
-								)
-							);
+						selectedQuestionsList.map((el, idx) => {
+							return <SelectedQuestionPreview el={el} idx={idx} />;
 						})}
 				</div>
 
 				{isLoading && (
 					<AiOutlineLoading3Quarters className="animate-spin text-2xl m-3 mx-auto" />
 				)}
-				{!isLoading && questionList.length === 0 && (
+				{!isLoading && temp_QuestionList.length === 0 && (
 					<p className="text-center text-[#555]">Woops! no questions found!</p>
 				)}
+
+				{!isLoading &&
+					selectedQuestionsList.length === 0 &&
+					showList == SELECTED_QUESTION && (
+						<p className="text-center text-[#555] cursor-pointer">
+							Woops! no questions found!{' '}
+							<span
+								className="underline text-blue-500"
+								onClick={() => {
+									setShowList(ALL_QUESTION);
+								}}>
+								Add Question
+							</span>
+						</p>
+					)}
 			</div>
 		</>
 	);
@@ -338,12 +341,16 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
 }
 
 function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
+	const { selectedQuestionsList } = useSelector((state) => state.tests);
+	const isAdded = (id) => {
+		return selectedQuestionsList.findIndex((el) => el.id == id);
+	};
 	return (
 		<div
-			className={`border mb-2 h-[10rem] hover:h-full transition-all duration-300 ${
-				!el.isAdded ? 'hover:bg-green-400' : ''
-			} overflow-y-scroll ${el.isAdded ? 'bg-green-400 ' : 'bg-gray-200 '}`}
-			onClick={handleAddQuestionToList.bind(null, el.id)}
+			className={`border mb-2 h-[10rem] hover:h-full hover:bg-green-300 transition-all duration-300 overflow-y-scroll ${
+				isAdded(el.id) != -1 ? 'bg-green-300' : ''
+			}`}
+			onClick={handleAddQuestionToList.bind(null, el)}
 			key={idx}>
 			<div className="py-3 px-4 text-start">
 				<div className="py-3">
@@ -447,11 +454,10 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 	);
 }
 
-function SelectedQuestionPreview({ el, idx, handleAddQuestionToList }) {
+function SelectedQuestionPreview({ el, idx }) {
 	return (
 		<div
 			className={`border mb-2 h-[10rem] hover:h-full transition-all duration-300  overflow-y-scroll `}
-			onClick={handleAddQuestionToList.bind(null, el.id)}
 			key={idx}>
 			<div className="py-3 px-4 text-start">
 				<div className="py-3">
@@ -556,123 +562,3 @@ function SelectedQuestionPreview({ el, idx, handleAddQuestionToList }) {
 }
 
 export default QuestionsList;
-
-{
-	/* <Accordion allowZeroExpanded={true} onChange={handleAccordionChange}>
-					{questionList.length >= 1 &&
-						questionList.map((el, idx) => {
-							return (
-								<AccordionItem className="border  mb-1" key={idx} uuid={idx}>
-									<AccordionItemHeading
-										className={`border-b py-3 bg-gray-200 px-4 ${
-											expandedItem == idx ? 'bg-cyan-500' : ''
-										}`}>
-										<AccordionItemButton>
-											<span className="">Question: {el.id}</span>
-										</AccordionItemButton>
-									</AccordionItemHeading>
-									<AccordionItemPanel className="py-3 px-4 text-start">
-										<div className="py-3">
-											<p className="font-bold text-[#555] mb-4 block text-start">
-												Question
-											</p>
-											<p
-												className="text-start"
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_question,
-												}}></p>
-										</div>
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 block text-start">
-												Option A
-											</span>
-
-											<p
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_opt_one,
-												}}></p>
-										</div>
-
-										<hr />
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 block text-start">
-												Option B
-											</span>
-
-											<p
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_opt_two,
-												}}></p>
-										</div>
-
-										<hr />
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 block text-start">
-												Option C
-											</span>
-											<p
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_opt_three,
-												}}></p>
-										</div>
-
-										<hr />
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 block text-start">
-												Option D
-											</span>
-											<p
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_opt_four,
-												}}></p>
-										</div>
-
-										<hr />
-
-										{el.mqs_opt_five && (
-											<div className="py-3">
-												<span className="font-bold text-[#555] mb-4 block text-start">
-													Option E
-												</span>
-												<p
-													dangerouslySetInnerHTML={{
-														__html: el.mqs_opt_five,
-													}}></p>
-											</div>
-										)}
-
-										<hr />
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 me-3">
-												Correct Option
-											</span>
-											<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">
-												{el.mqs_ans}
-											</span>
-										</div>
-
-										<hr />
-
-										{el.mqs_solution && (
-											<div className="py-3">
-												<span className="font-bold text-[#555] my-4 block text-start">
-													Solution
-												</span>
-												<p
-													className="text-start"
-													dangerouslySetInnerHTML={{
-														__html: el.mqs_solution,
-													}}></p>
-											</div>
-										)}
-									</AccordionItemPanel>
-								</AccordionItem>
-							);
-						})}
-				</Accordion> */
-}
