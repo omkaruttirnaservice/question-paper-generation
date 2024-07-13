@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 import db from '../config/db.connect.js';
 import { myDate } from '../config/utils.js';
@@ -8,6 +9,23 @@ import tm_test_user_master_list from '../Migration_Scripts/tm_test_user_master_l
 const testsModel = {
 	getList: async () => {
 		return tm_test_user_master_list.findAll({ raw: true });
+	},
+
+	getPublishedList: async () => {
+		let today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		return tm_publish_test_list.findAll(
+			{
+				where: {
+					ptl_active_date: {
+						[Op.gte]: today,
+					},
+				},
+				order: [['ptl_active_date', 'ASC']],
+			},
+			{ raw: true }
+		);
 	},
 
 	deleteTest: async (deleteId) => {
@@ -261,6 +279,109 @@ const testsModel = {
 			raw: true,
 			limit: 1,
 		});
+	},
+
+	publishTest: async ({
+		test_id_for_publish,
+		batch,
+		publish_date,
+		test_key,
+		test_details: mt,
+	}) => {
+		// changing publish date format from dd-mm-yyyy to yyy-mm-dd
+		let _tmpPubDate = publish_date.split('-');
+		publish_date = `${_tmpPubDate[2]}-${_tmpPubDate[1]}-${_tmpPubDate[0]}`;
+
+		// preparing insert data to save into database
+		let insertData = {
+			ptl_active_date: publish_date,
+			ptl_time: 0,
+			ptl_link: test_key, // TODO (Omkar): Convert this to base64
+			ptl_test_id: mt.id,
+			ptl_added_date: myDate.getDate(),
+			ptl_added_time: myDate.getTime(),
+			ptl_time_tramp: myDate.getTimeStamp(),
+			ptl_test_description: '-',
+			ptl_is_live: 1,
+			ptl_aouth_id: 1,
+			ptl_is_test_done: 0,
+			ptl_test_info: JSON.stringify([
+				{
+					test_id: mt.id,
+					test_name: mt.mt_name,
+					test_created_on: mt.mt_added_date,
+					test_descp: mt.mt_descp,
+					test_type: mt.mt_type == 1 ? 'On paper' : 'On tablet',
+					test_duration: mt.mt_test_time,
+					test_negative: mt.mt_is_negative,
+					test_mark_per_q: mt.mt_mark_per_question,
+					passing_out_of: mt.mt_passing_out_of,
+					test_total_marks: mt.mt_total_marks,
+					test_pattern: mt.mt_pattern_type,
+					test_total_question: mt.mt_total_test_question,
+					id: mt.id,
+					mt_name: mt.mt_name,
+					mt_added_date: mt.mt_added_date,
+					mt_descp: mt.mt_descp,
+					mt_added_time: mt.mt_added_time,
+					mt_is_live: mt.mt_is_live,
+					mt_time_stamp: mt.mt_time_stamp,
+					mt_type: mt.mt_type,
+					tm_aouth_id: mt.tm_aouth_id,
+					mt_test_time: mt.mt_test_time,
+					mt_total_test_takan: mt.mt_total_test_takan,
+					mt_is_negative: mt.mt_is_negative,
+					mt_negativ_mark: mt.mt_negativ_mark,
+					mt_mark_per_question: mt.mt_mark_per_question,
+					mt_passing_out_of: mt.mt_passing_out_of,
+					mt_total_marks: mt.mt_total_marks,
+					mt_pattern_type: mt.mt_pattern_type,
+					mt_total_test_question: mt.mt_total_test_question,
+				},
+			]),
+			mt_name: mt.mt_name,
+			mt_added_date: mt.mt_added_date,
+			mt_descp: mt.mt_descp,
+			mt_is_live: mt.mt_is_live,
+			mt_time_stamp: mt.mt_time_stamp,
+			mt_type: mt.mt_type,
+			tm_aouth_id: mt.tm_aouth_id,
+			mt_test_time: mt.mt_test_time,
+			mt_total_test_takan: mt.mt_total_test_takan,
+			mt_is_negative: mt.mt_is_negative,
+			mt_negativ_mark: mt.mt_negativ_mark,
+			mt_mark_per_question: mt.mt_mark_per_question,
+			mt_passing_out_of: mt.mt_passing_out_of,
+			mt_total_marks: mt.mt_total_marks,
+			mt_pattern_type: mt.mt_pattern_type,
+			mt_total_test_question: mt.mt_total_test_question,
+			mt_added_time: mt.mt_added_time,
+			ptl_link_1: test_key,
+			tm_allow_to: batch,
+			ptl_test_mode: 0,
+			is_test_loaded: 0,
+			is_student_added: 0,
+			ptl_master_exam_id: 0,
+			ptl_master_exam_name: '-',
+			is_test_generated: 0,
+			is_push_done: 0,
+		};
+
+		console.log(insertData, 'insertData for publish exam');
+
+		let trans = await sequelize.transaction();
+
+		try {
+			let _publishTestInsert = await tm_publish_test_list.create(insertData, {
+				transaction: trans,
+			});
+
+			await trans.commit();
+
+			return _publishTestInsert;
+		} catch (error) {
+			trans.rollback();
+		}
 	},
 };
 

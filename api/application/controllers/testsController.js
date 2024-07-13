@@ -1,3 +1,4 @@
+import { myDate } from '../config/utils.js';
 import testsModel from '../model/testsModel.js';
 import { sendError, sendSuccess } from '../utils/commonFunctions.js';
 
@@ -7,6 +8,16 @@ const testsController = {
 			let _testsList = await testsModel.getList();
 			console.log(_testsList, '==_testsList==');
 			return sendSuccess(res, _testsList);
+		} catch (error) {
+			return sendError(res, error.message);
+		}
+	},
+
+	getPublishedList: async (req, res) => {
+		try {
+			let _testsListPublished = await testsModel.getPublishedList();
+			console.log(_testsListPublished, '==_testsList==');
+			return sendSuccess(res, _testsListPublished);
 		} catch (error) {
 			return sendError(res, error.message);
 		}
@@ -129,9 +140,23 @@ const testsController = {
 		}
 	},
 
-	publishTest: (req, res) => {
+	publishTest: async (req, res) => {
 		try {
-			let { test_id_for_publish, batch, publish_date, test_key } = req.body;
+			// let {
+			// 	test_id_for_publish,
+			// 	batch,
+			// 	publish_date,
+			// 	test_key,
+			// 	test_details: mt,
+			// } = req.body;
+
+			let _publishTestInsert = await testsModel.publishTest(req.body);
+			console.log(_publishTestInsert.toJSON(), '-------');
+			if (_publishTestInsert.toJSON().id) {
+				return sendSuccess(res, {
+					message: 'Successfully published test',
+				});
+			}
 		} catch (error) {
 			return sendError(res, error.message);
 		}
