@@ -67,7 +67,8 @@ function AddTestForm() {
 				<form
 					action=""
 					id="create-test-form"
-					onSubmit={createTestSubmitHandler}>
+					onSubmit={createTestSubmitHandler}
+				>
 					<div className="grid grid-cols-3 gap-6 mb-5">
 						<div className="relative">
 							<Input
@@ -75,7 +76,8 @@ function AddTestForm() {
 								label={'Test name'}
 								name="test_name"
 								error={errors.test_name ? true : false}
-								onChange={inputChangeHandler}></Input>
+								onChange={inputChangeHandler}
+							></Input>
 							{errors.test_name && (
 								<span className="error">{errors.test_name}</span>
 							)}
@@ -87,7 +89,8 @@ function AddTestForm() {
 								label={'Test duration'}
 								name="test_duration"
 								error={errors.test_duration ? true : false}
-								onChange={inputChangeHandler}></Input>
+								onChange={inputChangeHandler}
+							></Input>
 
 							{errors.test_duration && (
 								<span className="error">{errors.test_duration}</span>
@@ -100,7 +103,8 @@ function AddTestForm() {
 								label={'Marks per question'}
 								name="marks_per_question"
 								error={errors.marks_per_question ? true : false}
-								onChange={inputChangeHandler}></Input>
+								onChange={inputChangeHandler}
+							></Input>
 
 							{errors.marks_per_question && (
 								<span className="error">{errors.marks_per_question}</span>
@@ -113,7 +117,8 @@ function AddTestForm() {
 								label={'Passing marks'}
 								name="test_passing_mark"
 								error={errors.test_passing_mark ? true : false}
-								onChange={inputChangeHandler}></Input>
+								onChange={inputChangeHandler}
+							></Input>
 
 							{errors.test_passing_mark && (
 								<span className="error">{errors.test_passing_mark}</span>

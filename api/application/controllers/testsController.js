@@ -161,6 +161,35 @@ const testsController = {
 			return sendError(res, error.message);
 		}
 	},
+
+	unpublishTest: async (req, res) => {
+		try {
+			let { id } = req.body;
+			if (!id) {
+				throw new Error('Invalid test id');
+			}
+			let _publishTestDelete = await testsModel.unpublishTest(id);
+			console.log(_publishTestDelete, '-------');
+			if (_publishTestDelete == 1) {
+				return sendSuccess(res, {
+					message: 'Successfully un-published test',
+				});
+			}
+		} catch (error) {
+			return sendError(res, error.message);
+		}
+	},
+	// getting test questions list
+	getTestQuestionsList: async (req, res) => {
+		try {
+			const { testId } = req.body;
+			let _testsList = await testsModel.getTestQuestionsList(testId);
+
+			return sendSuccess(res, _testsList);
+		} catch (error) {
+			return sendError(res, error.message);
+		}
+	},
 };
 
 export default testsController;

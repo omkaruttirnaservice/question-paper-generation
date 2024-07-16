@@ -4,18 +4,20 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { FaEye, FaPlus, FaTrash } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { ModalActions } from '../../Store/modal-slice.jsx';
+import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
+import TestListSchemaYUP from '../PublishedTestsList/TestsListSchemaYUP.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
 import Input from '../UI/Input.jsx';
 import './TestsList.css';
-import TestListSchemaYUP from '../TestsList/TestsListSchemaYUP.jsx';
 
 function TestsList() {
+	const navigate = useNavigate();
 	let initialStatePublishForm = {
 		test_id_for_publish: null,
 		batch: null,
@@ -30,6 +32,7 @@ function TestsList() {
 
 	const [errors, setErrors] = useState({});
 
+	const { testQuestionsList } = useSelector((state) => state.tests);
 	const { isLoading } = useSelector((state) => state.loader);
 
 	useEffect(() => {
@@ -85,21 +88,30 @@ function TestsList() {
 					text: 'Deleted successfully',
 					icon: 'success',
 				});
+
+				let updatedTestList = testsList.filter((el) => el.id != id);
+				setTestsList(updatedTestList);
 			}
 		});
+	};
+
+	const handleViewQuestions = (el) => {
+		if (!el.id) return false;
+
+		dispatch(testsSliceActions.setPreviewTestDetails(el));
+
+		navigate('/view-test-questions');
 	};
 
 	const handleChange = (e) => {
 		let { name, value } = e.target;
 
-		TestListSchemaYUP.validate(publishExamForm, { abortEarly: false })
-			.then(() => {})
+		TestListSchemaYUP.validateAt(name, { [name]: value })
+			.then(() => {
+				setErrors(name, { [name]: null });
+			})
 			.catch((error) => {
-				let _err = {};
-				error.inner.forEach((err) => {
-					_err[err.path] = err.message;
-				});
-				setErrors(_err);
+				setErrors({ ...errors, [name]: error.message });
 			});
 
 		setPublishExamForm((prev) => {
@@ -125,13 +137,20 @@ function TestsList() {
 	const handleGenerateTestKey = async (e) => {
 		e.preventDefault();
 
+		await generateAndSetKey();
+	};
+
+	const generateAndSetKey = async () => {
 		let testKey = await generateTestKey(publishExamForm.test_id_for_publish);
-		setPublishExamForm((prev) => {
-			return {
+
+		if (!testKey) {
+			await generateAndSetKey();
+		} else {
+			setPublishExamForm((prev) => ({
 				...prev,
 				test_key: testKey,
-			};
-		});
+			}));
+		}
 	};
 
 	const validateTestKey = async (testKey) => {
@@ -151,17 +170,14 @@ function TestsList() {
 				body: _req.body,
 			});
 			let _data = await _res.json();
-			if (_data._success == 2) {
-				generateTestKey(publishExamForm.test_id_for_publish);
-			} else {
-				return true;
-			}
+			return _data._success !== 2;
 		} catch (error) {
 			if (error.message == 'Failed to fetch') {
 				alert('Error in fetch validating test key', error.message);
 			} else {
 				alert(error.message);
 			}
+			return false;
 		}
 	};
 
@@ -170,17 +186,15 @@ function TestsList() {
 
 		if (+id <= 9) {
 			_key += getRamdomNumber(3);
-		}
-
-		if (+id >= 10 && +id <= 99) {
+		} else if (+id <= 99) {
 			_key += getRamdomNumber(2);
-		}
-
-		if (+id >= 100 && +id <= 999) {
+		} else if (+id <= 999) {
 			_key += getRamdomNumber(1);
 		}
 
 		let isValid = await validateTestKey(_key);
+
+		console.log(isValid, 'isValid');
 
 		if (isValid) {
 			return _key;
@@ -213,7 +227,6 @@ function TestsList() {
 			};
 
 			sendRequest(_req, ({ success, data }) => {
-				console.log(data, '==data==');
 				if (success == 1) {
 					Swal.fire({
 						title: 'Success',
@@ -241,7 +254,8 @@ function TestsList() {
 					<div className="relative">
 						<label
 							htmlFor=""
-							className="transition-all duration-300 text-gray-700 !mb-1  block">
+							className="transition-all duration-300 text-gray-700 !mb-1  block"
+						>
 							Select Publish Date
 						</label>
 						<DatePicker
@@ -270,7 +284,8 @@ function TestsList() {
 					<div className="relative">
 						<label
 							htmlFor=""
-							className="transition-all duration-300 text-gray-700 !mb-1  block">
+							className="transition-all duration-300 text-gray-700 !mb-1  block"
+						>
 							Batch No
 						</label>
 						<select
@@ -278,7 +293,8 @@ function TestsList() {
 							id=""
 							onChange={handleChange}
 							value={publishExamForm.batch}
-							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40">
+							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
+						>
 							<option value="">-- Select -- </option>
 
 							{batchCount.map((el, idx) => {
@@ -294,7 +310,8 @@ function TestsList() {
 							label={'Test key'}
 							name={'test_key'}
 							value={publishExamForm.test_key}
-							disabled></Input>
+							disabled
+						></Input>
 						{errors.test_key && (
 							<span className="error">{errors.test_key}</span>
 						)}
@@ -318,6 +335,8 @@ function TestsList() {
 						<thead>
 							<tr className="bg-cyan-300 text-center cursor-pointer">
 								<th className="p-2">#</th>
+
+								<th className="p-2">Published Test Id</th>
 								<th className="p-2">Name</th>
 								<th className="p-2">Duration</th>
 								<th className="p-2">Total Questions</th>
@@ -335,6 +354,8 @@ function TestsList() {
 									return (
 										<tr className="border-b-gray-300 border hover:bg-gray-100 text-center cursor-pointer">
 											<td className="p-2">{idx + 1}</td>
+
+											<td className="p-2">{el.id}</td>
 											<td className="p-2">{el.mt_name}</td>
 											<td className="p-2">{el.mt_test_time} Min</td>
 											<td className="p-2">{el.mt_total_test_question}</td>
@@ -347,7 +368,8 @@ function TestsList() {
 												<div className="flex justify-center">
 													<CButton
 														className="btn--primary"
-														onClick={handlePublishExam.bind(null, el)}>
+														onClick={handlePublishExam.bind(null, el)}
+													>
 														Publish
 													</CButton>
 												</div>
@@ -358,11 +380,13 @@ function TestsList() {
 													<CButton
 														className="btn--danger m-0"
 														onClick={handleDeleteTest.bind(null, el.id)}
-														icon={<FaTrash />}></CButton>
+														icon={<FaTrash />}
+													></CButton>
 													<CButton
 														className="btn--info m-0"
-														onClick={handlePublishExam.bind(null, el.id)}
-														icon={<FaEye />}></CButton>
+														onClick={handleViewQuestions.bind(null, el)}
+														icon={<FaEye />}
+													></CButton>
 												</div>
 											</td>
 										</tr>
@@ -377,7 +401,8 @@ function TestsList() {
 						<span>Woops! no test list found.&nbsp;&nbsp;</span>
 						<Link
 							className="underline font-semibold flex items-center gap-2 "
-							to={'/dashboard'}>
+							to={'/dashboard'}
+						>
 							Create New <FaPlus className="inline-block" />
 						</Link>
 					</div>

@@ -8,7 +8,32 @@ import tm_test_user_master_list from '../Migration_Scripts/tm_test_user_master_l
 
 const testsModel = {
 	getList: async () => {
-		return tm_test_user_master_list.findAll({ raw: true });
+		return tm_test_user_master_list.findAll(
+			{
+				// prettier-ignore
+				attributes: [
+					'id',
+					'mt_name',
+					[sequelize.fn('DATE_FORMAT', sequelize.col('mt_added_date'), '%d-%m-%Y'), 'mt_added_date'],
+					'mt_descp',
+					'mt_added_time',
+					'mt_is_live',
+					'mt_time_stamp',
+					'mt_type',
+					'tm_aouth_id',
+					'mt_test_time',
+					'mt_total_test_takan',
+					'mt_is_negative',
+					'mt_negativ_mark',
+					'mt_mark_per_question',
+					'mt_passing_out_of',
+					'mt_total_marks',
+					'mt_pattern_type',
+					'mt_total_test_question',
+				],
+			},
+			{ raw: true }
+		);
 	},
 
 	getPublishedList: async () => {
@@ -17,6 +42,55 @@ const testsModel = {
 
 		return tm_publish_test_list.findAll(
 			{
+				attributes: [
+					'id',
+					[
+						sequelize.fn(
+							'DATE_FORMAT',
+							sequelize.col('ptl_active_date'),
+							'%d-%m-%Y'
+						),
+						'ptl_active_date',
+					],
+					'ptl_time',
+					'ptl_link',
+					'ptl_test_id',
+					'ptl_added_date',
+					'ptl_added_time',
+					'ptl_time_tramp',
+					'ptl_test_description',
+					'ptl_is_live',
+					'ptl_aouth_id',
+					'ptl_is_test_done',
+					'ptl_test_info',
+					'mt_name',
+					'mt_added_date',
+					'mt_descp',
+					'mt_is_live',
+					'mt_time_stamp',
+					'mt_type',
+					'tm_aouth_id',
+					'mt_test_time',
+					'mt_total_test_takan',
+					'mt_is_negative',
+					'mt_negativ_mark',
+					'mt_mark_per_question',
+					'mt_passing_out_of',
+					'mt_total_marks',
+					'mt_pattern_type',
+					'mt_total_test_question',
+					'mt_added_time',
+					'ptl_link_1',
+					'tm_allow_to',
+					'ptl_test_mode',
+					'is_test_loaded',
+					'is_student_added',
+					'ptl_master_exam_id',
+					'ptl_master_exam_name',
+					'is_test_generated',
+					'is_push_done',
+				],
+
 				where: {
 					ptl_active_date: {
 						[Op.gte]: today,
@@ -296,7 +370,7 @@ const testsModel = {
 		let insertData = {
 			ptl_active_date: publish_date,
 			ptl_time: 0,
-			ptl_link: test_key, // TODO (Omkar): Convert this to base64
+			ptl_link: btoa(test_key), // TODO (Omkar): Convert this to base64
 			ptl_test_id: mt.id,
 			ptl_added_date: myDate.getDate(),
 			ptl_added_time: myDate.getTime(),
@@ -382,6 +456,21 @@ const testsModel = {
 		} catch (error) {
 			trans.rollback();
 		}
+	},
+
+	unpublishTest: async (id) => {
+		return tm_publish_test_list.destroy({
+			where: {
+				id: id,
+			},
+		});
+	},
+
+	// getting test questions list
+	getTestQuestionsList: async (testId) => {
+		return tm_test_question_sets.findAll({
+			where: { tqs_test_id: testId },
+		});
 	},
 };
 

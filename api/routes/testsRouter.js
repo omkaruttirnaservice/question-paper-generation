@@ -17,5 +17,9 @@ testsRouter.post(
 
 // publish the exam
 testsRouter.post('/publish', testsController.publishTest);
+testsRouter.delete('/unpublish', testsController.unpublishTest);
+
+// getting test questions list
+testsRouter.post('/questions', testsController.getTestQuestionsList);
 
 export default testsRouter;

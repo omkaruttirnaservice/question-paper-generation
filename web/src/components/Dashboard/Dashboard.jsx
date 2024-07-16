@@ -9,6 +9,7 @@ import AddTestForm from '../AddTestForm/AddTestForm.jsx';
 import AddTestFormAuto from '../AddTestFormAuto/AddTestFormAuto.jsx';
 import CButton from '../UI/CButton.jsx';
 import { MdChecklist } from 'react-icons/md';
+import { H3 } from '../UI/Headings.jsx';
 
 const MANUAL_TEST = 'manual';
 const AUTO_TEST = 'auto';
@@ -28,39 +29,46 @@ function Dashboard() {
 	};
 
 	const testsListHandler = () => navigate('/tests-list');
-
 	const publishedTestsListHandler = () => navigate('/published-test');
 
 	return (
-		<div className="container mx-auto mt-6 flex gap-6">
-			<CButton
-				className={'btn--info'}
-				onClick={testsListHandler}
-				icon={<FaListUl />}>
-				All Tests List
-			</CButton>
+		<>
+			<div className="container mx-auto mt-6 ">
+				<H3>Test Area</H3>
+				<div className="flex gap-6">
+					<CButton
+						className={'btn--info'}
+						onClick={testsListHandler}
+						icon={<FaListUl />}
+					>
+						All Tests List
+					</CButton>
 
-			<CButton
-				className={'btn--danger'}
-				onClick={publishedTestsListHandler}
-				icon={<MdChecklist />}>
-				Published Tests List
-			</CButton>
+					<CButton
+						className={'btn--danger'}
+						onClick={publishedTestsListHandler}
+						icon={<MdChecklist />}
+					>
+						Published Tests List
+					</CButton>
 
-			<CButton onClick={createTestHandler} icon={<IoCreateOutline />}>
-				Create Test (Manual)
-			</CButton>
+					<CButton onClick={createTestHandler} icon={<IoCreateOutline />}>
+						Create Test (Manual)
+					</CButton>
 
-			<CButton
-				className={'btn--success'}
-				onClick={createTestHandlerAuto}
-				icon={<IoCreateOutline />}>
-				Create Test (Auto)
-			</CButton>
+					<CButton
+						className={'btn--success'}
+						onClick={createTestHandlerAuto}
+						icon={<IoCreateOutline />}
+					>
+						Create Test (Auto)
+					</CButton>
 
-			<AddTestForm />
-			<AddTestFormAuto />
-		</div>
+					<AddTestForm />
+					<AddTestFormAuto />
+				</div>
+			</div>
+		</>
 	);
 }
 

@@ -21,7 +21,8 @@ function MenuBar() {
 								to={el.path}
 								className={({ isActive }) =>
 									isActive ? 'menu-item active' : 'menu-item'
-								}>
+								}
+							>
 								<i className={el.icon}></i>
 								<span>{el.name}</span>
 							</NavLink>
