@@ -3,7 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ModalActions } from '../../Store/modal-slice.jsx';
 import CButton from './CButton.jsx';
 
-export default function CModal({ id, children, title, showCloseBtn = true }) {
+export default function CModal({
+	id,
+	children,
+	title,
+	showCloseBtn = true,
+	className,
+}) {
 	const _modalSlice = useSelector((state) => state.modal);
 
 	function _isModalOpen(key) {
@@ -19,7 +25,7 @@ export default function CModal({ id, children, title, showCloseBtn = true }) {
 							_isModalOpen
 								? `top-[50%] opacity-100 visible`
 								: `top-[55%] opacity-0 invisible`
-						} top-[50%] p-4 min-w-[40vw] w-auto`}>
+						} top-[50%] p-4 min-w-[40vw] w-auto ${className}`}>
 						<ModalHeader id={id} showCloseBtn={showCloseBtn}>
 							{title}
 						</ModalHeader>

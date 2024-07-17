@@ -5,8 +5,13 @@ let testsRouter = express.Router();
 
 testsRouter.get('/list', testsController.getList);
 testsRouter.get('/list-published', testsController.getPublishedList);
+
+//  create new test
 testsRouter.post('/create', testsController.createTest);
+
+// create new auto test
 testsRouter.post('/create-auto', testsController.createTestAuto);
+
 testsRouter.delete('/delete', testsController.deleteTest);
 
 // test keys
@@ -21,5 +26,8 @@ testsRouter.delete('/unpublish', testsController.unpublishTest);
 
 // getting test questions list
 testsRouter.post('/questions', testsController.getTestQuestionsList);
+
+// update test question
+testsRouter.put('/update-test-question', testsController.updateTestQuestion);
 
 export default testsRouter;

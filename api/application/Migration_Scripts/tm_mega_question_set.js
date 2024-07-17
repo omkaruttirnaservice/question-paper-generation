@@ -7,6 +7,7 @@ import {
 	TIME,
 	TINYINT,
 	TEXT,
+	Sequelize,
 } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 
@@ -33,12 +34,15 @@ const tm_mega_question_set = sequelize.define('tm_mega_question_set', {
 	mqs_opt_four: {
 		type: TEXT('long'),
 	},
+
 	mqs_opt_five: {
 		type: TEXT('long'),
 	},
+
 	mqs_type: {
 		type: INTEGER,
 	},
+
 	mqs_ask_in_month: {
 		type: STRING('10'),
 	},
@@ -84,6 +88,46 @@ const tm_mega_question_set = sequelize.define('tm_mega_question_set', {
 	},
 	maq_page_number: {
 		type: INTEGER(),
+	},
+
+	// =====
+
+	mqs_is_image: {
+		// TODO (Omkar): Remove this column
+		type: Sequelize.STRING(20),
+	},
+
+	mqs_opt_six: {
+		// TODO (Omkar): Remove this column
+		type: TEXT('long'),
+	},
+
+	mqs_ask_in: {
+		type: Sequelize.STRING(20),
+	},
+	mqs_matrix_id: {
+		type: STRING(10),
+	},
+
+	mqs_question_data: {
+		type: STRING(10),
+	},
+	msqs_is_sol_image: {
+		type: STRING(10),
+	},
+	mqs_col_count: {
+		type: STRING(10),
+	},
+
+	// =====
+
+	createdAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+	},
+	updatedAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
 	},
 });
 

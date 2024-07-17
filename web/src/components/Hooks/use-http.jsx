@@ -25,7 +25,7 @@ const useHttp = () => {
 			// THIS FUNCTION IS FOR GETTING RESPONSE RECIVED FROM THE REQUEST
 			callback(data);
 		} catch (err) {
-			console.log(err);
+			console.log(err.message);
 			dispatch(loaderActions.hideLoader());
 			if (err.message == 'Failed to fetch') {
 				console.log('Unable to connect to backend');

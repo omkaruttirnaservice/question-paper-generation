@@ -1,5 +1,7 @@
 ### Table and column names
 
+================================================================================
+
 - tm_master_test_list = `stores main post list`
   mtl_test_name: `actual post name`
   mtl_long_form: `long form `
@@ -8,6 +10,8 @@
   added_date:`added date`
   added_time_stamp: `time stamp`
   mtl_is_active: `test active status`
+
+================================================================================
 
 - tm_main_topic_list = `stores subjects list`
   mtl_master_test_list_id = `id of the tm_master_test_list`
@@ -19,6 +23,8 @@
   mtl_is_live = 1,
   type = `Admin = 1 OR else = 2`
 
+================================================================================
+
 - tm_sub_topic_list = `stores sub topics of the subject`
   stl_name=`actual topic name`
   stl_master_test_id=`id of tm_master_test_list`
@@ -26,6 +32,8 @@
   stl_added_date= `added date`
   stl_added_time= `added time`
   stl_time_stamp= `added time stamp`
+
+================================================================================
 
 - tm_mega_question_set = `stores question data`
   mqs_question = `question`
@@ -49,6 +57,8 @@
   msq_publication = `publication name of questin`
   msq_book_name = `book name from where question is taken`
   maq_page_number = `page number of the book`
+
+================================================================================
 
 -tm_test_user_master_list = `stores the created tests`
 mt_name = `actual test name`
@@ -157,3 +167,5 @@ ptl_master_exam_id =
 ptl_master_exam_name =
 is_test_generated =
 is_push_done=
+
+================================================================================

@@ -1,7 +1,7 @@
 import React from 'react';
 import CButton from '../../UI/CButton.jsx';
 import { FaPlus } from 'react-icons/fa';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 import { ModalActions } from '../../../Store/modal-slice.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -14,7 +14,7 @@ function BookNameDropdown() {
 	} = useSelector((state) => state.questionForm);
 	const handleChange = async (e) => {
 		dispatch(
-			QuestionFormActions.handleInputChange({
+			EditQuestionFormActions.handleInputChange({
 				key: e.target.name,
 				value: e.target.value,
 			})

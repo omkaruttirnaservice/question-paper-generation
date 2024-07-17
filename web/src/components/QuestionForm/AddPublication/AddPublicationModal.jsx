@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { loaderActions } from '../../../Store/loader-slice.jsx';
 import { ModalActions } from '../../../Store/modal-slice.jsx';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
 import CModal from '../../UI/CModal.jsx';
 
@@ -49,7 +49,9 @@ function AddPublicationModal() {
 				{ msq_publication_name: pubName },
 			];
 
-			dispatch(QuestionFormActions.setPublicationsList(newPublicationsList));
+			dispatch(
+				EditQuestionFormActions.setPublicationsList(newPublicationsList)
+			);
 			dispatch(ModalActions.toggleModal('add-publication-modal'));
 			dispatch(loaderActions.hideLoader());
 		} catch (error) {

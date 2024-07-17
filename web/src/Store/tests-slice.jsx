@@ -1,4 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const testsSlice = createSlice({
 	name: 'tests-slice',
@@ -71,6 +73,7 @@ const testsSlice = createSlice({
 
 		// for view questions of the test
 		setTestQuestionsList: (state, action) => {
+			console.log(1, '==1updating questions==');
 			state.testQuestionsList = action.payload;
 		},
 		setPreviewTestDetails: (state, { payload }) => {
@@ -97,6 +100,19 @@ const testsSlice = createSlice({
 		},
 		cleanupPreviewTestDetails: (state, payload) => {
 			state.testQuestionsList = [];
+			state.previewTestDetails = {
+				test_id: null,
+				test_name: null,
+				test_duration: null,
+				marks_per_question: null,
+				total_questions: null,
+				is_negative_marking: 0,
+				negative_mark: 0,
+				test_passing_mark: null,
+				test_creation_type: null,
+				test_created_on: null,
+				todays_date: null,
+			};
 		},
 
 		// for the tests which are published
@@ -131,9 +147,75 @@ const testsSlice = createSlice({
 		},
 		cleanupPublishedTestDetails: (state, payload) => {
 			state.publishedTestQuestionsList = [];
+
+			state.previewPublishedTestDetails = {
+				test_id: null,
+				test_name: null,
+				test_duration: null,
+				marks_per_question: null,
+				total_questions: null,
+				is_negative_marking: 0,
+				negative_mark: 0,
+				test_passing_mark: null,
+				test_creation_type: null,
+				test_created_on: null,
+				todays_date: null,
+			};
 		},
 	},
 });
+
+export const getTestQuestionsListThunk = (testId, sendRequest, navigate) => {
+	console.log(1, testId, '==going type 1, testId==');
+	return async (dispatch) => {
+		let reqData = {
+			url: '/api/test/questions',
+			method: 'POST',
+			body: JSON.stringify({ testId }),
+		};
+		sendRequest(reqData, ({ success, data }) => {
+			if (data.length == 0) {
+				Swal.fire({
+					title: 'Warning!',
+					text: 'No questions found for the test!',
+				});
+
+				navigate(-1);
+				return false;
+			}
+
+			dispatch(testsSliceActions.setTestQuestionsList(data));
+		});
+	};
+};
+
+export const getPublishedTestQuestionsListThunk = (
+	testId,
+	sendRequest,
+	navigate
+) => {
+	console.log(2, '==going type 2==');
+	return async (dispatch) => {
+		let reqData = {
+			url: '/api/test/questions',
+			method: 'POST',
+			body: JSON.stringify({ testId }),
+		};
+		sendRequest(reqData, ({ success, data }) => {
+			if (data.length == 0) {
+				Swal.fire({
+					title: 'Warning!',
+					text: 'No questions found for the test!',
+				});
+
+				navigate(-1);
+				return false;
+			}
+
+			dispatch(testsSliceActions.setPublishedTestQuestionsList(data));
+		});
+	};
+};
 
 export const testsSliceActions = testsSlice.actions;
 export default testsSlice;

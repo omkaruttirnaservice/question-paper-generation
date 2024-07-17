@@ -4,6 +4,7 @@ import { loaderActions } from './loader-slice.jsx';
 
 let initialState = {
 	data: {
+		question_id: null,
 		post_id: null,
 		post_name: null,
 		subject_id: null,
@@ -34,8 +35,9 @@ let initialState = {
 	errors: {},
 	isEdit: false,
 	isQuestionPreview: false,
+	edit_test_type: null,
 };
-const QuestionFormSlice = createSlice({
+const EditQuestionFormSlice = createSlice({
 	name: 'question-form-slice',
 	initialState,
 	reducers: {
@@ -101,19 +103,42 @@ const QuestionFormSlice = createSlice({
 			state.data.topic_name = action.payload;
 		},
 
-		setQuestionNumber(state, action) {
-			state.questionNumber = +action.payload + 1;
-		},
-
 		setErrors(state, action) {
 			state.errors = {};
 			state.errors = action.payload;
 		},
 
 		setEditQuestionDetails(state, action) {
+			console.log(action.payload, '==action.payload==========');
+			let pl = action.payload.el;
+			state.edit_test_type = action.payload.edit_for;
 			state.isEdit = true;
 			console.log(action.payload);
-			state.data = action.payload;
+			state.questionNumber = pl.id; // setting up question id of tm_test_question_sets
+			state.data = {
+				question_id: pl.id,
+				post_id: null,
+				post_name: null,
+				subject_id: pl.main_topic_id,
+				subject_name: pl.main_topic_name,
+				topic_id: pl.sub_topic_id,
+				topic_name: pl.sub_topic_section,
+				pub_name: pl.pub_name,
+				book_name: pl.book_name,
+				pg_no: pl.page_name,
+				question_content: pl.q,
+				option_A: pl.q_a,
+				option_B: pl.q_b,
+				option_C: pl.q_c,
+				option_D: pl.q_d,
+				option_E: pl.q_e,
+				correct_option: pl.q_ans,
+				explanation: pl.q_sol,
+				difficulty: pl.mqs_leval,
+				month: pl.mqs_ask_in_month,
+				year: pl.mqs_ask_in_year,
+			};
+			console.log(state.data, '==state.data==');
 		},
 
 		setEditingFalse(state, action) {
@@ -121,14 +146,6 @@ const QuestionFormSlice = createSlice({
 		},
 	},
 });
-
-export const getQuestionNumberThunk = () => {
-	return async (dispatch) => {
-		let response = await fetch('/api/questions/get-question-number');
-		let { data } = await response.json();
-		dispatch(QuestionFormActions.setQuestionNumber(data.total_questions));
-	};
-};
 
 export const getBooksListThunk = (pubName, sendRequest) => {
 	return async (dispatch) => {
@@ -139,9 +156,9 @@ export const getBooksListThunk = (pubName, sendRequest) => {
 		};
 		sendRequest(requestData, ({ success, data }) => {
 			if (data.length == 0) {
-				dispatch(QuestionFormActions.setBooksList([]));
+				dispatch(EditQuestionFormActions.setBooksList([]));
 			} else {
-				dispatch(QuestionFormActions.setBooksList(data));
+				dispatch(EditQuestionFormActions.setBooksList(data));
 			}
 		});
 	};
@@ -154,9 +171,9 @@ export const getPublicationsListThunk = (sendRequest) => {
 		};
 		sendRequest(requestData, ({ success, data }) => {
 			if (data.length == 0) {
-				dispatch(QuestionFormActions.setPublicationsList([]));
+				dispatch(EditQuestionFormActions.setPublicationsList([]));
 			} else {
-				dispatch(QuestionFormActions.setPublicationsList(data));
+				dispatch(EditQuestionFormActions.setPublicationsList(data));
 			}
 		});
 	};
@@ -172,7 +189,7 @@ export const getPostListThunk = () => {
 			let { success, data } = await response.json();
 
 			if (success === 1) {
-				dispatch(QuestionFormActions.setPostsList(data));
+				dispatch(EditQuestionFormActions.setPostsList(data));
 			}
 
 			dispatch(loaderActions.hideLoader());
@@ -194,11 +211,11 @@ export const getSubjectsListThunk = (post_id, sendRequest) => {
 
 		if (!post_id) {
 			console.warn('No post id passed to get subject list');
-			dispatch(QuestionFormActions.setSubjectsList([]));
+			dispatch(EditQuestionFormActions.setSubjectsList([]));
 		} else {
 			sendRequest(reqData, ({ data, success }) => {
 				if (success == 1) {
-					dispatch(QuestionFormActions.setSubjectsList(data));
+					dispatch(EditQuestionFormActions.setSubjectsList(data));
 				}
 			});
 		}
@@ -216,14 +233,14 @@ export const getTopicsListThunk = (subject_id, sendRequest) => {
 			body: JSON.stringify({ subjectId: subject_id }),
 		};
 		if (!subject_id) {
-			dispatch(QuestionFormActions.setTopicsList([]));
+			dispatch(EditQuestionFormActions.setTopicsList([]));
 		} else {
 			sendRequest(requestData, (data) => {
-				dispatch(QuestionFormActions.setTopicsList(data.data));
+				dispatch(EditQuestionFormActions.setTopicsList(data.data));
 			});
 		}
 	};
 };
 
-export const QuestionFormActions = QuestionFormSlice.actions;
-export default QuestionFormSlice;
+export const EditQuestionFormActions = EditQuestionFormSlice.actions;
+export default EditQuestionFormSlice;

@@ -3,7 +3,7 @@ import { FaAngleDoubleRight, FaEyeSlash } from 'react-icons/fa';
 import { FaAngleRight, FaEye } from 'react-icons/fa6';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
 
 function QuestionPreview() {
@@ -53,7 +53,7 @@ function QuestionPreview() {
 	const handleKeyPress = (e) => {
 		let key = e.key;
 		if (e.altKey && key.toLowerCase() == 'p') {
-			dispatch(QuestionFormActions.toggleQuestionPreview());
+			dispatch(EditQuestionFormActions.toggleQuestionPreview());
 		}
 	};
 
@@ -70,31 +70,13 @@ function QuestionPreview() {
 				<span
 					className="bg-gray-600/50 blur fixed  inset-0 z-[90]"
 					onClick={() => {
-						dispatch(QuestionFormActions.toggleQuestionPreview());
+						dispatch(EditQuestionFormActions.toggleQuestionPreview());
 					}}></span>
 			)}
 			<div
 				className={`text-gray-600 pt-6 pb-10 px-5 w-[90%] overflow-auto h-[100svh] bg-gray-100 transition-all duration-200 fixed top-0  z-[100] ${
 					isQuestionPreview ? 'left-0' : 'left-[-100%]'
 				}`}>
-				{/* <div className="flex items-center py-3 gap-3">
-					<p>Data entry for</p>
-					<FaAngleRight />
-					<span className="underline">{dataEntryFor.postName}</span>
-					<FaAngleDoubleRight />
-					<span className="underline">{dataEntryFor.subjectName}</span>
-					<FaAngleDoubleRight />
-					<span className="underline">{dataEntryFor.topicName}</span>
-				</div>
-
-				<hr />
-
-				<div className="flex justify-end py-3 items-center gap-3">
-					[<span>{_formData.pub_name}</span>] [
-					<span>{_formData.book_name}</span>] [
-					<span>Pg. No. {_formData.pg_no}</span>]
-				</div> */}
-
 				<div className="flex flex-col gap-6">
 					<p className="font-bold">
 						Question <span>{questionNumber}</span>
@@ -158,7 +140,7 @@ function QuestionPreview() {
 				}
 				varient="btn--warning"
 				onClick={() => {
-					dispatch(QuestionFormActions.toggleQuestionPreview());
+					dispatch(EditQuestionFormActions.toggleQuestionPreview());
 				}}
 			/>
 		</>

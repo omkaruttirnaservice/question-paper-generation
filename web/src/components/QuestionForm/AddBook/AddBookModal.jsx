@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { loaderActions } from '../../../Store/loader-slice.jsx';
 import { ModalActions } from '../../../Store/modal-slice.jsx';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
 import CModal from '../../UI/CModal.jsx';
 import { toast } from 'react-toastify';
@@ -43,7 +43,7 @@ function AddBookModal() {
 			await addBookNameSchema.validate({ book_name: bookName });
 			setError({ ...error, book_name: null });
 			let newBookNamesList = [...bookNamesList, { msq_book_name: bookName }];
-			dispatch(QuestionFormActions.setBooksList(newBookNamesList));
+			dispatch(EditQuestionFormActions.setBooksList(newBookNamesList));
 			dispatch(ModalActions.toggleModal('add-book-modal'));
 			dispatch(loaderActions.hideLoader());
 		} catch (error) {

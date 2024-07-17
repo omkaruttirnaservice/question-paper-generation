@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 
 function DifficultyLevelDropdown() {
 	const dispatch = useDispatch();
@@ -9,7 +9,7 @@ function DifficultyLevelDropdown() {
 	);
 	const handleChange = async (e) => {
 		dispatch(
-			QuestionFormActions.handleInputChange({
+			EditQuestionFormActions.handleInputChange({
 				key: e.target.name,
 				value: e.target.value,
 			})
@@ -26,9 +26,15 @@ function DifficultyLevelDropdown() {
 					<option value="" className="">
 						-- Select --
 					</option>
-					<option value="1">Easy</option>
-					<option value="2">Medium</option>
-					<option value="3">Hard</option>
+					<option value="1" selected={_formData.difficulty == 1 ? true : false}>
+						Easy
+					</option>
+					<option value="2" selected={_formData.difficulty == 2 ? true : false}>
+						Medium
+					</option>
+					<option value="3" selected={_formData.difficulty == 3 ? true : false}>
+						Hard
+					</option>
 				</select>
 			</div>
 

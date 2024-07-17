@@ -3,7 +3,7 @@ import CButton from '../../UI/CButton.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { ModalActions } from '../../../Store/modal-slice.jsx';
 import { FaPlus } from 'react-icons/fa';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 
 function PostListDropdown({ isShowAddNewBtn = true }) {
 	const dispatch = useDispatch();
@@ -14,7 +14,7 @@ function PostListDropdown({ isShowAddNewBtn = true }) {
 	} = useSelector((state) => state.questionForm);
 	const handleChange = async (e) => {
 		dispatch(
-			QuestionFormActions.handleInputChange({
+			EditQuestionFormActions.handleInputChange({
 				key: e.target.name,
 				value: e.target.value,
 			})

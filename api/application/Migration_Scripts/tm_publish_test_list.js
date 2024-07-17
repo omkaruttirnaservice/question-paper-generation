@@ -1,4 +1,4 @@
-import { BIGINT, DATEONLY, Sequelize } from 'sequelize';
+import { BIGINT, DATE, DATEONLY, Sequelize } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 
 const tm_publish_test_list = sequelize.define('tm_publish_test_list', {
@@ -14,8 +14,8 @@ const tm_publish_test_list = sequelize.define('tm_publish_test_list', {
 	ptl_link: { type: Sequelize.STRING(100) },
 	ptl_test_id: { type: Sequelize.BIGINT },
 	ptl_added_date: { type: Sequelize.DATEONLY },
-	ptl_added_time: { type: Sequelize.STRING(20) },
-	ptl_time_tramp: { type: Sequelize.STRING(20) },
+	ptl_added_time: { type: Sequelize.TIME },
+	ptl_time_tramp: { type: Sequelize.DATE },
 	ptl_test_description: { type: Sequelize.TEXT('medium') },
 	ptl_is_live: { type: Sequelize.INTEGER },
 	ptl_aouth_id: { type: Sequelize.BIGINT },
@@ -47,6 +47,15 @@ const tm_publish_test_list = sequelize.define('tm_publish_test_list', {
 	ptl_master_exam_name: { type: Sequelize.TEXT('long') },
 	is_test_generated: { type: Sequelize.INTEGER },
 	is_push_done: { type: Sequelize.INTEGER },
+
+	createdAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+	},
+	updatedAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+	},
 });
 
 export default tm_publish_test_list;

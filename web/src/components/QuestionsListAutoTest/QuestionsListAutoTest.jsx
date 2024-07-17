@@ -8,8 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
 	getPostListThunk,
 	getSubjectsListThunk,
-	QuestionFormActions,
-} from '../../Store/question-form-slice.jsx';
+	EditQuestionFormActions,
+} from '../../Store/edit-question-form-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import PostListDropdown from '../QuestionForm/PostListDropdown/PostListDropdown.jsx';
 import SubjectListDropdown from '../QuestionForm/SubjectListDropdown/SubjectListDropdown.jsx';
@@ -62,7 +62,9 @@ function QuestionsListAutoTest() {
 			(el) => el.id == _formData.subject_id
 		);
 		if (selectedSubject.length !== 0) {
-			dispatch(QuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
+			dispatch(
+				EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name)
+			);
 		}
 	}, [_formData.subject_id]);
 

@@ -1,13 +1,21 @@
 import { FaBackspace } from 'react-icons/fa';
+import { GoPencil } from 'react-icons/go';
 import { useDispatch, useSelector } from 'react-redux';
 import useHttp from '../Hooks/use-http.jsx';
 
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { testsSliceActions } from '../../Store/tests-slice.jsx';
-import { H2, H3 } from '../UI/Headings.jsx';
 import { FaSpinner } from 'react-icons/fa6';
+import { Link, useNavigate } from 'react-router-dom';
+import { EditQuestionFormActions } from '../../Store/edit-question-form-slice.jsx';
+import { ModalActions } from '../../Store/modal-slice.jsx';
+import {
+	getTestQuestionsListThunk,
+	testsSliceActions,
+} from '../../Store/tests-slice.jsx';
+import CButton from '../UI/CButton.jsx';
+import { H2, H3 } from '../UI/Headings.jsx';
+import EditQuestionView from './EditQuestionView.jsx';
+import { EDIT_QUESTION_OF_GENERATED_TEST } from '../Utils/Constants.jsx';
 
 function TestQuestionsView() {
 	const { testQuestionsList, previewTestDetails } = useSelector(
@@ -20,24 +28,13 @@ function TestQuestionsView() {
 
 	useEffect(() => {
 		if (testQuestionsList.length == 0) {
-			let reqData = {
-				url: '/api/test/questions',
-				method: 'POST',
-				body: JSON.stringify({ testId: previewTestDetails.test_id }),
-			};
-			sendRequest(reqData, ({ success, data }) => {
-				if (data.length == 0) {
-					Swal.fire({
-						title: 'Warning!',
-						text: 'No questions found for the test!',
-					});
-
-					navigate('/tests-list');
-					return false;
-				}
-
-				dispatch(testsSliceActions.setTestQuestionsList(data));
-			});
+			dispatch(
+				getTestQuestionsListThunk(
+					previewTestDetails.test_id,
+					sendRequest,
+					navigate
+				)
+			);
 		}
 	}, [testQuestionsList]);
 
@@ -47,13 +44,23 @@ function TestQuestionsView() {
 		};
 	}, []);
 
+	const handleEditQuestion = (el) => {
+		dispatch(
+			EditQuestionFormActions.setEditQuestionDetails({
+				el,
+				edit_for: EDIT_QUESTION_OF_GENERATED_TEST,
+			})
+		);
+		dispatch(ModalActions.toggleModal('edit-que-modal'));
+	};
+
 	return (
 		<>
+			<EditQuestionView />
 			<div className="container mx-auto text-center my-6 relative">
 				<Link
 					className="bg-blue-200 inline-block absolute left-0 top-0 p-2"
-					to={'/tests-list'}
-				>
+					to={'/tests-list'}>
 					<FaBackspace />
 				</Link>
 				<H2 className="mb-0">{previewTestDetails.test_name}</H2>
@@ -111,9 +118,14 @@ function TestQuestionsView() {
 						return (
 							<>
 								<div
-									className={`border transition-all duration-300  mb-5 shadow-sm bg-gray-100 `}
-									key={idx}
-								>
+									className={`border transition-all duration-300  mb-5 shadow-sm bg-gray-100 relative que-container`}
+									key={idx}>
+									<CButton
+										icon={<GoPencil />}
+										onClick={handleEditQuestion.bind(null, el)}
+										className={'absolute top-0 right-0 edit-que-btn'}>
+										Edit
+									</CButton>
 									<div className="py-3 px-4 text-start">
 										<div className="py-3">
 											<p className="font-bold text-[#555] mb-4 block text-start">
@@ -123,8 +135,7 @@ function TestQuestionsView() {
 												className="text-start"
 												dangerouslySetInnerHTML={{
 													__html: el.q,
-												}}
-											></p>
+												}}></p>
 										</div>
 
 										<div className="py-3">
@@ -135,8 +146,7 @@ function TestQuestionsView() {
 											<p
 												dangerouslySetInnerHTML={{
 													__html: el.q_a,
-												}}
-											></p>
+												}}></p>
 										</div>
 
 										<hr />
@@ -149,8 +159,7 @@ function TestQuestionsView() {
 											<p
 												dangerouslySetInnerHTML={{
 													__html: el.q_b,
-												}}
-											></p>
+												}}></p>
 										</div>
 
 										<hr />
@@ -162,8 +171,7 @@ function TestQuestionsView() {
 											<p
 												dangerouslySetInnerHTML={{
 													__html: el.q_c,
-												}}
-											></p>
+												}}></p>
 										</div>
 
 										<hr />
@@ -175,8 +183,7 @@ function TestQuestionsView() {
 											<p
 												dangerouslySetInnerHTML={{
 													__html: el.q_d,
-												}}
-											></p>
+												}}></p>
 										</div>
 
 										<hr />
@@ -189,8 +196,7 @@ function TestQuestionsView() {
 												<p
 													dangerouslySetInnerHTML={{
 														__html: el.q_e,
-													}}
-												></p>
+													}}></p>
 											</div>
 										)}
 
@@ -216,10 +222,10 @@ function TestQuestionsView() {
 													className="text-start"
 													dangerouslySetInnerHTML={{
 														__html: el.q_sol,
-													}}
-												></p>
+													}}></p>
 											</div>
 										)}
+
 										<hr />
 
 										<div className=" bg-gray-300 p-3 ">

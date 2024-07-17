@@ -4,11 +4,11 @@ import { FaGripLinesVertical } from 'react-icons/fa';
 import { FaAngleRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+	EditQuestionFormActions,
 	getPostListThunk,
 	getSubjectsListThunk,
 	getTopicsListThunk,
-	QuestionFormActions,
-} from '../../Store/question-form-slice.jsx';
+} from '../../Store/edit-question-form-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import PostListDropdown from '../QuestionForm/PostListDropdown/PostListDropdown.jsx';
 import SubjectListDropdown from '../QuestionForm/SubjectListDropdown/SubjectListDropdown.jsx';
@@ -69,7 +69,9 @@ function QuestionsList() {
 			(el) => el.id == _formData.subject_id
 		);
 		if (selectedSubject.length !== 0) {
-			dispatch(QuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
+			dispatch(
+				EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name)
+			);
 		}
 	}, [_formData.subject_id]);
 
@@ -80,7 +82,9 @@ function QuestionsList() {
 
 		let selectedTopic = topicsList.filter((el) => el.id == _formData.topic_id);
 		if (selectedTopic.length !== 0) {
-			dispatch(QuestionFormActions.setTopicName(selectedTopic[0].topic_name));
+			dispatch(
+				EditQuestionFormActions.setTopicName(selectedTopic[0].topic_name)
+			);
 		}
 
 		getQuestions();
@@ -103,7 +107,7 @@ function QuestionsList() {
 
 	const handleAddQuestionToList = (_addEl) => {
 		let insertArray = [...selectedQuestionsList];
-		let _index = insertArray.findIndex((el) => el.id == _addEl.id);
+		let _index = insertArray.findIndex((el) => el.q_id == _addEl.q_id);
 
 		if (_index != -1) {
 			insertArray.splice(_index, 1);
@@ -343,24 +347,24 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
 function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 	const { selectedQuestionsList } = useSelector((state) => state.tests);
 	const isAdded = (id) => {
-		return selectedQuestionsList.findIndex((el) => el.id == id);
+		return selectedQuestionsList.findIndex((el) => el.q_id == id);
 	};
 	return (
 		<div
 			className={`border mb-2 h-[10rem] hover:h-full hover:bg-green-300 transition-all duration-300 overflow-y-scroll ${
-				isAdded(el.id) != -1 ? 'bg-green-300' : ''
+				isAdded(el.q_id) != -1 ? 'bg-green-300' : ''
 			}`}
 			onClick={handleAddQuestionToList.bind(null, el)}
 			key={idx}>
 			<div className="py-3 px-4 text-start">
 				<div className="py-3">
 					<p className="font-bold text-[#555] mb-4 block text-start">
-						Q. {el.id})
+						Q. {el.q_id})
 					</p>
 					<p
 						className="text-start"
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_question,
+							__html: el.q,
 						}}></p>
 				</div>
 
@@ -371,7 +375,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 
 					<p
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_one,
+							__html: el.q_a,
 						}}></p>
 				</div>
 
@@ -384,7 +388,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 
 					<p
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_two,
+							__html: el.q_b,
 						}}></p>
 				</div>
 
@@ -396,7 +400,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 					</span>
 					<p
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_three,
+							__html: el.q_c,
 						}}></p>
 				</div>
 
@@ -408,20 +412,20 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 					</span>
 					<p
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_four,
+							__html: el.q_d,
 						}}></p>
 				</div>
 
 				<hr />
 
-				{el.mqs_opt_five && (
+				{el.q_e && (
 					<div className="py-3">
 						<span className="font-bold text-[#555] mb-4 block text-start">
 							Option E
 						</span>
 						<p
 							dangerouslySetInnerHTML={{
-								__html: el.mqs_opt_five,
+								__html: el.q_e,
 							}}></p>
 					</div>
 				)}
@@ -432,12 +436,12 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 					<span className="font-bold text-[#555] mb-4 me-3">
 						Correct Option
 					</span>
-					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.mqs_ans}</span>
+					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans}</span>
 				</div>
 
 				<hr />
 
-				{el.mqs_solution && (
+				{el.q_sol && (
 					<div className="py-3">
 						<span className="font-bold text-[#555] my-4 block text-start">
 							Solution
@@ -445,7 +449,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 						<p
 							className="text-start"
 							dangerouslySetInnerHTML={{
-								__html: el.mqs_solution,
+								__html: el.q_sol,
 							}}></p>
 					</div>
 				)}
@@ -462,12 +466,12 @@ function SelectedQuestionPreview({ el, idx }) {
 			<div className="py-3 px-4 text-start">
 				<div className="py-3">
 					<p className="font-bold text-[#555] mb-4 block text-start">
-						Q. {el.id})
+						Q. {el.q_id})
 					</p>
 					<p
 						className="text-start"
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_question,
+							__html: el.q,
 						}}></p>
 				</div>
 
@@ -478,7 +482,7 @@ function SelectedQuestionPreview({ el, idx }) {
 
 					<p
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_one,
+							__html: el.q_a,
 						}}></p>
 				</div>
 
@@ -491,7 +495,7 @@ function SelectedQuestionPreview({ el, idx }) {
 
 					<p
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_two,
+							__html: el.q_b,
 						}}></p>
 				</div>
 
@@ -503,7 +507,7 @@ function SelectedQuestionPreview({ el, idx }) {
 					</span>
 					<p
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_three,
+							__html: el.q_c,
 						}}></p>
 				</div>
 
@@ -515,20 +519,20 @@ function SelectedQuestionPreview({ el, idx }) {
 					</span>
 					<p
 						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_four,
+							__html: el.q_d,
 						}}></p>
 				</div>
 
 				<hr />
 
-				{el.mqs_opt_five && (
+				{el.q_e && (
 					<div className="py-3">
 						<span className="font-bold text-[#555] mb-4 block text-start">
 							Option E
 						</span>
 						<p
 							dangerouslySetInnerHTML={{
-								__html: el.mqs_opt_five,
+								__html: el.q_e,
 							}}></p>
 					</div>
 				)}
@@ -539,12 +543,12 @@ function SelectedQuestionPreview({ el, idx }) {
 					<span className="font-bold text-[#555] mb-4 me-3">
 						Correct Option
 					</span>
-					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.mqs_ans}</span>
+					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans}</span>
 				</div>
 
 				<hr />
 
-				{el.mqs_solution && (
+				{el.q_sol && (
 					<div className="py-3">
 						<span className="font-bold text-[#555] my-4 block text-start">
 							Solution
@@ -552,7 +556,7 @@ function SelectedQuestionPreview({ el, idx }) {
 						<p
 							className="text-start"
 							dangerouslySetInnerHTML={{
-								__html: el.mqs_solution,
+								__html: el.q_sol,
 							}}></p>
 					</div>
 				)}

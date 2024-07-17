@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { ModalActions } from '../../../Store/modal-slice.jsx';
 import { FaPlus } from 'react-icons/fa';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 
 function SubjectListDropdown({ isShowAddNewBtn = true }) {
 	const dispatch = useDispatch();
@@ -13,9 +13,10 @@ function SubjectListDropdown({ isShowAddNewBtn = true }) {
 		subjectsList,
 		errors,
 	} = useSelector((state) => state.questionForm);
+	console.log(subjectsList, '==subjectsList==');
 	const handleChange = async (e) => {
 		dispatch(
-			QuestionFormActions.handleInputChange({
+			EditQuestionFormActions.handleInputChange({
 				key: e.target.name,
 				value: e.target.value,
 			})

@@ -1,4 +1,13 @@
-import { TEXT, BIGINT, STRING, DATEONLY, INTEGER } from 'sequelize';
+import {
+	TEXT,
+	BIGINT,
+	STRING,
+	DATEONLY,
+	INTEGER,
+	Sequelize,
+	DATE,
+	TIME,
+} from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 
 const tm_sub_topic_list = sequelize.define('tm_sub_topic_list', {
@@ -13,11 +22,19 @@ const tm_sub_topic_list = sequelize.define('tm_sub_topic_list', {
 		allowNull: false,
 	},
 	stl_master_test_id: {
-		type: BIGINT,
+		type: INTEGER,
+		references: {
+			model: 'tm_master_test_list',
+			key: 'id',
+		},
 	},
 
 	stl_main_topic_list_id: {
-		type: BIGINT,
+		type: INTEGER,
+		references: {
+			model: 'tm_main_topic_list',
+			key: 'id',
+		},
 	},
 
 	stl_added_date: {
@@ -25,10 +42,19 @@ const tm_sub_topic_list = sequelize.define('tm_sub_topic_list', {
 	},
 
 	stl_added_time: {
-		type: STRING(20),
+		type: TIME,
 	},
 	stl_time_stamp: {
-		type: STRING(20),
+		type: DATE,
+	},
+
+	createdAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+	},
+	updatedAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
 	},
 });
 

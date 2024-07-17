@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 
 function QuestionPgNo() {
 	const dispatch = useDispatch();
@@ -9,7 +9,7 @@ function QuestionPgNo() {
 	);
 	const handleChange = async (e) => {
 		dispatch(
-			QuestionFormActions.handleInputChange({
+			EditQuestionFormActions.handleInputChange({
 				key: e.target.name,
 				value: e.target.value,
 			})

@@ -1,9 +1,18 @@
-import { BIGINT, DATE, DATEONLY, STRING, TIME, TINYINT } from 'sequelize';
+import {
+	BIGINT,
+	DATE,
+	DATEONLY,
+	INTEGER,
+	Sequelize,
+	STRING,
+	TIME,
+	TINYINT,
+} from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 
 const tm_master_test_list = sequelize.define('tm_master_test_list', {
 	id: {
-		type: BIGINT,
+		type: INTEGER,
 		allowNull: false,
 		primaryKey: true,
 		autoIncrement: true,
@@ -35,6 +44,14 @@ const tm_master_test_list = sequelize.define('tm_master_test_list', {
 	mtl_is_active: {
 		type: TINYINT,
 		allowNull: false,
+	},
+	createdAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+	},
+	updatedAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
 	},
 });
 

@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import { ModalActions } from '../../../Store/modal-slice.jsx';
-import { getSubjectsListThunk } from '../../../Store/question-form-slice.jsx';
+import { getSubjectsListThunk } from '../../../Store/edit-question-form-slice.jsx';
 import useHttp from '../../Hooks/use-http.jsx';
 import CButton from '../../UI/CButton.jsx';
 import CModal from '../../UI/CModal.jsx';
@@ -87,6 +87,7 @@ function AddSubjectModal() {
 							type="text"
 							className="input-el mt-2"
 							// value={subjectsList[_formData.subject_id - 1]?.subject_name}
+
 							value={postsList
 								.map((el) => {
 									if (el.id == _formData.post_id) return el.mtl_test_name;

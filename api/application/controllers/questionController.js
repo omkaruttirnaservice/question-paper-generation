@@ -118,6 +118,7 @@ const questionController = {
 				subject_id,
 				topic_id,
 			});
+			console.log(questionList[0], '==questionList==');
 			return sendSuccess(res, questionList[0]);
 		} catch (err) {
 			console.log('Error whlie fetching the questions: ', err);

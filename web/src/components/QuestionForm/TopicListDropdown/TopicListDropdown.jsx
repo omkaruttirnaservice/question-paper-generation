@@ -1,5 +1,5 @@
 import React from 'react';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { ModalActions } from '../../../Store/modal-slice.jsx';
@@ -15,7 +15,7 @@ function TopicListDropdown({ isShowAddNewBtn = true }) {
 	} = useSelector((state) => state.questionForm);
 	const handleChange = async (e) => {
 		dispatch(
-			QuestionFormActions.handleInputChange({
+			EditQuestionFormActions.handleInputChange({
 				key: e.target.name,
 				value: e.target.value,
 			})

@@ -40,9 +40,9 @@ const testsController = {
 
 	createTest: async (req, res) => {
 		console.log(req.body, 'createTest');
-		let { test: _t, testQuestions: _q, _formData: _fd } = req.body;
+		let { test: _t, testQuestions: _q } = req.body;
 		try {
-			let _createTestRes = await testsModel.createTest(_t, _q, _fd);
+			let _createTestRes = await testsModel.createTest(_t, _q);
 			console.log(_createTestRes);
 			if (_createTestRes) {
 				return sendSuccess(res, 'Successfully created test');
@@ -186,6 +186,18 @@ const testsController = {
 			let _testsList = await testsModel.getTestQuestionsList(testId);
 
 			return sendSuccess(res, _testsList);
+		} catch (error) {
+			return sendError(res, error.message);
+		}
+	},
+
+	// update test question
+	updateTestQuestion: async (req, res) => {
+		try {
+			let [_updateRes] = await testsModel.updateTestQuestion(req.body);
+			console.log(_updateRes, '==_updateRes==');
+
+			return sendSuccess(res, 'Successfully updated question');
 		} catch (error) {
 			return sendError(res, error.message);
 		}

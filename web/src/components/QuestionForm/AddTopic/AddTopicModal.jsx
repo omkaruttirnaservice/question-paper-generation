@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { ModalActions } from '../../../Store/modal-slice.jsx';
-import { getTopicsListThunk } from '../../../Store/question-form-slice.jsx';
+import { getTopicsListThunk } from '../../../Store/edit-question-form-slice.jsx';
 import useHttp from '../../Hooks/use-http.jsx';
 import CButton from '../../UI/CButton.jsx';
 import CModal from '../../UI/CModal.jsx';

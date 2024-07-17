@@ -120,10 +120,9 @@ const testsModel = {
 		}
 	},
 
-	createTest: async (_t, _q, _fd) => {
+	createTest: async (_t, _q) => {
 		console.log(_q, 'Q===============================================');
 		console.log(_t, '==_t==');
-		console.log(_fd, '==_fd==');
 		let transact = await sequelize.transaction();
 		try {
 			let _masterTest = await tm_test_user_master_list.create(
@@ -154,20 +153,20 @@ const testsModel = {
 			let questionsData = [];
 			_q.forEach((_q) => {
 				questionsData.push({
-					q_id: _q.id,
+					q_id: _q.q_id,
 					tqs_test_id: masterTestId,
-					section_id: null,
-					section_name: null,
-					sub_topic_id: _fd.topic_id,
-					sub_topic_section: _fd.topic_name,
-					main_topic_id: _fd.subject_id,
-					main_topic_name: _fd.subject_name,
-					q: _q.mqs_question,
-					q_a: _q.mqs_opt_one,
-					q_b: _q.mqs_opt_two,
-					q_c: _q.mqs_opt_three,
-					q_d: _q.mqs_opt_four,
-					q_e: _q.mqs_opt_five,
+					section_id: 0,
+					section_name: '-',
+					sub_topic_id: _q.sub_topic_id,
+					sub_topic_section: _q.sub_topic_section,
+					main_topic_id: _q.main_topic_id,
+					main_topic_name: _q.main_topic_name,
+					q: _q.q,
+					q_a: _q.q_a,
+					q_b: _q.q_b,
+					q_c: _q.q_c,
+					q_d: _q.q_d,
+					q_e: _q.q_e,
 					q_display_type: null,
 					q_ask_in: null,
 					q_data_type: null,
@@ -184,19 +183,22 @@ const testsModel = {
 					q_i_sol: null,
 					stl_topic_number: null,
 					sl_section_no: null,
-					q_sol: _q.mqs_solution,
-					q_ans: _q.mqs_ans,
+					q_sol: _q.q_sol,
+					q_ans: _q.q_ans,
 					q_mat_ans: null,
 					q_mat_ans_row: null,
 					q_col_display_type: null,
 					question_no: null,
 					mark_per_question: _t.marks_per_question,
-					tqs_question_id: _q.id,
-					tqs_chapter_id: _fd.topic_id,
-					tqs_section_id: _fd.subject_id,
-					pub_name: _q.msq_publication_name,
-					book_name: _q.msq_book_name,
-					page_name: _q.maq_page_number,
+					tqs_question_id: _q.q_id,
+					tqs_chapter_id: _q.sub_topic_id,
+					tqs_section_id: 0,
+					pub_name: _q.pub_name,
+					book_name: _q.book_name,
+					page_name: _q.page_name,
+					mqs_ask_in_month: _q.mqs_ask_in_month,
+					mqs_ask_in_year: _q.mqs_ask_in_year,
+					mqs_leval: _q.mqs_leval,
 				});
 			});
 			await tm_test_question_sets.bulkCreate(questionsData, {
@@ -213,7 +215,7 @@ const testsModel = {
 
 	getRandQues: (subjectId, topicId, limit) => {
 		let query = `SELECT
-												question_list.id as q_id,
+							question_list.id as q_id,
 		                    IFNULL(0,0) as section_id,
 		                    IFNULL('-','-')as section_name,
 		                    sub_topic_list.id as sub_topic_id,
@@ -226,7 +228,7 @@ const testsModel = {
 		                    IFNULL(question_list.mqs_opt_three,'') as q_c,
 		                    IFNULL(question_list.mqs_opt_four,'') as q_d,
 		                    IFNULL(question_list.mqs_opt_five,'') as q_e,
-												IFNULL(question_list.mqs_type,'') as q_display_type,
+							IFNULL(question_list.mqs_type,'') as q_display_type,
 		                    IFNULL('','') as q_mat_data,
 		                    IFNULL('','') as q_col_a,
 		                    IFNULL('','') as q_col_b,
@@ -252,12 +254,18 @@ const testsModel = {
 							mqs_section_id as tqs_section_id,
 							msq_publication_name as pub_name,
 							msq_book_name as book_name,
-							maq_page_number as page_name
+							maq_page_number as page_name,
+							mqs_ask_in_month as mqs_ask_in_month,
+							mqs_ask_in_year as mqs_ask_in_year,
+							mqs_leval as mqs_leval
 
 							FROM 
-		                        tm_mega_question_set as question_list INNER JOIN  
+		                        tm_mega_question_set as question_list 
+
+								INNER JOIN  
 		                        tm_sub_topic_list as sub_topic_list ON
 		                        sub_topic_list.id = question_list.mqs_chapter_id  
+
 		                      	INNER JOIN 
 	                   			tm_main_topic_list as main_topic_list ON
 	                   			sub_topic_list.stl_main_topic_list_id  = main_topic_list.id
@@ -298,8 +306,8 @@ const testsModel = {
 			questionsData.push({
 				q_id: _q.q_id,
 				tqs_test_id: masterTestId,
-				section_id: null,
-				section_name: null,
+				section_id: 0,
+				section_name: '-',
 				sub_topic_id: _q.sub_topic_id,
 				sub_topic_section: _q.sub_topic_section,
 				main_topic_id: _q.main_topic_id,
@@ -323,7 +331,7 @@ const testsModel = {
 				q_i_d: null,
 				q_i_e: null,
 				q_i_q: null,
-				q_i_sol: _q.mqs_ans,
+				q_i_sol: null,
 				stl_topic_number: null,
 				sl_section_no: null,
 				q_sol: _q.q_sol,
@@ -333,12 +341,15 @@ const testsModel = {
 				q_col_display_type: null,
 				question_no: null,
 				mark_per_question: _t.marks_per_question,
-				tqs_question_id: _q.tqs_question_id,
-				tqs_chapter_id: _q.tqs_chapter_id,
-				tqs_section_id: _q.tqs_section_id,
+				tqs_question_id: _q.q_id,
+				tqs_chapter_id: _q.sub_topic_id,
+				tqs_section_id: 0,
 				pub_name: _q.pub_name,
 				book_name: _q.book_name,
 				page_name: _q.page_name,
+				mqs_ask_in_month: _q.mqs_ask_in_month,
+				mqs_ask_in_year: _q.mqs_ask_in_year,
+				mqs_leval: _q.mqs_leval,
 			});
 		});
 		return await tm_test_question_sets.bulkCreate(questionsData);
@@ -471,6 +482,44 @@ const testsModel = {
 		return tm_test_question_sets.findAll({
 			where: { tqs_test_id: testId },
 		});
+	},
+
+	// update test question
+	updateTestQuestion: async (data) => {
+		console.log(data, '==data to update question==');
+
+		let trans = await sequelize.transaction();
+		try {
+			let _updateRes = tm_test_question_sets.update(
+				{
+					q: data.question_content,
+					q_a: data.option_A,
+					q_b: data.option_B,
+					q_c: data.option_C,
+					q_d: data.option_D,
+					q_e: data.option_E,
+					q_ans: data.correct_option,
+					q_sol: data.explanation,
+					pub_name: data.pub_name,
+					book_name: data.book_name,
+					page_name: data.pg_no,
+					mqs_ask_in_month: data.month,
+					mqs_ask_in_year: data.year,
+					mqs_leval: data.difficulty,
+				},
+				{
+					where: {
+						id: data.question_id,
+					},
+				},
+				{ transaction: trans }
+			);
+			await trans.commit();
+			return _updateRes;
+		} catch (error) {
+			trans.rollback();
+			console.log(error, '==error==');
+		}
 	},
 };
 

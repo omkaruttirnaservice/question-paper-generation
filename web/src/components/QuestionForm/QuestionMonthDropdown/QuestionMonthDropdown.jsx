@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { QuestionFormActions } from '../../../Store/question-form-slice.jsx';
+import { EditQuestionFormActions } from '../../../Store/edit-question-form-slice.jsx';
 
 function QuestionMonthDropdown() {
 	// prettier-ignore
@@ -12,7 +12,7 @@ function QuestionMonthDropdown() {
 	);
 	const handleChange = async (e) => {
 		dispatch(
-			QuestionFormActions.handleInputChange({
+			EditQuestionFormActions.handleInputChange({
 				key: e.target.name,
 				value: e.target.value,
 			})
@@ -30,7 +30,13 @@ function QuestionMonthDropdown() {
 						-- Select --
 					</option>
 					{months.map((el) => {
-						return <option value={el}>{el}</option>;
+						return (
+							<option
+								value={el}
+								selected={_formData.month == el ? true : false}>
+								{el}
+							</option>
+						);
 					})}
 				</select>
 			</div>

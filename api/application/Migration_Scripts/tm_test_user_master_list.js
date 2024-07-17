@@ -1,4 +1,4 @@
-import { BIGINT, DATEONLY, Sequelize } from 'sequelize';
+import { BIGINT, DATE, DATEONLY, Sequelize } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 
 const tm_test_user_master_list = sequelize.define('tm_test_user_master_list', {
@@ -25,6 +25,14 @@ const tm_test_user_master_list = sequelize.define('tm_test_user_master_list', {
 	mt_total_marks: { type: Sequelize.INTEGER },
 	mt_pattern_type: { type: Sequelize.INTEGER },
 	mt_total_test_question: { type: Sequelize.INTEGER },
+	createdAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+	},
+	updatedAt: {
+		type: DATE,
+		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+	},
 });
 
 export default tm_test_user_master_list;

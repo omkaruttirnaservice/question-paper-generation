@@ -1,3 +1,11 @@
 .react-datepicker-wrapper {
 	display: block !important;
 }
+
+.que-container:hover .edit-que-btn {
+	display: block !important;
+}
+
+.edit-que-btn {
+	display: none !important;
+}

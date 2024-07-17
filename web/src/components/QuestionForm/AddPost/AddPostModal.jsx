@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ModalActions } from '../../../Store/modal-slice.jsx';
-import { getPostListThunk } from '../../../Store/question-form-slice.jsx';
+import { getPostListThunk } from '../../../Store/edit-question-form-slice.jsx';
 import useHttp from '../../Hooks/use-http.jsx';
 import CButton from '../../UI/CButton.jsx';
 import CModal from '../../UI/CModal.jsx';

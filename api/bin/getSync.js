@@ -9,6 +9,24 @@ import tm_test_question_sets from '../application/Migration_Scripts/tm_test_ques
 
 import tm_publish_test_list from '../application/Migration_Scripts/tm_publish_test_list.js';
 
+import tm_exam_to_question from '../application/Migration_Scripts/tm_exam_to_question.js';
+
+tm_master_test_list.hasMany(tm_main_topic_list, {
+	foreignKey: 'mtl_master_test_list_id',
+});
+
+tm_main_topic_list.belongsTo(tm_master_test_list, {
+	foreignKey: 'mtl_master_test_list_id',
+});
+
+tm_main_topic_list.hasMany(tm_sub_topic_list, {
+	foreignKey: 'stl_main_topic_list_id',
+});
+
+tm_sub_topic_list.belongsTo(tm_main_topic_list, {
+	foreignKey: 'stl_main_topic_list_id',
+});
+
 const getSync = () => {
 	sequelize
 		.sync({ alter: true })

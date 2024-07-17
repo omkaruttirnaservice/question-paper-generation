@@ -7,11 +7,13 @@ const sequelize = new Sequelize(
 	process.env.DB_USER,
 	process.env.DB_PASSWORD,
 	{
-		dialect: 'mysql',
 		host: process.env.HOST,
+		dialect: 'mysql',
+		loggin: false,
 		define: {
 			freezeTableName: true,
 		},
+		timezone: '+05:30',
 	}
 );
 
