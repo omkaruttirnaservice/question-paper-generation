@@ -81,6 +81,7 @@ const testsController = {
 			});
 
 			let ALLDATA = [];
+			let selectedQueId = [];
 
 			async function fetchData(idx) {
 				let [_randQues] = await testsModel.getRandQues(
@@ -97,6 +98,11 @@ const testsController = {
 				if (idx + 1 < topicId.length) {
 					await fetchData(idx + 1);
 				}
+
+				_randQues.forEach((el) => selectedQueId.push(el.q_id));
+
+				console.log(selectedQueId, '==selectedQueId==');
+				console.log(selectedQueId.length, '==selectedQueId.length==');
 			}
 
 			await fetchData(0);
@@ -105,6 +111,14 @@ const testsController = {
 				ALLDATA,
 				masterTestId,
 				_t
+			);
+
+			// updating the question selection status to 1 to indidate that question is selected
+			let _updateTestQuesSelectionStatusRes =
+				await testsModel.updateTestQueSelectionStatus(selectedQueId);
+			console.log(
+				_updateTestQuesSelectionStatusRes,
+				'_updateTestQuesSelectionStatusRes===='
 			);
 
 			return sendSuccess(res, 'Successfully created auto test');

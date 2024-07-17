@@ -5,6 +5,8 @@ import { myDate } from '../config/utils.js';
 import tm_publish_test_list from '../Migration_Scripts/tm_publish_test_list.js';
 import tm_test_question_sets from '../Migration_Scripts/tm_test_question_sets.js';
 import tm_test_user_master_list from '../Migration_Scripts/tm_test_user_master_list.js';
+import tm_master_test_list from '../Migration_Scripts/tm_master_test_list.js';
+import tm_mega_question_set from '../Migration_Scripts/tm_mega_question_set.js';
 
 const testsModel = {
 	getList: async () => {
@@ -271,7 +273,8 @@ const testsModel = {
 	                   			sub_topic_list.stl_main_topic_list_id  = main_topic_list.id
 								WHERE
 									mqs_section_id = ${subjectId} AND
-									mqs_chapter_id = ${topicId} 
+									mqs_chapter_id = ${topicId} AND 
+									is_que_selected_previously = 0
 
 								ORDER BY RAND()
 									LIMIT ${limit}`;
@@ -353,6 +356,19 @@ const testsModel = {
 			});
 		});
 		return await tm_test_question_sets.bulkCreate(questionsData);
+	},
+
+	updateTestQueSelectionStatus: (id) => {
+		return tm_mega_question_set.update(
+			{
+				is_que_selected_previously: 1,
+			},
+			{
+				where: {
+					id: [...id],
+				},
+			}
+		);
 	},
 
 	// tests key

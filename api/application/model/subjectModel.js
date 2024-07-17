@@ -58,7 +58,7 @@ const subjectModel = {
 								LEFT JOIN
 						tm_mega_question_set mqs ON mtl.id = mqs.mqs_chapter_id
 				WHERE
-						mtl.stl_main_topic_list_id = ?
+						mtl.stl_main_topic_list_id = ? AND is_que_selected_previously = 0
 				GROUP BY stl_name;`,
 			+subjectId
 		);

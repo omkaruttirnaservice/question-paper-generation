@@ -89,6 +89,10 @@ const tm_mega_question_set = sequelize.define('tm_mega_question_set', {
 	maq_page_number: {
 		type: INTEGER(),
 	},
+	is_que_selected_previously: {
+		type: TINYINT,
+		defaultValue: 0,
+	},
 
 	// =====
 
