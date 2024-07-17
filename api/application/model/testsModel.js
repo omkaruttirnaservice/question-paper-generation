@@ -123,8 +123,6 @@ const testsModel = {
 	},
 
 	createTest: async (_t, _q) => {
-		console.log(_q, 'Q===============================================');
-		console.log(_t, '==_t==');
 		let transact = await sequelize.transaction();
 		try {
 			let _masterTest = await tm_test_user_master_list.create(

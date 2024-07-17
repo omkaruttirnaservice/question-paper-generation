@@ -51,20 +51,14 @@ const testsController = {
 	createTestAuto: async (req, res) => {
 		try {
 			let { test: _t, topicList: _top } = req.body;
-			if (!_t) {
-				throw new Error('Invalid test details');
-			}
+			if (!_t) throw new Error('Invalid test details');
 
-			if (!_top) {
-				throw new Error('Invalid topic list');
-			}
+			if (!_top) throw new Error('Invalid topic list');
 
 			let _masterTest = await testsModel.createMasterTest(_t, _top);
 
 			const { id: masterTestId } = _masterTest.toJSON();
-			if (!masterTestId) {
-				throw new Error('Unable to create master test');
-			}
+			if (!masterTestId) throw new Error('Unable to create master test');
 
 			let subjectId = [];
 			let topicId = [];
