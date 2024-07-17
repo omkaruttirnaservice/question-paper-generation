@@ -301,6 +301,62 @@ const testsModel = {
 		});
 	},
 
+	getQuestionsDataToSave: async (q, masterTestId, _t) => {
+		let questionsData = [];
+		q.forEach((_q) => {
+			questionsData.push({
+				q_id: _q.q_id,
+				tqs_test_id: masterTestId,
+				section_id: 0,
+				section_name: '-',
+				sub_topic_id: _q.sub_topic_id,
+				sub_topic_section: _q.sub_topic_section,
+				main_topic_id: _q.main_topic_id,
+				main_topic_name: _q.main_topic_name,
+				q: _q.q,
+				q_a: _q.q_a,
+				q_b: _q.q_b,
+				q_c: _q.q_c,
+				q_d: _q.q_d,
+				q_e: _q.q_e,
+				q_display_type: null,
+				q_ask_in: null,
+				q_data_type: null,
+				q_mat_data: null,
+				q_col_a: null,
+				q_col_b: null,
+				q_mat_id: null,
+				q_i_a: null,
+				q_i_b: null,
+				q_i_c: null,
+				q_i_d: null,
+				q_i_e: null,
+				q_i_q: null,
+				q_i_sol: null,
+				stl_topic_number: null,
+				sl_section_no: null,
+				q_sol: _q.q_sol,
+				q_ans: _q.q_ans,
+				q_mat_ans: null,
+				q_mat_ans_row: null,
+				q_col_display_type: null,
+				question_no: null,
+				mark_per_question: _t.marks_per_question,
+				tqs_question_id: _q.q_id,
+				tqs_chapter_id: _q.sub_topic_id,
+				tqs_section_id: 0,
+				pub_name: _q.pub_name,
+				book_name: _q.book_name,
+				page_name: _q.page_name,
+				mqs_ask_in_month: _q.mqs_ask_in_month,
+				mqs_ask_in_year: _q.mqs_ask_in_year,
+				mqs_leval: _q.mqs_leval,
+			});
+		});
+		return questionsData;
+		// return await tm_test_question_sets.bulkCreate(questionsData);
+	},
+
 	saveExamQuestions: async (q, masterTestId, _t) => {
 		let questionsData = [];
 		q.forEach((_q) => {

@@ -1,4 +1,8 @@
+import sequelize from '../config/db-connect-migration.js';
 import { myDate } from '../config/utils.js';
+import tm_mega_question_set from '../Migration_Scripts/tm_mega_question_set.js';
+import tm_test_question_sets from '../Migration_Scripts/tm_test_question_sets.js';
+import tm_test_user_master_list from '../Migration_Scripts/tm_test_user_master_list.js';
 import testsModel from '../model/testsModel.js';
 import { sendError, sendSuccess } from '../utils/commonFunctions.js';
 
@@ -48,7 +52,7 @@ const testsController = {
 		}
 	},
 
-	createTestAuto: async (req, res) => {
+	createTestAutoV1: async (req, res) => {
 		try {
 			let { test: _t, topicList: _top } = req.body;
 			if (!_t) throw new Error('Invalid test details');
@@ -107,6 +111,114 @@ const testsController = {
 
 			return sendSuccess(res, 'Successfully created auto test');
 		} catch (error) {
+			return sendError(res, error.message);
+		}
+	},
+
+	createTestAutoV2: async (req, res) => {
+		let transact = await sequelize.transaction();
+		try {
+			let { test: _t, topicList: _top } = req.body;
+			if (!_t) throw new Error('Invalid test details');
+
+			if (!_top) throw new Error('Invalid topic list');
+
+			// creating master test
+			let _masterTest = await tm_test_user_master_list.create(
+				{
+					mt_name: _t.test_name,
+					mt_added_date: myDate.getDate(),
+					mt_descp: 'TEST',
+					mt_added_time: myDate.getTime(),
+					mt_is_live: 1,
+					mt_time_stamp: myDate.getDateTime(),
+					mt_type: 1,
+					tm_aouth_id: 1,
+					mt_test_time: _t.test_duration,
+					mt_total_test_takan: 0,
+					mt_is_negative: _t.is_negative_marking,
+					mt_negativ_mark: 0,
+					mt_mark_per_question: _t.marks_per_question,
+					mt_passing_out_of: _t.test_passing_mark,
+					mt_total_marks: +_t.total_questions * +_t.marks_per_question,
+					mt_pattern_type: 1,
+					mt_total_test_question: +_t.total_questions,
+				},
+				{
+					transaction: transact,
+				}
+			);
+
+			const { id: masterTestId } = _masterTest.toJSON();
+			if (!masterTestId) throw new Error('Unable to create master test');
+
+			let subjectId = [];
+			let topicId = [];
+			let limit = [];
+			let ALLDATA = [];
+			let selectedQueId = [];
+
+			_top.forEach((el) => {
+				subjectId.push(el.subject_id);
+				topicId.push(el.id);
+				limit.push(el.selectedCount);
+			});
+
+			async function fetchData(idx) {
+				let [_randQues] = await testsModel.getRandQues(
+					subjectId[idx],
+					topicId[idx],
+					limit[idx],
+					transact
+				);
+
+				if (_randQues.length == 0) {
+					throw new Error('No questions found to select automatically');
+				}
+				ALLDATA.push(..._randQues);
+
+				if (idx + 1 < topicId.length) {
+					await fetchData(idx + 1);
+				}
+
+				// adding id of selected question to update their selection status later on
+				_randQues.forEach((el) => selectedQueId.push(el.q_id));
+			}
+
+			await fetchData(0);
+
+			let questionsData = testsModel.getQuestionsDataToSave(
+				ALLDATA,
+				masterTestId,
+				_t
+			);
+			if (questionsData.length == 0)
+				throw new Error('No questions found to save');
+
+			let _saveQuesRes = await tm_test_question_sets.bulkCreate(questionsData, {
+				transaction: transact,
+			});
+
+			// updating the question selection status to 1 to indidate that question is selected
+			let _updateTestQuesSelectionStatusRes = await tm_mega_question_set.update(
+				{
+					is_que_selected_previously: 1,
+				},
+				{
+					where: {
+						id: [...selectedQueId],
+					},
+				},
+				{
+					transaction: transact,
+				}
+			);
+
+			await transact.commit();
+
+			return sendSuccess(res, 'Successfully created auto test');
+		} catch (error) {
+			await transact.rollback();
 			return sendError(res, error.message);
 		}
 	},

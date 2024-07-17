@@ -126,7 +126,7 @@ function QuestionsListAutoTest() {
 		if (!isValid) return false;
 
 		let requestData = {
-			url: '/api/test/create-auto',
+			url: '/api/test/v2/create-auto',
 			method: 'POST',
 			body: JSON.stringify({
 				test,

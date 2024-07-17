@@ -10,7 +10,8 @@ testsRouter.get('/list-published', testsController.getPublishedList);
 testsRouter.post('/create', testsController.createTest);
 
 // create new auto test
-testsRouter.post('/create-auto', testsController.createTestAuto);
+testsRouter.post('/v1/create-auto', testsController.createTestAutoV1);
+testsRouter.post('/v2/create-auto', testsController.createTestAutoV2);
 
 testsRouter.delete('/delete', testsController.deleteTest);
 
