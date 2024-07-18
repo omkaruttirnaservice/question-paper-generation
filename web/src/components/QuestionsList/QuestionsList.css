@@ -1,0 +1,27 @@
+:root {
+	--bg-color: rgba(245, 114, 114, 0.575);
+}
+.selected-question {
+	background-color: var(--bg-color);
+	max-height: 6rem;
+	transition: 300ms all ease-out;
+
+	&:hover {
+		background-color: var(--bg-color) !important;
+		max-height: 40rem;
+		transition-delay: 0.2s;
+	}
+}
+
+.preview-question {
+	background-color: var(--bg-color) !important;
+	transition: 300ms all;
+}
+
+.remove-que-btn {
+	display: none !important;
+}
+
+.preview-question:hover .remove-que-btn {
+	display: block !important;
+}

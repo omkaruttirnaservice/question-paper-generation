@@ -2,17 +2,65 @@ import { createSlice } from '@reduxjs/toolkit';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
+const TEST_INITIAL_STATE = {
+	test: {
+		test_name: null,
+		test_duration: null,
+		marks_per_question: null,
+		total_questions: null,
+		is_negative_marking: 0,
+		negative_mark: 0,
+		test_passing_mark: null,
+		test_creation_type: null,
+	},
+	errors: {},
+	selectedQuestionsList: [],
+	sortedSelectedQuestionsList: [],
+
+	previewTestDetails: {
+		// this is for preview of test questions which are not yet published
+		test_id: null,
+		test_name: null,
+		test_duration: null,
+		marks_per_question: null,
+		total_questions: null,
+		is_negative_marking: 0,
+		negative_mark: 0,
+		test_passing_mark: null,
+		test_creation_type: null,
+		test_created_on: null,
+		todays_date: null,
+	},
+	testQuestionsList: [], // this is for storing of tests question for viewing
+
+	previewPublishedTestDetails: {
+		// this is for preview of test questions which are published
+		test_id: null,
+		test_name: null,
+		test_duration: null,
+		marks_per_question: null,
+		total_questions: null,
+		is_negative_marking: 0,
+		negative_mark: 0,
+		test_passing_mark: null,
+		test_creation_type: null,
+		test_created_on: null,
+		todays_date: null,
+	},
+	publishedTestQuestionsList: [], // this is for storing of tests question for viewing of tests which are published
+};
+
 const testsSlice = createSlice({
 	name: 'tests-slice',
 	initialState: {
 		test: {
-			test_name: null,
-			test_duration: null,
-			marks_per_question: null,
+			test_name: 'Demo 1',
+			test_duration: 90,
+			marks_per_question: 1,
 			total_questions: null,
 			is_negative_marking: 0,
 			negative_mark: 0,
-			test_passing_mark: null,
+			test_passing_mark: 20,
 			test_creation_type: null,
 		},
 		errors: {},
@@ -69,11 +117,17 @@ const testsSlice = createSlice({
 
 		setSelectedQuestionsList: (state, action) => {
 			state.selectedQuestionsList = action.payload;
+			// let sorted = [...state.sortedSelectedQuestionsList];
+
+			// if (sorted[el.sub_topic_section]) {
+			// 	sorted[el.sub_topic_section].push(el);
+			// } else {
+			// 	sorted[el.sub_topic_section] = [el];
+			// }
 		},
 
 		// for view questions of the test
 		setTestQuestionsList: (state, action) => {
-			console.log(1, '==1updating questions==');
 			state.testQuestionsList = action.payload;
 		},
 		setPreviewTestDetails: (state, { payload }) => {
@@ -81,8 +135,7 @@ const testsSlice = createSlice({
 			state.previewTestDetails.test_id = payload.id;
 			state.previewTestDetails.test_name = payload.mt_name;
 			state.previewTestDetails.test_duration = payload.mt_test_time;
-			state.previewTestDetails.marks_per_question =
-				payload.mt_mark_per_question;
+			state.previewTestDetails.marks_per_question = payload.mt_mark_per_question;
 			state.previewTestDetails.total_questions = payload.mt_total_test_question;
 			state.previewTestDetails.is_negative_marking = payload.mt_negativ_mark;
 			state.previewTestDetails.negative_mark = payload.mt_negativ_mark;
@@ -91,12 +144,7 @@ const testsSlice = createSlice({
 			state.previewTestDetails.test_created_on = payload.mt_added_date;
 
 			let todaysDate = new Date();
-			state.previewTestDetails.todays_date =
-				todaysDate.getDate() +
-				'-' +
-				(todaysDate.getMonth() + 1) +
-				'-' +
-				todaysDate.getFullYear();
+			state.previewTestDetails.todays_date = todaysDate.getDate() + '-' + (todaysDate.getMonth() + 1) + '-' + todaysDate.getFullYear();
 		},
 		cleanupPreviewTestDetails: (state, payload) => {
 			state.testQuestionsList = [];
@@ -125,25 +173,16 @@ const testsSlice = createSlice({
 			state.previewPublishedTestDetails.test_id = payload.ptl_test_id;
 			state.previewPublishedTestDetails.test_name = payload.mt_name;
 			state.previewPublishedTestDetails.test_duration = payload.mt_test_time;
-			state.previewPublishedTestDetails.marks_per_question =
-				payload.mt_mark_per_question;
-			state.previewPublishedTestDetails.total_questions =
-				payload.mt_total_test_question;
-			state.previewPublishedTestDetails.is_negative_marking =
-				payload.mt_negativ_mark;
+			state.previewPublishedTestDetails.marks_per_question = payload.mt_mark_per_question;
+			state.previewPublishedTestDetails.total_questions = payload.mt_total_test_question;
+			state.previewPublishedTestDetails.is_negative_marking = payload.mt_negativ_mark;
 			state.previewPublishedTestDetails.negative_mark = payload.mt_negativ_mark;
-			state.previewPublishedTestDetails.test_passing_mark =
-				payload.mt_passing_out_of;
+			state.previewPublishedTestDetails.test_passing_mark = payload.mt_passing_out_of;
 
 			state.previewPublishedTestDetails.test_created_on = payload.mt_added_date;
 
 			let todaysDate = new Date();
-			state.previewPublishedTestDetails.todays_date =
-				todaysDate.getDate() +
-				'-' +
-				(todaysDate.getMonth() + 1) +
-				'-' +
-				todaysDate.getFullYear();
+			state.previewPublishedTestDetails.todays_date = todaysDate.getDate() + '-' + (todaysDate.getMonth() + 1) + '-' + todaysDate.getFullYear();
 		},
 		cleanupPublishedTestDetails: (state, payload) => {
 			state.publishedTestQuestionsList = [];
@@ -189,11 +228,7 @@ export const getTestQuestionsListThunk = (testId, sendRequest, navigate) => {
 	};
 };
 
-export const getPublishedTestQuestionsListThunk = (
-	testId,
-	sendRequest,
-	navigate
-) => {
+export const getPublishedTestQuestionsListThunk = (testId, sendRequest, navigate) => {
 	console.log(2, '==going type 2==');
 	return async (dispatch) => {
 		let reqData = {

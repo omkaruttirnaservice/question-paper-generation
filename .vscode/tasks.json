@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "startfb",
+			"problemMatcher": [],
+			"label": "npm: startfb",
+			"detail": "concurrently \" cd web && npm start \"  \"cd api && npm start\""
+		}
+	]
+}

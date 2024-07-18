@@ -121,7 +121,7 @@ const testsController = {
 			let { test: _t, topicList: _top } = req.body;
 			if (!_t) throw new Error('Invalid test details');
 
-			if (!_top) throw new Error('Invalid topic list');
+			if (!_top || _top.length == 0) throw new Error('Invalid topic list');
 
 			// creating master test
 			let _masterTest = await tm_test_user_master_list.create(
@@ -192,12 +192,15 @@ const testsController = {
 				masterTestId,
 				_t
 			);
+			console.log(questionsData, '==questionsData==');
 			if (questionsData.length == 0)
 				throw new Error('No questions found to save');
 
 			let _saveQuesRes = await tm_test_question_sets.bulkCreate(questionsData, {
 				transaction: transact,
 			});
+
+			console.log(_saveQuesRes, '==_saveQuesRes==');
 
 			// updating the question selection status to 1 to indidate that question is selected
 			let _updateTestQuesSelectionStatusRes = await tm_mega_question_set.update(

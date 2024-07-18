@@ -301,7 +301,7 @@ const testsModel = {
 		});
 	},
 
-	getQuestionsDataToSave: async (q, masterTestId, _t) => {
+	getQuestionsDataToSave: (q, masterTestId, _t) => {
 		let questionsData = [];
 		q.forEach((_q) => {
 			questionsData.push({

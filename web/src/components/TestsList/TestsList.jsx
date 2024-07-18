@@ -97,6 +97,7 @@ function TestsList() {
 
 	const handleViewQuestions = (el) => {
 		if (!el.id) return false;
+		console.log(el, '==el==');
 
 		dispatch(testsSliceActions.setPreviewTestDetails(el));
 
@@ -254,8 +255,7 @@ function TestsList() {
 					<div className="relative">
 						<label
 							htmlFor=""
-							className="transition-all duration-300 text-gray-700 !mb-1  block"
-						>
+							className="transition-all duration-300 text-gray-700 !mb-1  block">
 							Select Publish Date
 						</label>
 						<DatePicker
@@ -284,8 +284,7 @@ function TestsList() {
 					<div className="relative">
 						<label
 							htmlFor=""
-							className="transition-all duration-300 text-gray-700 !mb-1  block"
-						>
+							className="transition-all duration-300 text-gray-700 !mb-1  block">
 							Batch No
 						</label>
 						<select
@@ -293,8 +292,7 @@ function TestsList() {
 							id=""
 							onChange={handleChange}
 							value={publishExamForm.batch}
-							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
-						>
+							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40">
 							<option value="">-- Select -- </option>
 
 							{batchCount.map((el, idx) => {
@@ -310,8 +308,7 @@ function TestsList() {
 							label={'Test key'}
 							name={'test_key'}
 							value={publishExamForm.test_key}
-							disabled
-						></Input>
+							disabled></Input>
 						{errors.test_key && (
 							<span className="error">{errors.test_key}</span>
 						)}
@@ -368,8 +365,7 @@ function TestsList() {
 												<div className="flex justify-center">
 													<CButton
 														className="btn--primary"
-														onClick={handlePublishExam.bind(null, el)}
-													>
+														onClick={handlePublishExam.bind(null, el)}>
 														Publish
 													</CButton>
 												</div>
@@ -380,13 +376,11 @@ function TestsList() {
 													<CButton
 														className="btn--danger m-0"
 														onClick={handleDeleteTest.bind(null, el.id)}
-														icon={<FaTrash />}
-													></CButton>
+														icon={<FaTrash />}></CButton>
 													<CButton
 														className="btn--info m-0"
 														onClick={handleViewQuestions.bind(null, el)}
-														icon={<FaEye />}
-													></CButton>
+														icon={<FaEye />}></CButton>
 												</div>
 											</td>
 										</tr>
@@ -401,8 +395,7 @@ function TestsList() {
 						<span>Woops! no test list found.&nbsp;&nbsp;</span>
 						<Link
 							className="underline font-semibold flex items-center gap-2 "
-							to={'/dashboard'}
-						>
+							to={'/dashboard'}>
 							Create New <FaPlus className="inline-block" />
 						</Link>
 					</div>

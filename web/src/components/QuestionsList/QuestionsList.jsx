@@ -1,14 +1,11 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { FaGripLinesVertical } from 'react-icons/fa';
+import { FaGripLinesVertical, FaTrash } from 'react-icons/fa';
+
+import { GoPencil } from 'react-icons/go';
 
 import { FaAngleRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-	EditQuestionFormActions,
-	getPostListThunk,
-	getSubjectsListThunk,
-	getTopicsListThunk,
-} from '../../Store/edit-question-form-slice.jsx';
+import { EditQuestionFormActions, getPostListThunk, getSubjectsListThunk, getTopicsListThunk } from '../../Store/edit-question-form-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import PostListDropdown from '../QuestionForm/PostListDropdown/PostListDropdown.jsx';
 import SubjectListDropdown from '../QuestionForm/SubjectListDropdown/SubjectListDropdown.jsx';
@@ -22,13 +19,15 @@ import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 
+import './QuestionsList.css';
+
 const ALL_QUESTION = 'all-question';
 const SELECTED_QUESTION = 'selected-question';
 
 function QuestionsList() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { test, selectedQuestionsList } = useSelector((state) => state.tests);
+	const { test, selectedQuestionsList, sortedSelectedQuestionsList } = useSelector((state) => state.tests);
 
 	const [temp_QuestionList, set_temp_QuestionList] = useState([]);
 	const [showList, setShowList] = useState(ALL_QUESTION);
@@ -43,12 +42,7 @@ function QuestionsList() {
 		}
 	});
 
-	const {
-		data: _formData,
-		postsList,
-		subjectsList,
-		topicsList,
-	} = useSelector((state) => state.questionForm);
+	const { data: _formData, postsList, subjectsList, topicsList } = useSelector((state) => state.questionForm);
 
 	useEffect(() => {
 		if (postsList.length === 0) {
@@ -65,13 +59,9 @@ function QuestionsList() {
 		dispatch(getTopicsListThunk(_formData.subject_id, sendRequest));
 		set_temp_QuestionList([]);
 
-		let selectedSubject = subjectsList.filter(
-			(el) => el.id == _formData.subject_id
-		);
+		let selectedSubject = subjectsList.filter((el) => el.id == _formData.subject_id);
 		if (selectedSubject.length !== 0) {
-			dispatch(
-				EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name)
-			);
+			dispatch(EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
 		}
 	}, [_formData.subject_id]);
 
@@ -82,9 +72,7 @@ function QuestionsList() {
 
 		let selectedTopic = topicsList.filter((el) => el.id == _formData.topic_id);
 		if (selectedTopic.length !== 0) {
-			dispatch(
-				EditQuestionFormActions.setTopicName(selectedTopic[0].topic_name)
-			);
+			dispatch(EditQuestionFormActions.setTopicName(selectedTopic[0].topic_name));
 		}
 
 		getQuestions();
@@ -106,7 +94,9 @@ function QuestionsList() {
 	}
 
 	const handleAddQuestionToList = (_addEl) => {
+		console.log(_addEl, '==_addEl==');
 		let insertArray = [...selectedQuestionsList];
+
 		let _index = insertArray.findIndex((el) => el.q_id == _addEl.q_id);
 
 		if (_index != -1) {
@@ -152,12 +142,32 @@ function QuestionsList() {
 		});
 	};
 
+	let lastMainName = '';
+	let lastSub = '';
+
+	const renderTopicHeader = (mainTopicName, subTopicSection) => {
+		let header = null;
+
+		// Render sub topic header if it changes
+		if (subTopicSection !== lastSub) {
+			lastSub = subTopicSection;
+			header = (
+				<p className="topicDisplay">
+					{mainTopicName} :: {subTopicSection}
+				</p>
+			);
+		}
+
+		if (mainTopicName !== lastMainName) {
+			lastMainName = mainTopicName;
+		}
+
+		return header;
+	};
+
 	return (
 		<>
-			<CreatePreSubmitView
-				test={test}
-				finalTestSubmitHandler={finalTestSubmitHandler}
-			/>
+			<CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
 			<div className="container mx-auto mt-6">
 				<div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
 					<div className="grid grid-cols-4 items-center gap-1">
@@ -214,14 +224,12 @@ function QuestionsList() {
 					</div>
 
 					<div className="grid grid-cols-5 gap-3 ">
-						<PostListDropdown isShowAddNewBtn={false} />
+						<PostListDropdown isShowAddNewBtn={false} disabled={selectedQuestionsList.length >= 1} />
 						<SubjectListDropdown isShowAddNewBtn={false} />
 						<TopicListDropdown isShowAddNewBtn={false} />
 
 						{test.total_questions >= 1 && (
-							<CButton
-								className={'btn--success w-fit h-fit self-end'}
-								onClick={createExamHandler}>
+							<CButton className={'btn--success w-fit h-fit self-end'} onClick={createExamHandler}>
 								Create Exam
 							</CButton>
 						)}
@@ -231,17 +239,10 @@ function QuestionsList() {
 
 			{temp_QuestionList.length >= 1 && (
 				<div className="container mx-auto flex justify-center gap-4 mt-5">
-					<CButton
-						className={''}
-						onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
+					<CButton className={''} onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
 						All Questions
 					</CButton>
-					<CButton
-						className={'btn--danger'}
-						onClick={viewQuestionListChangeHandler.bind(
-							null,
-							SELECTED_QUESTION
-						)}>
+					<CButton className={'btn--danger'} onClick={viewQuestionListChangeHandler.bind(null, SELECTED_QUESTION)}>
 						Question Paper ( {selectedQuestionsList.length} )
 					</CButton>
 				</div>
@@ -252,42 +253,31 @@ function QuestionsList() {
 					{temp_QuestionList.length >= 1 &&
 						showList == ALL_QUESTION &&
 						temp_QuestionList.map((el, idx) => {
-							return (
-								<AllQuestionsPreview
-									el={el}
-									idx={idx}
-									handleAddQuestionToList={handleAddQuestionToList}
-								/>
-							);
+							return <AllQuestionsPreview el={el} idx={idx} handleAddQuestionToList={handleAddQuestionToList} />;
 						})}
 
 					{showList == SELECTED_QUESTION &&
 						selectedQuestionsList.map((el, idx) => {
-							return <SelectedQuestionPreview el={el} idx={idx} />;
+							const topicHeader = renderTopicHeader(el.main_topic_name, el.sub_topic_section);
+							return <SelectedQuestionPreview el={el} topicHeader={topicHeader} key={idx} />;
 						})}
 				</div>
 
-				{isLoading && (
-					<AiOutlineLoading3Quarters className="animate-spin text-2xl m-3 mx-auto" />
-				)}
-				{!isLoading && temp_QuestionList.length === 0 && (
-					<p className="text-center text-[#555]">Woops! no questions found!</p>
-				)}
+				{isLoading && <AiOutlineLoading3Quarters className="animate-spin text-2xl m-3 mx-auto" />}
+				{!isLoading && temp_QuestionList.length === 0 && <p className="text-center text-[#555]">Woops! no questions found!</p>}
 
-				{!isLoading &&
-					selectedQuestionsList.length === 0 &&
-					showList == SELECTED_QUESTION && (
-						<p className="text-center text-[#555] cursor-pointer">
-							Woops! no questions found!{' '}
-							<span
-								className="underline text-blue-500"
-								onClick={() => {
-									setShowList(ALL_QUESTION);
-								}}>
-								Add Question
-							</span>
-						</p>
-					)}
+				{!isLoading && selectedQuestionsList.length === 0 && showList == SELECTED_QUESTION && (
+					<p className="text-center text-[#555] cursor-pointer">
+						Woops! no questions found!{' '}
+						<span
+							className="underline text-blue-500"
+							onClick={() => {
+								setShowList(ALL_QUESTION);
+							}}>
+							Add Question
+						</span>
+					</p>
+				)}
 			</div>
 		</>
 	);
@@ -351,16 +341,12 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 	};
 	return (
 		<div
-			className={`border mb-2 h-[10rem] hover:h-full hover:bg-green-300 transition-all duration-300 overflow-y-scroll ${
-				isAdded(el.q_id) != -1 ? 'bg-green-300' : ''
-			}`}
+			className={`border mb-2 hover:bg-green-300 transition-all duration-300 overflow-y-scroll ${isAdded(el.q_id) != -1 ? 'selected-question' : ''}`}
 			onClick={handleAddQuestionToList.bind(null, el)}
 			key={idx}>
 			<div className="py-3 px-4 text-start">
 				<div className="py-3">
-					<p className="font-bold text-[#555] mb-4 block text-start">
-						Q. {el.q_id})
-					</p>
+					<p className="font-bold text-[#555] mb-4 block text-start">Q. {el.q_id})</p>
 					<p
 						className="text-start"
 						dangerouslySetInnerHTML={{
@@ -369,9 +355,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 				</div>
 
 				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option A
-					</span>
+					<span className="font-bold text-[#555] mb-4 block text-start">Option A</span>
 
 					<p
 						dangerouslySetInnerHTML={{
@@ -382,9 +366,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 				<hr />
 
 				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option B
-					</span>
+					<span className="font-bold text-[#555] mb-4 block text-start">Option B</span>
 
 					<p
 						dangerouslySetInnerHTML={{
@@ -395,9 +377,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 				<hr />
 
 				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option C
-					</span>
+					<span className="font-bold text-[#555] mb-4 block text-start">Option C</span>
 					<p
 						dangerouslySetInnerHTML={{
 							__html: el.q_c,
@@ -407,9 +387,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 				<hr />
 
 				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option D
-					</span>
+					<span className="font-bold text-[#555] mb-4 block text-start">Option D</span>
 					<p
 						dangerouslySetInnerHTML={{
 							__html: el.q_d,
@@ -420,9 +398,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 
 				{el.q_e && (
 					<div className="py-3">
-						<span className="font-bold text-[#555] mb-4 block text-start">
-							Option E
-						</span>
+						<span className="font-bold text-[#555] mb-4 block text-start">Option E</span>
 						<p
 							dangerouslySetInnerHTML={{
 								__html: el.q_e,
@@ -433,9 +409,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 				<hr />
 
 				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 me-3">
-						Correct Option
-					</span>
+					<span className="font-bold text-[#555] mb-4 me-3">Correct Option</span>
 					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans}</span>
 				</div>
 
@@ -443,9 +417,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 
 				{el.q_sol && (
 					<div className="py-3">
-						<span className="font-bold text-[#555] my-4 block text-start">
-							Solution
-						</span>
+						<span className="font-bold text-[#555] my-4 block text-start">Solution</span>
 						<p
 							className="text-start"
 							dangerouslySetInnerHTML={{
@@ -458,110 +430,113 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 	);
 }
 
-function SelectedQuestionPreview({ el, idx }) {
+function SelectedQuestionPreview({ el, idx, topicHeader }) {
+	const dispatch = useDispatch();
+	const { selectedQuestionsList } = useSelector((state) => state.tests);
+	const [isOpen, setIsOpen] = useState(false);
+	const handleRemoveQuestion = (el) => {
+		let updatedList = [...selectedQuestionsList];
+		let index = selectedQuestionsList.findIndex((_el) => _el.q_id == el.q_id);
+		updatedList.splice(index, 1);
+		dispatch(testsSliceActions.setSelectedQuestionsList(updatedList));
+		dispatch(testsSliceActions.updateTotalQuestionsCount());
+	};
 	return (
-		<div
-			className={`border mb-2 h-[10rem] hover:h-full transition-all duration-300  overflow-y-scroll `}
-			key={idx}>
-			<div className="py-3 px-4 text-start">
-				<div className="py-3">
-					<p className="font-bold text-[#555] mb-4 block text-start">
-						Q. {el.q_id})
-					</p>
-					<p
-						className="text-start"
-						dangerouslySetInnerHTML={{
-							__html: el.q,
-						}}></p>
-				</div>
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option A
-					</span>
-
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.q_a,
-						}}></p>
-				</div>
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option B
-					</span>
-
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.q_b,
-						}}></p>
-				</div>
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option C
-					</span>
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.q_c,
-						}}></p>
-				</div>
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option D
-					</span>
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.q_d,
-						}}></p>
-				</div>
-
-				<hr />
-
-				{el.q_e && (
-					<div className="py-3">
-						<span className="font-bold text-[#555] mb-4 block text-start">
-							Option E
-						</span>
+		<>
+			{topicHeader && <div className="border p-2 text-center">{topicHeader}</div>}
+			<div
+				className={`border mb-2  overflow-y-hidden preview-question ${isOpen ? 'h-auto' : 'h-[8rem]'} relative`}
+				key={idx}
+				onClick={() => {
+					setIsOpen(!isOpen);
+				}}>
+				<CButton icon={<FaTrash />} onClick={handleRemoveQuestion.bind(null, el)} className={'btn--danger absolute top-0 right-0 remove-que-btn'}>
+					Remove
+				</CButton>
+				<div className="py-3 px-4 text-start">
+					<div className="py-3 flex items-start gap-2">
+						<p className="font-bold text-[#555] mb-4  text-start inline-block">Q. {el.q_id})</p>
 						<p
+							className="text-start inline-block"
 							dangerouslySetInnerHTML={{
-								__html: el.q_e,
+								__html: el.q,
 							}}></p>
 					</div>
-				)}
 
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 me-3">
-						Correct Option
-					</span>
-					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans}</span>
-				</div>
-
-				<hr />
-
-				{el.q_sol && (
 					<div className="py-3">
-						<span className="font-bold text-[#555] my-4 block text-start">
-							Solution
-						</span>
+						<span className="font-bold text-[#555] mb-4 block text-start">Option A</span>
+
 						<p
-							className="text-start"
 							dangerouslySetInnerHTML={{
-								__html: el.q_sol,
+								__html: el.q_a,
 							}}></p>
 					</div>
-				)}
+
+					<hr />
+
+					<div className="py-3">
+						<span className="font-bold text-[#555] mb-4 block text-start">Option B</span>
+
+						<p
+							dangerouslySetInnerHTML={{
+								__html: el.q_b,
+							}}></p>
+					</div>
+
+					<hr />
+
+					<div className="py-3">
+						<span className="font-bold text-[#555] mb-4 block text-start">Option C</span>
+						<p
+							dangerouslySetInnerHTML={{
+								__html: el.q_c,
+							}}></p>
+					</div>
+
+					<hr />
+
+					<div className="py-3">
+						<span className="font-bold text-[#555] mb-4 block text-start">Option D</span>
+						<p
+							dangerouslySetInnerHTML={{
+								__html: el.q_d,
+							}}></p>
+					</div>
+
+					<hr />
+
+					{el.q_e && (
+						<div className="py-3">
+							<span className="font-bold text-[#555] mb-4 block text-start">Option E</span>
+							<p
+								dangerouslySetInnerHTML={{
+									__html: el.q_e,
+								}}></p>
+						</div>
+					)}
+
+					<hr />
+
+					<div className="py-3">
+						<span className="font-bold text-[#555] mb-4 me-3">Correct Option</span>
+						<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans}</span>
+					</div>
+
+					<hr />
+
+					{el.q_sol && (
+						<div className="py-3">
+							<span className="font-bold text-[#555] my-4 block text-start">Solution</span>
+							<p
+								className="text-start"
+								dangerouslySetInnerHTML={{
+									__html: el.q_sol,
+								}}></p>
+						</div>
+					)}
+				</div>
 			</div>
-		</div>
+		</>
 	);
 }
 
