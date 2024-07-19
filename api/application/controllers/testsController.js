@@ -78,11 +78,7 @@ const testsController = {
 			let selectedQueId = [];
 
 			async function fetchData(idx) {
-				let [_randQues] = await testsModel.getRandQues(
-					subjectId[idx],
-					topicId[idx],
-					limit[idx]
-				);
+				let [_randQues] = await testsModel.getRandQues(subjectId[idx], topicId[idx], limit[idx]);
 
 				if (_randQues.length == 0) {
 					throw new Error('No questions found to select automatically');
@@ -99,15 +95,10 @@ const testsController = {
 
 			await fetchData(0);
 
-			let _saveQuesRes = await testsModel.saveExamQuestions(
-				ALLDATA,
-				masterTestId,
-				_t
-			);
+			let _saveQuesRes = await testsModel.saveExamQuestions(ALLDATA, masterTestId, _t);
 
 			// updating the question selection status to 1 to indidate that question is selected
-			let _updateTestQuesSelectionStatusRes =
-				await testsModel.updateTestQueSelectionStatus(selectedQueId);
+			let _updateTestQuesSelectionStatusRes = await testsModel.updateTestQueSelectionStatus(selectedQueId);
 
 			return sendSuccess(res, 'Successfully created auto test');
 		} catch (error) {
@@ -163,18 +154,16 @@ const testsController = {
 				topicId.push(el.id);
 				limit.push(el.selectedCount);
 			});
+			console.log(subjectId, '==subjectId==');
+			console.log(topicId, '==topicId==');
+			console.log(limit, '==limit==');
 
 			async function fetchData(idx) {
-				let [_randQues] = await testsModel.getRandQues(
-					subjectId[idx],
-					topicId[idx],
-					limit[idx],
-					transact
-				);
+				let [_randQues] = await testsModel.getRandQues(subjectId[idx], topicId[idx], limit[idx], transact);
 
-				if (_randQues.length == 0) {
-					throw new Error('No questions found to select automatically');
-				}
+				// if (_randQues.length == 0) {
+				// 	throw new Error('No questions found to select automatically');
+				// }
 				ALLDATA.push(..._randQues);
 
 				if (idx + 1 < topicId.length) {
@@ -187,14 +176,9 @@ const testsController = {
 
 			await fetchData(0);
 
-			let questionsData = testsModel.getQuestionsDataToSave(
-				ALLDATA,
-				masterTestId,
-				_t
-			);
+			let questionsData = testsModel.getQuestionsDataToSave(ALLDATA, masterTestId, _t);
 			console.log(questionsData, '==questionsData==');
-			if (questionsData.length == 0)
-				throw new Error('No questions found to save');
+			if (questionsData.length == 0) throw new Error('No questions found to save');
 
 			let _saveQuesRes = await tm_test_question_sets.bulkCreate(questionsData, {
 				transaction: transact,

@@ -21,7 +21,7 @@ import Spinner from '../UI/Spinner.jsx';
 import { H3 } from '../UI/Headings.jsx';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
-import { confirmDialouge } from '../../helpers/confirmDialouge.js';
+import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 
 function QuestionsListAutoTest() {
 	const dispatch = useDispatch();
@@ -54,7 +54,6 @@ function QuestionsListAutoTest() {
 	}, [_formData.post_id]);
 
 	useEffect(() => {
-		console.log('==Getting topics list subject id changed==');
 		setTopicList([]);
 
 		getTopicAndQuestionCount(_formData.subject_id);
@@ -65,7 +64,7 @@ function QuestionsListAutoTest() {
 		}
 	}, [_formData.subject_id]);
 
-	function getTopicAndQuestionCount(subjectId) {
+	const getTopicAndQuestionCount = (subjectId) => {
 		let reqData = {
 			url: '/api/get-topic-list-and-question-count',
 			method: 'POST',
@@ -77,7 +76,7 @@ function QuestionsListAutoTest() {
 			console.log(data, '==data==');
 			setTopicList(data);
 		});
-	}
+	};
 
 	const topicListCheckboxHandler = (e) => {
 		const isChecked = e.target.checked;
@@ -140,6 +139,7 @@ function QuestionsListAutoTest() {
 		updatedList.push(testChartAddData);
 
 		setSelectedTopicList(updatedList);
+		setTopicList([]);
 	};
 
 	const handleRemoveFromEamChart = async ({ idx, el }) => {
@@ -233,12 +233,40 @@ function QuestionsListAutoTest() {
 		dispatch(ModalActions.toggleModal('create-test-modal-auto'));
 	};
 
+	const finalTestSubmitHandler = async () => {
+		console.log(selectedTopicList, '==selectedTopicList==');
+		const __allTopicListToCreateExam = [];
+
+		selectedTopicList.forEach((item1) => {
+			__allTopicListToCreateExam.push(...item1._topicsList);
+		});
+
+		console.log(__allTopicListToCreateExam, '==__allTopicListToCreateExam==');
+
+		const isConfirm = await confirmDialouge({
+			title: 'Are you sure?',
+			text: 'Do you want to create test?',
+		});
+		if (!isConfirm) return false;
+		let rD = {
+			url: '/api/test/v2/create-auto',
+			method: 'POST',
+			body: JSON.stringify({
+				test: test,
+				topicList: __allTopicListToCreateExam,
+			}),
+		};
+		sendRequest(rD, (data) => {
+			console.log(data, '==data==');
+			if (data.success == 1) {
+				Swal.fire('Success', 'Test has been generated!');
+			}
+		});
+	};
+
 	return (
 		<>
-			{/* <CreatePreSubmitView
-				test={test}
-				finalTestSubmitHandler={finalTestSubmitHandler}
-			/> */}
+			<CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
 			<div className="container mx-auto mt-6 shadow-sm">
 				<InfoContainer>
 					<div className="grid grid-cols-5 items-center gap-3">
@@ -372,7 +400,7 @@ function QuestionsListAutoTest() {
 					<div className="grid grid-cols-2 mb-4">
 						<H3>Exam Chart</H3>
 						{_formData.subject_id && (
-							<CButton icon={<FaPlus />} className={'btn--success w-fit justify-self-end h-fit self-end mb-1'} isLoading={isLoading}>
+							<CButton icon={<FaPlus />} className={'btn--success w-fit justify-self-end h-fit self-end mb-1'} onClick={finalTestSubmitHandler}>
 								Create Exam
 							</CButton>
 						)}

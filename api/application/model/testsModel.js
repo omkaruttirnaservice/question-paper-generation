@@ -46,14 +46,7 @@ const testsModel = {
 			{
 				attributes: [
 					'id',
-					[
-						sequelize.fn(
-							'DATE_FORMAT',
-							sequelize.col('ptl_active_date'),
-							'%d-%m-%Y'
-						),
-						'ptl_active_date',
-					],
+					[sequelize.fn('DATE_FORMAT', sequelize.col('ptl_active_date'), '%d-%m-%Y'), 'ptl_active_date'],
 					'ptl_time',
 					'ptl_link',
 					'ptl_test_id',
@@ -270,8 +263,8 @@ const testsModel = {
 	                   			tm_main_topic_list as main_topic_list ON
 	                   			sub_topic_list.stl_main_topic_list_id  = main_topic_list.id
 								WHERE
-									mqs_section_id = ${subjectId} AND
-									mqs_chapter_id = ${topicId} AND 
+									mqs_section_id = ${subjectId} OR
+									mqs_chapter_id = ${topicId} AND
 									is_que_selected_previously = 0
 
 								ORDER BY RAND()
@@ -436,13 +429,7 @@ const testsModel = {
 		});
 	},
 
-	publishTest: async ({
-		test_id_for_publish,
-		batch,
-		publish_date,
-		test_key,
-		test_details: mt,
-	}) => {
+	publishTest: async ({ test_id_for_publish, batch, publish_date, test_key, test_details: mt }) => {
 		// changing publish date format from dd-mm-yyyy to yyy-mm-dd
 		let _tmpPubDate = publish_date.split('-');
 		publish_date = `${_tmpPubDate[2]}-${_tmpPubDate[1]}-${_tmpPubDate[0]}`;
