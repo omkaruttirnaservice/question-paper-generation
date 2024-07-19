@@ -13,6 +13,9 @@ const TEST_INITIAL_STATE = {
 		test_passing_mark: null,
 		test_creation_type: null,
 	},
+
+	topicList: [], // this is the topic list which includes questions count as well
+	selectedTopicList: [], // this is list of topics in test chart
 	errors: {},
 	selectedQuestionsList: [],
 	sortedSelectedQuestionsList: [],
@@ -100,6 +103,16 @@ const testsSlice = createSlice({
 	// 	publishedTestQuestionsList: [], // this is for storing of tests question for viewing of tests which are published
 	// },
 	reducers: {
+		setTopicList: (state, action) => {
+			// this is the topic list which includes questions count as well
+			state.topicList = action.payload;
+		},
+
+		setSelectedTopicList: (state, action) => {
+			// this is list of topics in test chart
+			state.selectedTopicList = action.payload;
+		},
+
 		setTestDetails: (state, action) => {
 			let { key, value } = action.payload;
 			state.test[key] = value;
@@ -198,8 +211,9 @@ const testsSlice = createSlice({
 
 		// RESET
 		reset(state, action) {
-			console.log('==reseting 2==');
 			state.test = TEST_INITIAL_STATE.test;
+			state.topicList = TEST_INITIAL_STATE.topicList;
+			state.selectedTopicList = TEST_INITIAL_STATE.selectedTopicList;
 			state.errors = TEST_INITIAL_STATE.errors;
 			state.selectedQuestionsList = TEST_INITIAL_STATE.selectedQuestionsList;
 			state.sortedSelectedQuestionsList = TEST_INITIAL_STATE.sortedSelectedQuestionsList;

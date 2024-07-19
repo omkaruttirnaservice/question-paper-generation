@@ -28,10 +28,13 @@ function QuestionsListAutoTest() {
 	const navigate = useNavigate();
 	const { sendRequest } = useHttp();
 
-	const { test, topicList, selectedTopicList } = useSelector((state) => state.tests);
+	const { test } = useSelector((state) => state.tests);
 
 	const { data: _formData, postsList, subjectsList, topicsList } = useSelector((state) => state.questionForm);
 	const { isLoading } = useSelector((state) => state.loader);
+
+	const [topicList, setTopicList] = useState([]); // this is the topic list which includes questions count as well
+	const [selectedTopicList, setSelectedTopicList] = useState([]);
 
 	useLayoutEffect(() => {
 		if (!test.test_name) {
@@ -47,18 +50,20 @@ function QuestionsListAutoTest() {
 
 	useEffect(() => {
 		dispatch(getSubjectsListThunk(_formData.post_id, sendRequest));
-		dispatch(testsSliceActions.setTopicList([]));
+		setTopicList([]);
 	}, [_formData.post_id]);
 
 	useEffect(() => {
-		dispatch(testsSliceActions.setTopicList([]));
+		setTopicList([]);
 
-		getTopicAndQuestionCount(_formData.subject_id);
 		let selectedSubject = subjectsList.filter((el) => el.id == _formData.subject_id);
 		if (selectedSubject.length !== 0) {
 			dispatch(EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
 		}
+
+		getTopicAndQuestionCount(_formData.subject_id);
 	}, [_formData.subject_id]);
+	console.log(selectedTopicList, '==selectedTopicList==');
 
 	const getTopicAndQuestionCount = (subjectId) => {
 		let reqData = {
@@ -69,7 +74,16 @@ function QuestionsListAutoTest() {
 			}),
 		};
 		sendRequest(reqData, ({ data }) => {
-			dispatch(testsSliceActions.setTopicList(data));
+			const currentSubjectName = _formData.subject_name;
+			const isSubjectAlreadyAddedToTestChart = selectedTopicList.findIndex((item1) => item1._subjectName == currentSubjectName);
+			if (isSubjectAlreadyAddedToTestChart != -1) {
+				let updatedTopicList = [...data];
+				selectedTopicList[isSubjectAlreadyAddedToTestChart]._topicList.forEach((item1) => {
+					let index = updatedTopicList.findIndex((item2) => item2.id == item1.id);
+					if (index !== -1) updatedTopicList[index] = item1;
+				});
+				setTopicList(updatedTopicList);
+			} else setTopicList(data);
 		});
 	};
 
@@ -88,7 +102,7 @@ function QuestionsListAutoTest() {
 			return topic;
 		});
 
-		dispatch(testsSliceActions.setTopicList(updatedList));
+		setTopicList(updatedList);
 	};
 
 	const questionCountChangeHandler = (e) => {
@@ -99,38 +113,27 @@ function QuestionsListAutoTest() {
 			return false;
 		}
 
-		let __topicListCopy = topicList.map((el) => el);
-		const topicIdx = __topicListCopy.findIndex((el) => +el.id === +name);
+		const topicIdx = topicList.findIndex((el) => +el.id === +name);
 		if (topicIdx === -1) return false;
 
-		const maxQuestionCount = __topicListCopy[topicIdx].question_count;
+		const maxQuestionCount = topicList[topicIdx].question_count;
 
 		if (+value > maxQuestionCount) {
 			e.target.value = maxQuestionCount.toString();
-			__topicListCopy[topicIdx] = {
-				...__topicListCopy[topicIdx],
-				selectedCount: maxQuestionCount,
-			};
-		} else {
-			__topicListCopy[topicIdx] = {
-				...__topicListCopy[topicIdx],
-				selectedCount: parseInt(value),
-			};
 		}
 
-		dispatch(testsSliceActions.setTopicList([...__topicListCopy]));
+		topicList[topicIdx].selectedCount = parseInt(e.target.value);
+
+		setTopicList([...topicList]);
 	};
 
 	const handleAddToTestChart = () => {
 		let isValid = validateQuestionsSelection();
 		if (!isValid) return false;
 
-		let _editSubjectName = subjectsList.filter((el) => el.id == topicList[0].subject_id);
-		_editSubjectName = _editSubjectName[0].mtl_name;
-
 		let testChartAddData = {
 			_postName: _formData.post_name,
-			_subjectName: _editSubjectName,
+			_subjectName: _formData.subject_name,
 			_topicsList: topicList.filter((el) => el?.selectedCount >= 1),
 		};
 
@@ -144,8 +147,8 @@ function QuestionsListAutoTest() {
 		}
 		updatedList.push(testChartAddData);
 
-		dispatch(testsSliceActions.setSelectedTopicList(updatedList));
-		dispatch(testsSliceActions.setTopicList([]));
+		setSelectedTopicList(updatedList);
+		setTopicList([]);
 	};
 
 	const handleRemoveFromEamChart = async ({ idx, el }) => {
@@ -160,8 +163,7 @@ function QuestionsListAutoTest() {
 		let updatedList = [...selectedTopicList];
 
 		updatedList.splice(idx, 1);
-
-		dispatch(testsSliceActions.setSelectedTopicList(updatedList));
+		setSelectedTopicList(updatedList);
 	};
 
 	const handleEditFromExamChart = async ({ idx, el }) => {
@@ -190,7 +192,7 @@ function QuestionsListAutoTest() {
 				if (index !== -1) updatedTopicList[index] = item1;
 			});
 
-			dispatch(testsSliceActions.setTopicList(updatedTopicList));
+			setTopicList(updatedTopicList);
 		});
 	};
 
@@ -264,11 +266,9 @@ function QuestionsListAutoTest() {
 			}),
 		};
 		sendRequest(rD, (data) => {
+			console.log(data, '==data==');
 			if (data.success == 1) {
 				Swal.fire('Success', 'Test has been generated!');
-				dispatch(EditQuestionFormActions.reset());
-				dispatch(testsSliceActions.reset());
-				navigate('/tests-list');
 			}
 		});
 	};
