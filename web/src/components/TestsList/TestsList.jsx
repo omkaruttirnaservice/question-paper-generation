@@ -15,6 +15,7 @@ import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
 import Input from '../UI/Input.jsx';
 import './TestsList.css';
+import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 
 function TestsList() {
 	const navigate = useNavigate();
@@ -26,9 +27,7 @@ function TestsList() {
 		test_details: null,
 	};
 	const [batchCount, setBatchCount] = useState([]);
-	const [publishExamForm, setPublishExamForm] = useState(
-		initialStatePublishForm
-	);
+	const [publishExamForm, setPublishExamForm] = useState(initialStatePublishForm);
 
 	const [errors, setErrors] = useState({});
 
@@ -73,8 +72,16 @@ function TestsList() {
 		dispatch(ModalActions.toggleModal('publish-exam-modal'));
 	};
 
-	const handleDeleteTest = (id) => {
+	const handleDeleteTest = async (id) => {
 		if (!id) return false;
+
+		const isConfirm = await confirmDialouge({
+			title: 'Are you sure!',
+			text: 'Do you want to delete test?',
+		});
+
+		if (!isConfirm) return false;
+
 		let reqData = {
 			url: '/api/test/delete',
 			method: 'DELETE',
@@ -216,7 +223,6 @@ function TestsList() {
 	const handleFinalPublishExam = async () => {
 		try {
 			await TestListSchemaYUP.validate(publishExamForm, { abortEarly: false });
-			alert('All valid');
 			setErrors({});
 
 			console.log(publishExamForm, '==publishExamForm==');
@@ -253,9 +259,7 @@ function TestsList() {
 			<CModal id="publish-exam-modal" title={'Publish Exam'}>
 				<div className="grid grid-cols-2 gap-6">
 					<div className="relative">
-						<label
-							htmlFor=""
-							className="transition-all duration-300 text-gray-700 !mb-1  block">
+						<label htmlFor="" className="transition-all duration-300 text-gray-700 !mb-1  block">
 							Select Publish Date
 						</label>
 						<DatePicker
@@ -264,9 +268,7 @@ function TestsList() {
 								setPublishExamForm((prev) => {
 									return {
 										...prev,
-										publish_date: `${date.getDate()}-${
-											date.getMonth() + 1
-										}-${date.getFullYear()}`,
+										publish_date: `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
 									};
 								});
 							}}
@@ -276,15 +278,11 @@ function TestsList() {
 							value={publishExamForm.publish_date}
 							className="block !w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
 						/>
-						{errors.publish_date && (
-							<span className="error">{errors.publish_date}</span>
-						)}
+						{errors.publish_date && <span className="error">{errors.publish_date}</span>}
 					</div>
 
 					<div className="relative">
-						<label
-							htmlFor=""
-							className="transition-all duration-300 text-gray-700 !mb-1  block">
+						<label htmlFor="" className="transition-all duration-300 text-gray-700 !mb-1  block">
 							Batch No
 						</label>
 						<select
@@ -304,14 +302,8 @@ function TestsList() {
 					</div>
 
 					<div className="relative">
-						<Input
-							label={'Test key'}
-							name={'test_key'}
-							value={publishExamForm.test_key}
-							disabled></Input>
-						{errors.test_key && (
-							<span className="error">{errors.test_key}</span>
-						)}
+						<Input label={'Test key'} name={'test_key'} value={publishExamForm.test_key} disabled></Input>
+						{errors.test_key && <span className="error">{errors.test_key}</span>}
 					</div>
 					<div className="flex items-center mt-3">
 						<CButton className={'btn--success'} onClick={handleGenerateTestKey}>
@@ -357,15 +349,11 @@ function TestsList() {
 											<td className="p-2">{el.mt_test_time} Min</td>
 											<td className="p-2">{el.mt_total_test_question}</td>
 											<td className="p-2">{el.mt_mark_per_question}</td>
-											<td className="p-2">
-												{el.mt_is_negative == 1 ? 'Yes' : 'No'}
-											</td>
+											<td className="p-2">{el.mt_is_negative == 1 ? 'Yes' : 'No'}</td>
 											<td className="p-2">{el.mt_passing_out_of}</td>
 											<td className="p-2">
 												<div className="flex justify-center">
-													<CButton
-														className="btn--primary"
-														onClick={handlePublishExam.bind(null, el)}>
+													<CButton className="btn--primary" onClick={handlePublishExam.bind(null, el)}>
 														Publish
 													</CButton>
 												</div>
@@ -373,14 +361,8 @@ function TestsList() {
 											<td className="p-2">View Published</td>
 											<td className="p-2">
 												<div className="flex gap-2 items-center justify-center">
-													<CButton
-														className="btn--danger m-0"
-														onClick={handleDeleteTest.bind(null, el.id)}
-														icon={<FaTrash />}></CButton>
-													<CButton
-														className="btn--info m-0"
-														onClick={handleViewQuestions.bind(null, el)}
-														icon={<FaEye />}></CButton>
+													<CButton className="btn--danger m-0" onClick={handleDeleteTest.bind(null, el.id)} icon={<FaTrash />}></CButton>
+													<CButton className="btn--info m-0" onClick={handleViewQuestions.bind(null, el)} icon={<FaEye />}></CButton>
 												</div>
 											</td>
 										</tr>
@@ -393,9 +375,7 @@ function TestsList() {
 				{testsList.length == 0 && !isLoading && (
 					<div className="text-center mt-6 flex justify-center">
 						<span>Woops! no test list found.&nbsp;&nbsp;</span>
-						<Link
-							className="underline font-semibold flex items-center gap-2 "
-							to={'/dashboard'}>
+						<Link className="underline font-semibold flex items-center gap-2 " to={'/dashboard'}>
 							Create New <FaPlus className="inline-block" />
 						</Link>
 					</div>

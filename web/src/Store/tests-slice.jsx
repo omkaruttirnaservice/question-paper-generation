@@ -120,6 +120,9 @@ const testsSlice = createSlice({
 		updateTotalQuestionsCount: (state, action) => {
 			state.test.total_questions = state.selectedQuestionsList.length;
 		},
+		updateTotalQuestionsCount_AUTO_TEST: (state, action) => {
+			state.test.total_questions = action.payload;
+		},
 
 		setTestCreationType: (state, action) => {
 			state.test.test_creation_type = action.payload;

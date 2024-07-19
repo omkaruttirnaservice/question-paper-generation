@@ -67,9 +67,7 @@ function PublishedTestsList() {
 					text: 'Unpublished the exam',
 					icon: 'success',
 				});
-				setPublishedTestsList(
-					publishedTestsList.filter((_el) => _el.id != el.id)
-				);
+				setPublishedTestsList(publishedTestsList.filter((_el) => _el.id != el.id));
 			}
 		});
 	};
@@ -98,7 +96,7 @@ function PublishedTestsList() {
 						</thead>
 						<tbody>
 							{publishedTestsList.length >= 1 &&
-								publishedTestsList.map((el, idx) => {
+								publishedTestsList.map((el, idx, _array) => {
 									let value = isExamToday(el.ptl_active_date);
 									return (
 										<tr className="border-b-gray-300 border hover:bg-gray-100 text-center cursor-pointer">
@@ -110,35 +108,19 @@ function PublishedTestsList() {
 											<td className="p-2">{el.mt_total_test_question}</td>
 											<td className="p-2">{el.ptl_active_date}</td>
 											<td className="p-2">
-												{value == 1 && (
-													<span className="bg-blue-300 p-1">Today</span>
-												)}
-												{value == 2 && (
-													<span className="bg-green-300 p-1">Upcomming</span>
-												)}
+												{value == 1 && <span className="bg-blue-300 p-1">Today</span>}
+												{value == 2 && <span className="bg-green-300 p-1">Upcomming</span>}
 											</td>
 											<td className="p-2">{el.ptl_link}</td>
 
 											<td className="p-2">
 												<div className="flex gap-2 items-center justify-center">
-													{value == 2 && (
-														<CButton
-															icon={<FaXmark />}
-															onClick={handleUnpublishExam.bind(null, el)}
-														></CButton>
-													)}
+													{value == 2 && <CButton icon={<FaXmark />} onClick={handleUnpublishExam.bind(null, el)}></CButton>}
 												</div>
 											</td>
 											<td className="p-2">
 												<div className="flex gap-2 items-center justify-center">
-													<CButton
-														className="btn--info m-0"
-														onClick={handlePublishedTestQuePreview.bind(
-															null,
-															el
-														)}
-														icon={<FaEye />}
-													></CButton>
+													<CButton className="btn--info m-0" onClick={handlePublishedTestQuePreview.bind(null, el)} icon={<FaEye />}></CButton>
 												</div>
 											</td>
 										</tr>
@@ -151,11 +133,8 @@ function PublishedTestsList() {
 				{publishedTestsList.length == 0 && !isLoading && (
 					<div className="text-center mt-6 flex justify-center">
 						<span>Woops! no test list found.&nbsp;&nbsp;</span>
-						<Link
-							className="underline font-semibold flex items-center gap-2 "
-							to={'/dashboard'}
-						>
-							Create New <FaPlus className="inline-block" />
+						<Link className="underline font-semibold flex items-center gap-2 " to={'/tests-list'}>
+							Publish Test <FaPlus className="inline-block" />
 						</Link>
 					</div>
 				)}

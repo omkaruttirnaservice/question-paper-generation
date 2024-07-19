@@ -84,7 +84,7 @@ function TestQuestionsView() {
 
 				<PreviewTestDetails title={'Is negative marking'} value={previewTestDetails.is_negative_marking == 0 ? 'No' : 'Yes'} />
 
-				<PreviewTestDetails title={'Negative marks'} value={previewTestDetails.negative_mark} />
+				<PreviewTestDetails title={'Negative marks'} value={previewTestDetails.negative_mark == 0 ? 'No' : 'Yes'} />
 				<PreviewTestDetails title={'Passing marks'} value={previewTestDetails.test_passing_mark} />
 
 				<PreviewTestDetails title={'Test created date'} value={previewTestDetails.test_created_on} />
@@ -104,7 +104,7 @@ function TestQuestionsView() {
 						const topicHeader = renderTopicHeader(el.main_topic_name, el.sub_topic_section);
 						return (
 							<>
-								{topicHeader && <div className="border p-2 text-center">{topicHeader}</div>}
+								{topicHeader && <div className="border p-2 text-center bg-green-300">{topicHeader}</div>}
 								<div className={`border transition-all duration-300  mb-5 shadow-sm bg-gray-100 relative que-container`} key={idx}>
 									<CButton icon={<GoPencil />} onClick={handleEditQuestion.bind(null, el)} className={'absolute top-0 right-0 edit-que-btn'}>
 										Edit

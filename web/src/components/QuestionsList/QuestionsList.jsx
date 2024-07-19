@@ -20,6 +20,7 @@ import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 
 import './QuestionsList.css';
+import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 
 const ALL_QUESTION = 'all-question';
 const SELECTED_QUESTION = 'selected-question';
@@ -165,6 +166,13 @@ function QuestionsList() {
 		return header;
 	};
 
+	useEffect(() => {
+		return () => {
+			dispatch(testsSliceActions.reset());
+			dispatch(EditQuestionFormActions.reset());
+		};
+	}, []);
+
 	return (
 		<>
 			<CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
@@ -237,16 +245,14 @@ function QuestionsList() {
 				</div>
 			</div>
 
-			{temp_QuestionList.length >= 1 && (
-				<div className="container mx-auto flex justify-center gap-4 mt-5">
-					<CButton className={''} onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
-						All Questions
-					</CButton>
-					<CButton className={'btn--danger'} onClick={viewQuestionListChangeHandler.bind(null, SELECTED_QUESTION)}>
-						Question Paper ( {selectedQuestionsList.length} )
-					</CButton>
-				</div>
-			)}
+			<div className="container mx-auto flex justify-center gap-4 mt-5">
+				<CButton className={''} onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
+					All Questions
+				</CButton>
+				<CButton className={'btn--danger'} onClick={viewQuestionListChangeHandler.bind(null, SELECTED_QUESTION)}>
+					Question Paper ( {selectedQuestionsList.length} )
+				</CButton>
+			</div>
 
 			<div className="container mx-auto mt-6">
 				<div>
@@ -434,7 +440,12 @@ function SelectedQuestionPreview({ el, idx, topicHeader }) {
 	const dispatch = useDispatch();
 	const { selectedQuestionsList } = useSelector((state) => state.tests);
 	const [isOpen, setIsOpen] = useState(false);
-	const handleRemoveQuestion = (el) => {
+	const handleRemoveQuestion = async (el) => {
+		const isConfirm = await confirmDialouge({
+			title: 'Are you sure?',
+			text: 'Do you want to delete the question?',
+		});
+		if (!isConfirm) return false;
 		let updatedList = [...selectedQuestionsList];
 		let index = selectedQuestionsList.findIndex((_el) => _el.q_id == el.q_id);
 		updatedList.splice(index, 1);

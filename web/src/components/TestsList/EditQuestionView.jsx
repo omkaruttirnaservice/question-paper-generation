@@ -4,10 +4,7 @@ import EditAddQuestionForm from '../QuestionForm/EditQuestionForm.jsx';
 
 function EditQuestionView() {
 	return (
-		<CModal
-			id="edit-que-modal"
-			title={'Edit Question'}
-			className={'h-[100vh] w-[90vw] mt-4 overflow-auto !fixed'}>
+		<CModal id="edit-que-modal" title={'Edit Question'} className={'h-[100vh] !w-[90vw] mt-4 overflow-auto !fixed'}>
 			<EditAddQuestionForm />
 		</CModal>
 	);

@@ -146,7 +146,20 @@ function QuestionsListAutoTest() {
 
 		dispatch(testsSliceActions.setSelectedTopicList(updatedList));
 		dispatch(testsSliceActions.setTopicList([]));
+
+		updateTotalQuestionsCount(updatedList);
 	};
+	function updateTotalQuestionsCount(list) {
+		console.log(list, '==list==');
+		let count = 0;
+		list.forEach((item1) => {
+			item1._topicsList.forEach((el) => {
+				count += el.selectedCount;
+			});
+		});
+		console.log(count, '==count==');
+		dispatch(testsSliceActions.updateTotalQuestionsCount_AUTO_TEST(count));
+	}
 
 	const handleRemoveFromEamChart = async ({ idx, el }) => {
 		let isConfirm = await confirmDialouge({
@@ -162,6 +175,8 @@ function QuestionsListAutoTest() {
 		updatedList.splice(idx, 1);
 
 		dispatch(testsSliceActions.setSelectedTopicList(updatedList));
+
+		updateTotalQuestionsCount(updatedList);
 	};
 
 	const handleEditFromExamChart = async ({ idx, el }) => {
@@ -272,6 +287,13 @@ function QuestionsListAutoTest() {
 			}
 		});
 	};
+
+	useEffect(() => {
+		return () => {
+			dispatch(testsSliceActions.reset());
+			dispatch(EditQuestionFormActions.reset());
+		};
+	}, []);
 
 	return (
 		<>
