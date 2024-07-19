@@ -52,52 +52,53 @@ const TEST_INITIAL_STATE = {
 
 const testsSlice = createSlice({
 	name: 'tests-slice',
-	initialState: {
-		test: {
-			test_name: 'Demo 1',
-			test_duration: 90,
-			marks_per_question: 1,
-			total_questions: null,
-			is_negative_marking: 0,
-			negative_mark: 0,
-			test_passing_mark: 20,
-			test_creation_type: null,
-		},
-		errors: {},
-		selectedQuestionsList: [],
+	initialState: TEST_INITIAL_STATE,
+	// initialState: {
+	// 	test: {
+	// 		test_name: 'Demo 1',
+	// 		test_duration: 90,
+	// 		marks_per_question: 1,
+	// 		total_questions: null,
+	// 		is_negative_marking: 0,
+	// 		negative_mark: 0,
+	// 		test_passing_mark: 20,
+	// 		test_creation_type: 'Auto',
+	// 	},
+	// 	errors: {},
+	// 	selectedQuestionsList: [],
 
-		previewTestDetails: {
-			// this is for preview of test questions which are not yet published
-			test_id: null,
-			test_name: null,
-			test_duration: null,
-			marks_per_question: null,
-			total_questions: null,
-			is_negative_marking: 0,
-			negative_mark: 0,
-			test_passing_mark: null,
-			test_creation_type: null,
-			test_created_on: null,
-			todays_date: null,
-		},
-		testQuestionsList: [], // this is for storing of tests question for viewing
+	// 	previewTestDetails: {
+	// 		// this is for preview of test questions which are not yet published
+	// 		test_id: null,
+	// 		test_name: null,
+	// 		test_duration: null,
+	// 		marks_per_question: null,
+	// 		total_questions: null,
+	// 		is_negative_marking: 0,
+	// 		negative_mark: 0,
+	// 		test_passing_mark: null,
+	// 		test_creation_type: null,
+	// 		test_created_on: null,
+	// 		todays_date: null,
+	// 	},
+	// 	testQuestionsList: [], // this is for storing of tests question for viewing
 
-		previewPublishedTestDetails: {
-			// this is for preview of test questions which are published
-			test_id: null,
-			test_name: null,
-			test_duration: null,
-			marks_per_question: null,
-			total_questions: null,
-			is_negative_marking: 0,
-			negative_mark: 0,
-			test_passing_mark: null,
-			test_creation_type: null,
-			test_created_on: null,
-			todays_date: null,
-		},
-		publishedTestQuestionsList: [], // this is for storing of tests question for viewing of tests which are published
-	},
+	// 	previewPublishedTestDetails: {
+	// 		// this is for preview of test questions which are published
+	// 		test_id: null,
+	// 		test_name: null,
+	// 		test_duration: null,
+	// 		marks_per_question: null,
+	// 		total_questions: null,
+	// 		is_negative_marking: 0,
+	// 		negative_mark: 0,
+	// 		test_passing_mark: null,
+	// 		test_creation_type: null,
+	// 		test_created_on: null,
+	// 		todays_date: null,
+	// 	},
+	// 	publishedTestQuestionsList: [], // this is for storing of tests question for viewing of tests which are published
+	// },
 	reducers: {
 		setTestDetails: (state, action) => {
 			let { key, value } = action.payload;
@@ -117,13 +118,6 @@ const testsSlice = createSlice({
 
 		setSelectedQuestionsList: (state, action) => {
 			state.selectedQuestionsList = action.payload;
-			// let sorted = [...state.sortedSelectedQuestionsList];
-
-			// if (sorted[el.sub_topic_section]) {
-			// 	sorted[el.sub_topic_section].push(el);
-			// } else {
-			// 	sorted[el.sub_topic_section] = [el];
-			// }
 		},
 
 		// for view questions of the test
@@ -200,6 +194,19 @@ const testsSlice = createSlice({
 				test_created_on: null,
 				todays_date: null,
 			};
+		},
+
+		// RESET
+		reset(state, action) {
+			console.log('==reseting 2==');
+			state.test = TEST_INITIAL_STATE.test;
+			state.errors = TEST_INITIAL_STATE.errors;
+			state.selectedQuestionsList = TEST_INITIAL_STATE.selectedQuestionsList;
+			state.sortedSelectedQuestionsList = TEST_INITIAL_STATE.sortedSelectedQuestionsList;
+			state.previewTestDetails = TEST_INITIAL_STATE.previewTestDetails;
+			state.testQuestionsList = TEST_INITIAL_STATE.testQuestionsList;
+			state.previewPublishedTestDetails = TEST_INITIAL_STATE.previewPublishedTestDetails;
+			state.publishedTestQuestionsList = TEST_INITIAL_STATE.publishedTestQuestionsList;
 		},
 	},
 });

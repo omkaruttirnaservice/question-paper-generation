@@ -1,24 +1,27 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { FaGripLinesVertical } from 'react-icons/fa';
+import { BiReset } from 'react-icons/bi';
+import { CiViewList } from 'react-icons/ci';
+import { FaEdit, FaGripLinesVertical, FaPlus, FaTrash } from 'react-icons/fa';
 
 import './QuestionsListAutoTest.css';
 
 import { FaAngleRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-	getPostListThunk,
-	getSubjectsListThunk,
-	EditQuestionFormActions,
-} from '../../Store/edit-question-form-slice.jsx';
+import EditQuestionFormSlice, { EditQuestionFormActions, getPostListThunk, getSubjectsListThunk } from '../../Store/edit-question-form-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import PostListDropdown from '../QuestionForm/PostListDropdown/PostListDropdown.jsx';
 import SubjectListDropdown from '../QuestionForm/SubjectListDropdown/SubjectListDropdown.jsx';
 
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
+import InfoContainer from '../UI/InfoContainer.jsx';
+import Spinner from '../UI/Spinner.jsx';
+import { H3 } from '../UI/Headings.jsx';
+import { testsSliceActions } from '../../Store/tests-slice.jsx';
+import { ModalActions } from '../../Store/modal-slice.jsx';
+import { confirmDialouge } from '../../helpers/confirmDialouge.js';
 
 function QuestionsListAutoTest() {
 	const dispatch = useDispatch();
@@ -26,21 +29,18 @@ function QuestionsListAutoTest() {
 	const { sendRequest } = useHttp();
 
 	const { test } = useSelector((state) => state.tests);
+
+	const { data: _formData, postsList, subjectsList, topicsList } = useSelector((state) => state.questionForm);
 	const { isLoading } = useSelector((state) => state.loader);
-	const [topicList, setTopicList] = useState([]);
+
+	const [topicList, setTopicList] = useState([]); // this is the topic list which includes questions count as well
+	const [selectedTopicList, setSelectedTopicList] = useState([]);
 
 	useLayoutEffect(() => {
 		if (!test.test_name) {
 			navigate('/dashboard');
 		}
 	});
-
-	const {
-		data: _formData,
-		postsList,
-		subjectsList,
-		topicsList,
-	} = useSelector((state) => state.questionForm);
 
 	useEffect(() => {
 		if (postsList.length === 0) {
@@ -54,17 +54,14 @@ function QuestionsListAutoTest() {
 	}, [_formData.post_id]);
 
 	useEffect(() => {
+		console.log('==Getting topics list subject id changed==');
 		setTopicList([]);
 
 		getTopicAndQuestionCount(_formData.subject_id);
 
-		let selectedSubject = subjectsList.filter(
-			(el) => el.id == _formData.subject_id
-		);
+		let selectedSubject = subjectsList.filter((el) => el.id == _formData.subject_id);
 		if (selectedSubject.length !== 0) {
-			dispatch(
-				EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name)
-			);
+			dispatch(EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
 		}
 	}, [_formData.subject_id]);
 
@@ -77,6 +74,7 @@ function QuestionsListAutoTest() {
 			}),
 		};
 		sendRequest(reqData, ({ data }) => {
+			console.log(data, '==data==');
 			setTopicList(data);
 		});
 	}
@@ -121,30 +119,71 @@ function QuestionsListAutoTest() {
 		setTopicList([...topicList]);
 	};
 
-	const finalTestSubmitHandler = () => {
+	const handleAddToTestChart = () => {
 		let isValid = validateQuestionsSelection();
 		if (!isValid) return false;
 
-		let requestData = {
-			url: '/api/test/v2/create-auto',
-			method: 'POST',
-			body: JSON.stringify({
-				test,
-				topicList: topicList.filter((el) => el?.selectedCount >= 1),
-			}),
+		let testChartAddData = {
+			_postName: _formData.post_name,
+			_subjectName: _formData.subject_name,
+			_topicsList: topicList.filter((el) => el?.selectedCount >= 1),
 		};
 
-		sendRequest(requestData, ({ success, data }) => {
-			if (success) {
-				Swal.fire({
-					title: 'Success!',
-					text: data,
-					icon: 'success',
-				});
-				navigate('/dashboard');
+		testChartAddData['_totalQuestionsCount'] = testChartAddData._topicsList.reduce((sum, el) => sum + el.selectedCount, 0);
 
-				// dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
-			}
+		let updatedList = [...selectedTopicList];
+		let isExsistsIndex = updatedList.findIndex((el) => el._subjectName == testChartAddData._subjectName);
+
+		if (isExsistsIndex != -1) {
+			updatedList.splice(isExsistsIndex, 1);
+		}
+		updatedList.push(testChartAddData);
+
+		setSelectedTopicList(updatedList);
+	};
+
+	const handleRemoveFromEamChart = async ({ idx, el }) => {
+		let isConfirm = await confirmDialouge({
+			title: `Are you sure?`,
+			text: `Do you want to delete the topic ${el._subjectName}`,
+		});
+		if (!isConfirm) return false;
+
+		Swal.fire('Deleted!', '', 'success');
+
+		let updatedList = [...selectedTopicList];
+
+		updatedList.splice(idx, 1);
+		setSelectedTopicList(updatedList);
+	};
+
+	const handleEditFromExamChart = async ({ idx, el }) => {
+		if (!el) {
+			Swal.fire({
+				title: 'Warning!',
+				text: 'Please select topic to edit details from exam chart',
+				icon: 'warning',
+			});
+			return false;
+		}
+		const subjectId = el._topicsList[0].subject_id;
+		const topicsListForEdit = el._topicsList;
+
+		let reqData = {
+			url: '/api/get-topic-list-and-question-count',
+			method: 'POST',
+			body: JSON.stringify({
+				subjectId,
+			}),
+		};
+		sendRequest(reqData, ({ data }) => {
+			let updatedTopicList = [...data];
+			topicsListForEdit.forEach((item1) => {
+				let index = updatedTopicList.findIndex((item2) => item2.id == item1.id);
+				if (index !== -1) updatedTopicList[index] = item1;
+			});
+
+			setTopicList(updatedTopicList);
 		});
 	};
 
@@ -182,14 +221,26 @@ function QuestionsListAutoTest() {
 		return isValid;
 	};
 
+	const handleResetExam = async () => {
+		const isConfirm = await confirmDialouge({
+			title: 'Are you sure?',
+			text: 'Do you want to reset exam?',
+		});
+
+		if (!isConfirm) return false;
+		dispatch(EditQuestionFormActions.reset());
+		dispatch(testsSliceActions.reset());
+		dispatch(ModalActions.toggleModal('create-test-modal-auto'));
+	};
+
 	return (
 		<>
 			{/* <CreatePreSubmitView
 				test={test}
 				finalTestSubmitHandler={finalTestSubmitHandler}
 			/> */}
-			<div className="container mx-auto mt-6">
-				<div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
+			<div className="container mx-auto mt-6 shadow-sm">
+				<InfoContainer>
 					<div className="grid grid-cols-5 items-center gap-3">
 						<div className="flex items-center gap-1">
 							<FaGripLinesVertical />
@@ -245,72 +296,130 @@ function QuestionsListAutoTest() {
 
 					<div className="grid grid-cols-5 gap-3 ">
 						<PostListDropdown isShowAddNewBtn={false} />
-						<SubjectListDropdown isShowAddNewBtn={false} />
 					</div>
-				</div>
+				</InfoContainer>
 			</div>
 
-			<div className="container mx-auto mt-6">
-				<form action="">
-					<table className="w-full" id="questions-list-table">
-						<thead>
-							<tr className="bg-blue-300">
-								<td className="p-2 text-center">#</td>
-								<td className="p-2">Check/Unckeck</td>
-								<td className="p-2">Section Name</td>
-								<td className="p-2">Select Question</td>
-								<td className="p-2">Question</td>
-							</tr>
-						</thead>
-						<tbody>
-							{topicList.length >= 1 &&
-								topicList.map((el, idx) => {
-									return (
-										<tr className="border-b hover:bg-gray-100">
-											<td className="p-2 text-center">{idx + 1}</td>
-											<td className="p-2 text-center" width={'5%'}>
-												<input
-													type="checkbox"
-													name={el.id}
-													value=""
-													data-id={el.id}
-													onChange={topicListCheckboxHandler}
-												/>
-											</td>
-											<td className="p-2">{el.topic_name}</td>
-											<td className="p-2">{el.question_count}</td>
-											<td>
-												<input
-													type=""
-													className="border w-16 p-1"
-													name={el.id}
-													value={el.selectedCount ? el.selectedCount : 0}
-													onChange={questionCountChangeHandler}
-													disabled={!el.isChecked}
-												/>
-											</td>
-										</tr>
-									);
-								})}
-						</tbody>
-					</table>
+			<InfoContainer>
+				<div className="grid grid-cols-2 mb-4">
+					<SubjectListDropdown isShowAddNewBtn={false} className={'w-fit'} />
+
 					{_formData.subject_id && (
-						<CButton
-							className={'btn--success mt-6'}
-							onClick={finalTestSubmitHandler}
-							isLoading={isLoading}>
-							Create Exam
+						<CButton icon={<BiReset />} className={'btn--danger w-fit justify-self-end h-fit self-end mb-1'} onClick={handleResetExam}>
+							Reset Exam
 						</CButton>
 					)}
-				</form>
+				</div>
 
-				{isLoading && (
-					<AiOutlineLoading3Quarters className="animate-spin text-2xl m-3 mx-auto" />
+				{topicList.length >= 1 && (
+					<div className="grid grid-cols-1 gap-2">
+						<form action="" className="">
+							<table className="w-full shadow-sm" id="questions-list-table">
+								<thead>
+									<tr className="bg-cyan-500 text-white">
+										<td className="p-2 text-center">#</td>
+										<td className="p-2">Check/Unckeck</td>
+										<td className="p-2">Section Name</td>
+										<td className="p-2">Select Question</td>
+										<td className="p-2">Question</td>
+									</tr>
+								</thead>
+								<tbody>
+									{topicList.length >= 1 &&
+										topicList.map((el, idx) => {
+											return (
+												<tr className="border hover:bg-gray-50">
+													<td className="p-2 text-center ">{idx + 1}</td>
+													<td className="p-2 text-center" width={'5%'}>
+														<input type="checkbox" name={el.id} value="" data-id={el.id} onChange={topicListCheckboxHandler} />
+													</td>
+													<td className="p-2">{el.topic_name}</td>
+													<td className="p-2">{el.question_count}</td>
+													<td>
+														<input
+															type=""
+															className="border w-16 p-1"
+															name={el.id}
+															value={el.selectedCount ? el.selectedCount : 0}
+															onChange={questionCountChangeHandler}
+															disabled={!el.isChecked}
+														/>
+													</td>
+												</tr>
+											);
+										})}
+								</tbody>
+							</table>
+						</form>
+
+						<CButton
+							icon={<CiViewList />}
+							className={'btn--danger h-fit w-fit justify-self-end'}
+							onClick={handleAddToTestChart}
+							isLoading={isLoading}>
+							Add to test chart
+						</CButton>
+					</div>
 				)}
-				{!isLoading && topicList.length === 0 && (
-					<p className="text-center text-[#555]">Woops! no questions found!</p>
-				)}
-			</div>
+
+				{isLoading && <Spinner />}
+				{!isLoading && topicList.length === 0 && <p className="text-center text-[#555]">Woops! no questions found!</p>}
+			</InfoContainer>
+
+			{/* TEST chart */}
+			{selectedTopicList.length >= 1 && (
+				<InfoContainer>
+					<div className="grid grid-cols-2 mb-4">
+						<H3>Exam Chart</H3>
+						{_formData.subject_id && (
+							<CButton icon={<FaPlus />} className={'btn--success w-fit justify-self-end h-fit self-end mb-1'} isLoading={isLoading}>
+								Create Exam
+							</CButton>
+						)}
+					</div>
+					<div className="grid grid-cols-1 gap-2">
+						<form action="" className="">
+							<table className="w-full shadow-sm" id="questions-list-table">
+								<thead>
+									<tr className="bg-cyan-500 text-white text-center">
+										<td className="p-2 text-center">#</td>
+										<td className="p-2">Test Class</td>
+										<td className="p-2">Topic Name</td>
+										<td className="p-2">Section For Test</td>
+										<td className="p-2">Questions</td>
+										<td className="p-2">Edit|Remove</td>
+									</tr>
+								</thead>
+								<tbody>
+									{selectedTopicList.map((el, idx) => {
+										return (
+											<tr className="border hover:bg-gray-50 text-center">
+												<td className="p-2 text-center ">{idx + 1}</td>
+												<td className="p-2 text-center">-</td>
+												<td className="p-2">{el._subjectName}</td>
+												<td className="p-2">{el._topicsList.length}</td>
+												<td>{el._totalQuestionsCount}</td>
+												<td>
+													<div className="flex justify-center gap-2">
+														<CButton
+															icon={<FaEdit />}
+															className={'btn--success h-fit w-fit justify-self-end'}
+															onClick={handleEditFromExamChart.bind(null, { idx, el })}></CButton>
+														<CButton
+															icon={<FaTrash />}
+															className={'btn--danger h-fit w-fit justify-self-end'}
+															onClick={handleRemoveFromEamChart.bind(null, { idx, el })}></CButton>
+													</div>
+												</td>
+											</tr>
+										);
+									})}
+								</tbody>
+							</table>
+						</form>
+					</div>
+				</InfoContainer>
+			)}
 		</>
 	);
 }
@@ -366,234 +475,4 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
 	);
 }
 
-function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
-	return (
-		<div
-			className={`border mb-2 h-[10rem] hover:h-full transition-all duration-300 ${
-				!el.isAdded ? 'hover:bg-green-400' : ''
-			} overflow-y-scroll ${el.isAdded ? 'bg-green-400 ' : 'bg-gray-200 '}`}
-			onClick={handleAddQuestionToList.bind(null, el.id)}
-			key={idx}>
-			<div className="py-3 px-4 text-start">
-				<div className="py-3">
-					<p className="font-bold text-[#555] mb-4 block text-start">
-						Q. {el.id})
-					</p>
-					<p
-						className="text-start"
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_question,
-						}}></p>
-				</div>
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option A
-					</span>
-
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_one,
-						}}></p>
-				</div>
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option B
-					</span>
-
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_two,
-						}}></p>
-				</div>
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option C
-					</span>
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_three,
-						}}></p>
-				</div>
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 block text-start">
-						Option D
-					</span>
-					<p
-						dangerouslySetInnerHTML={{
-							__html: el.mqs_opt_four,
-						}}></p>
-				</div>
-
-				<hr />
-
-				{el.mqs_opt_five && (
-					<div className="py-3">
-						<span className="font-bold text-[#555] mb-4 block text-start">
-							Option E
-						</span>
-						<p
-							dangerouslySetInnerHTML={{
-								__html: el.mqs_opt_five,
-							}}></p>
-					</div>
-				)}
-
-				<hr />
-
-				<div className="py-3">
-					<span className="font-bold text-[#555] mb-4 me-3">
-						Correct Option
-					</span>
-					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.mqs_ans}</span>
-				</div>
-
-				<hr />
-
-				{el.mqs_solution && (
-					<div className="py-3">
-						<span className="font-bold text-[#555] my-4 block text-start">
-							Solution
-						</span>
-						<p
-							className="text-start"
-							dangerouslySetInnerHTML={{
-								__html: el.mqs_solution,
-							}}></p>
-					</div>
-				)}
-			</div>
-		</div>
-	);
-}
-
 export default QuestionsListAutoTest;
-
-{
-	/* <Accordion allowZeroExpanded={true} onChange={handleAccordionChange}>
-					{topicList.length >= 1 &&
-						topicList.map((el, idx) => {
-							return (
-								<AccordionItem className="border  mb-1" key={idx} uuid={idx}>
-									<AccordionItemHeading
-										className={`border-b py-3 bg-gray-200 px-4 ${
-											expandedItem == idx ? 'bg-cyan-500' : ''
-										}`}>
-										<AccordionItemButton>
-											<span className="">Question: {el.id}</span>
-										</AccordionItemButton>
-									</AccordionItemHeading>
-									<AccordionItemPanel className="py-3 px-4 text-start">
-										<div className="py-3">
-											<p className="font-bold text-[#555] mb-4 block text-start">
-												Question
-											</p>
-											<p
-												className="text-start"
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_question,
-												}}></p>
-										</div>
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 block text-start">
-												Option A
-											</span>
-
-											<p
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_opt_one,
-												}}></p>
-										</div>
-
-										<hr />
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 block text-start">
-												Option B
-											</span>
-
-											<p
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_opt_two,
-												}}></p>
-										</div>
-
-										<hr />
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 block text-start">
-												Option C
-											</span>
-											<p
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_opt_three,
-												}}></p>
-										</div>
-
-										<hr />
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 block text-start">
-												Option D
-											</span>
-											<p
-												dangerouslySetInnerHTML={{
-													__html: el.mqs_opt_four,
-												}}></p>
-										</div>
-
-										<hr />
-
-										{el.mqs_opt_five && (
-											<div className="py-3">
-												<span className="font-bold text-[#555] mb-4 block text-start">
-													Option E
-												</span>
-												<p
-													dangerouslySetInnerHTML={{
-														__html: el.mqs_opt_five,
-													}}></p>
-											</div>
-										)}
-
-										<hr />
-
-										<div className="py-3">
-											<span className="font-bold text-[#555] mb-4 me-3">
-												Correct Option
-											</span>
-											<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">
-												{el.mqs_ans}
-											</span>
-										</div>
-
-										<hr />
-
-										{el.mqs_solution && (
-											<div className="py-3">
-												<span className="font-bold text-[#555] my-4 block text-start">
-													Solution
-												</span>
-												<p
-													className="text-start"
-													dangerouslySetInnerHTML={{
-														__html: el.mqs_solution,
-													}}></p>
-											</div>
-										)}
-									</AccordionItemPanel>
-								</AccordionItem>
-							);
-						})}
-				</Accordion> */
-}

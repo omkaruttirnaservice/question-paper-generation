@@ -1,5 +1,5 @@
 :root {
-	--bg-color: rgba(245, 114, 114, 0.575);
+	--bg-color: rgba(171, 245, 86, 0.575);
 }
 .selected-question {
 	background-color: var(--bg-color);
@@ -9,7 +9,6 @@
 	&:hover {
 		background-color: var(--bg-color) !important;
 		max-height: 40rem;
-		transition-delay: 0.2s;
 	}
 }
 

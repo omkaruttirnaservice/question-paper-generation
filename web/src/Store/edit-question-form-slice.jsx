@@ -80,7 +80,13 @@ const EditQuestionFormSlice = createSlice({
 			state.data.topic_id = null;
 			state.postsList = action.payload;
 		},
+		setPostName(state, action) {
+			state.data.post_name = action.payload;
+		},
 
+		setSubjectId(state, action) {
+			state.data.subject_id = action.payload;
+		},
 		setSubjectsList(state, action) {
 			let _subjectsList = action.payload;
 			if (_subjectsList.length === 0) {
@@ -143,6 +149,21 @@ const EditQuestionFormSlice = createSlice({
 
 		setEditingFalse(state, action) {
 			state.isEdit = false;
+		},
+
+		// RESET
+		reset(state, action) {
+			state.data = initialState.data;
+			state.publicationsList = initialState.publicationsList;
+			state.bookNamesList = initialState.bookNamesList;
+			state.postsList = initialState.postsList;
+			state.subjectsList = initialState.subjectsList;
+			state.topicsList = initialState.topicsList;
+			state.questionNumber = initialState.questionNumber;
+			state.errors = initialState.errors;
+			state.isEdit = initialState.isEdit;
+			state.isQuestionPreview = initialState.isQuestionPreview;
+			state.edit_test_type = initialState.edit_test_type;
 		},
 	},
 });

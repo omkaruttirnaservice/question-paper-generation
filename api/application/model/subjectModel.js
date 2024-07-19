@@ -26,24 +26,12 @@ const subjectModel = {
 				mtl_is_live,
 				type
 			) VALUES(?, ?, ?, ?, ?, ?, ?, ?)`,
-			[
-				d.mtl_master_test_list_id,
-				d.mtl_name,
-				d.mtp_added_aouth_id,
-				d.mtl_added_time,
-				d.mtl_added_date,
-				d.mtl_time_stamp,
-				d.mtl_is_live,
-				d.type,
-			]
+			[d.mtl_master_test_list_id, d.mtl_name, d.mtp_added_aouth_id, d.mtl_added_time, d.mtl_added_date, d.mtl_time_stamp, d.mtl_is_live, d.type]
 		);
 	},
 
 	getTopicList: function (subjectId) {
-		return db.query(
-			`SELECT id, stl_name AS topic_name FROM tm_sub_topic_list WHERE stl_main_topic_list_id = ?`,
-			subjectId
-		);
+		return db.query(`SELECT id, stl_name AS topic_name FROM tm_sub_topic_list WHERE stl_main_topic_list_id = ?`, subjectId);
 	},
 
 	getTopicListAndQuestionCount: function (subjectId) {
@@ -51,7 +39,7 @@ const subjectModel = {
 			`SELECT 
 						mtl.id id,
 						stl_name topic_name,
-						mqs.mqs_section_id subject_id,
+						mtl.stl_main_topic_list_id subject_id,
 						COUNT(mqs.id) question_count
 				FROM
 						tm_sub_topic_list mtl
@@ -76,14 +64,7 @@ const subjectModel = {
 						stl_time_stamp
 						) 
 				VALUES(?, ?, ?, ?, ?, ?)`,
-			[
-				d.stl_name,
-				d.stl_master_test_id,
-				d.stl_main_topic_list_id,
-				d.stl_added_date,
-				d.stl_added_time,
-				d.stl_time_stamp,
-			]
+			[d.stl_name, d.stl_master_test_id, d.stl_main_topic_list_id, d.stl_added_date, d.stl_added_time, d.stl_time_stamp]
 		);
 	},
 };

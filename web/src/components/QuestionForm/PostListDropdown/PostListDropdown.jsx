@@ -15,6 +15,16 @@ function PostListDropdown({ isShowAddNewBtn = true, disabled = false }) {
 				value: e.target.value,
 			})
 		);
+
+		console.log(postsList, '==postsList==');
+		let selectedPost = postsList.filter((el) => el.id == e.target.value);
+		console.log(selectedPost, '==selectedPost==');
+
+		if (selectedPost.length >= 0) {
+			dispatch(EditQuestionFormActions.setPostName(selectedPost[0].mtl_test_name));
+		} else {
+			dispatch(EditQuestionFormActions.setPostName(null));
+		}
 	};
 
 	const handlePostAddModal = () => {
@@ -31,9 +41,9 @@ function PostListDropdown({ isShowAddNewBtn = true, disabled = false }) {
 						-- Select --
 					</option>
 					{postsList.length >= 1 &&
-						postsList?.map((subject, i) => (
-							<option key={i} value={subject.id} selected={subject.id == _formData.post_id}>
-								{subject.mtl_test_name}
+						postsList?.map((post, i) => (
+							<option key={i} value={post.id} selected={post.id == _formData.post_id}>
+								{post.mtl_test_name}
 							</option>
 						))}
 				</select>

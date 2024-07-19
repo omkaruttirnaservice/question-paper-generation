@@ -341,7 +341,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 	};
 	return (
 		<div
-			className={`border mb-2 hover:bg-green-300 transition-all duration-300 overflow-y-scroll ${isAdded(el.q_id) != -1 ? 'selected-question' : ''}`}
+			className={`border mb-2 hover:bg-red-300 transition-all duration-300 overflow-y-scroll ${isAdded(el.q_id) != -1 ? 'selected-question' : ''}`}
 			onClick={handleAddQuestionToList.bind(null, el)}
 			key={idx}>
 			<div className="py-3 px-4 text-start">
