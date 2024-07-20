@@ -11,8 +11,8 @@ import CButton from '../UI/CButton.jsx';
 import { MdChecklist } from 'react-icons/md';
 import { H3 } from '../UI/Headings.jsx';
 
-const MANUAL_TEST = 'manual';
-const AUTO_TEST = 'auto';
+export const MANUAL_TEST = 'manual';
+export const AUTO_TEST = 'auto';
 
 function Dashboard() {
 	const dispatch = useDispatch();
@@ -33,22 +33,14 @@ function Dashboard() {
 
 	return (
 		<>
-			<div className="container mx-auto mt-6 ">
+			<div className="container mt-6">
 				<H3>Test Area</H3>
 				<div className="flex gap-6">
-					<CButton
-						className={'btn--info'}
-						onClick={testsListHandler}
-						icon={<FaListUl />}
-					>
+					<CButton className={'btn--info'} onClick={testsListHandler} icon={<FaListUl />}>
 						All Tests List
 					</CButton>
 
-					<CButton
-						className={'btn--danger'}
-						onClick={publishedTestsListHandler}
-						icon={<MdChecklist />}
-					>
+					<CButton className={'btn--danger'} onClick={publishedTestsListHandler} icon={<MdChecklist />}>
 						Published Tests List
 					</CButton>
 
@@ -56,11 +48,7 @@ function Dashboard() {
 						Create Test (Manual)
 					</CButton>
 
-					<CButton
-						className={'btn--success'}
-						onClick={createTestHandlerAuto}
-						icon={<IoCreateOutline />}
-					>
+					<CButton className={'btn--success'} onClick={createTestHandlerAuto} icon={<IoCreateOutline />}>
 						Create Test (Auto)
 					</CButton>
 

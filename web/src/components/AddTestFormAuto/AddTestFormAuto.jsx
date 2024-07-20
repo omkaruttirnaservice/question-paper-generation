@@ -17,25 +17,16 @@ function AddTestFormAuto() {
 
 	const createTestFormAutoSchema = Yup.object().shape({
 		test_name: Yup.string('Enter test name').required('Test name required'),
-		test_duration: Yup.string('Enter test duration').required(
-			'Test duration required'
-		),
-		marks_per_question: Yup.string('Enter marks per que.').required(
-			'Marks per que. required'
-		),
-		test_passing_mark: Yup.string('Enter passing marks').required(
-			'Passing marks required.'
-		),
+		test_duration: Yup.string('Enter test duration').required('Test duration required'),
+		marks_per_question: Yup.string('Enter marks per que.').required('Marks per que. required'),
+		test_passing_mark: Yup.string('Enter passing marks').required('Passing marks required.'),
 
 		is_negative_marking: Yup.string(),
-		negative_mark: Yup.string('Enter negative marks').when(
-			'is_negative_marking',
-			{
-				is: () => '1',
-				then: () => Yup.string().required('Negative marks required'),
-				otherwise: Yup.string('Enter negative marks').notRequired(),
-			}
-		),
+		negative_mark: Yup.string('Enter negative marks').when('is_negative_marking', {
+			is: () => '1',
+			then: () => Yup.string().required('Negative marks required'),
+			otherwise: Yup.string('Enter negative marks').notRequired(),
+		}),
 	});
 
 	const inputChangeHandler = (e) => {
@@ -49,9 +40,7 @@ function AddTestFormAuto() {
 				dispatch(testsSliceActions.setErrors({ ...errors, [name]: null }));
 			})
 			.catch((error) => {
-				dispatch(
-					testsSliceActions.setErrors({ ...errors, [name]: error.message })
-				);
+				dispatch(testsSliceActions.setErrors({ ...errors, [name]: error.message }));
 			});
 
 		if (name === 'is_negative_marking') {
@@ -72,13 +61,11 @@ function AddTestFormAuto() {
 	const createTestSubmitHandler = async (e) => {
 		e.preventDefault();
 		try {
-			await createTestFormAutoSchema.validate(
-				{ ...test },
-				{ abortEarly: false }
-			);
+			await createTestFormAutoSchema.validate({ ...test }, { abortEarly: false });
 
 			dispatch(ModalActions.toggleModal('create-test-modal-auto'));
-			navigate('/create-test/auto');
+
+			dispatch(testsSliceActions.setTestDetailsFilled(true));
 		} catch (error) {
 			let __err = {};
 			error.inner.forEach((el) => {
@@ -86,16 +73,15 @@ function AddTestFormAuto() {
 			});
 
 			dispatch(testsSliceActions.setErrors(__err));
+
+			dispatch(testsSliceActions.setTestDetailsFilled(false));
 		}
 	};
 
 	return (
 		<div>
 			<CModal id="create-test-modal-auto" title={'Create New Test (Auto)'}>
-				<form
-					action=""
-					id="create-test-form-auto"
-					onSubmit={createTestSubmitHandler}>
+				<form action="" id="create-test-form-auto" onSubmit={createTestSubmitHandler}>
 					<div className="grid grid-cols-3 gap-6 mb-5">
 						<div className="relative">
 							<Input
@@ -104,9 +90,7 @@ function AddTestFormAuto() {
 								name="test_name"
 								error={errors.test_name ? true : false}
 								onChange={inputChangeHandler}></Input>
-							{errors.test_name && (
-								<span className="error">{errors.test_name}</span>
-							)}
+							{errors.test_name && <span className="error">{errors.test_name}</span>}
 						</div>
 
 						<div className="relative">
@@ -117,9 +101,7 @@ function AddTestFormAuto() {
 								error={errors.test_duration ? true : false}
 								onChange={inputChangeHandler}></Input>
 
-							{errors.test_duration && (
-								<span className="error">{errors.test_duration}</span>
-							)}
+							{errors.test_duration && <span className="error">{errors.test_duration}</span>}
 						</div>
 
 						<div className="relative">
@@ -130,15 +112,11 @@ function AddTestFormAuto() {
 								error={errors.marks_per_question}
 								onChange={inputChangeHandler}></Input>
 
-							{errors.marks_per_question && (
-								<span className="error">{errors.marks_per_question}</span>
-							)}
+							{errors.marks_per_question && <span className="error">{errors.marks_per_question}</span>}
 						</div>
 
 						<div className="relative">
-							<label
-								htmlFor=""
-								className="transition-all duration-300 text-gray-700 !mb-1  block">
+							<label htmlFor="" className="transition-all duration-300 text-gray-700 !mb-1  block">
 								Negative Marking
 							</label>
 							<select
@@ -151,9 +129,7 @@ function AddTestFormAuto() {
 								<option value="1">Yes</option>
 							</select>
 
-							{errors.is_negative_marking && (
-								<span className="error">{errors.is_negative_marking}</span>
-							)}
+							{errors.is_negative_marking && <span className="error">{errors.is_negative_marking}</span>}
 						</div>
 
 						<div className="relative">
@@ -165,9 +141,7 @@ function AddTestFormAuto() {
 								disabled={test.is_negative_marking != 1 ? true : false}
 							/>
 
-							{errors.negative_mark && (
-								<span className="error">{errors.negative_mark}</span>
-							)}
+							{errors.negative_mark && <span className="error">{errors.negative_mark}</span>}
 						</div>
 
 						<div className="relative">
@@ -178,9 +152,7 @@ function AddTestFormAuto() {
 								error={errors.test_passing_mark ? true : false}
 								onChange={inputChangeHandler}></Input>
 
-							{errors.test_passing_mark && (
-								<span className="error">{errors.test_passing_mark}</span>
-							)}
+							{errors.test_passing_mark && <span className="error">{errors.test_passing_mark}</span>}
 						</div>
 					</div>
 

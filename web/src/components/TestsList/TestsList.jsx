@@ -321,7 +321,7 @@ function TestsList() {
 					</CButton>
 				</div>
 			</CModal>
-			<div className="mt-6 px-6 !h-[3rem]">
+			<div className="mt-6">
 				<H1 className="text-center">Tests List</H1>
 
 				{testsList.length >= 1 && (

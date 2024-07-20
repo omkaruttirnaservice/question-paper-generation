@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { BiReset } from 'react-icons/bi';
 import { CiViewList } from 'react-icons/ci';
 import { FaEdit, FaGripLinesVertical, FaPlus, FaTrash } from 'react-icons/fa';
@@ -7,37 +7,33 @@ import './QuestionsListAutoTest.css';
 
 import { FaAngleRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import EditQuestionFormSlice, { EditQuestionFormActions, getPostListThunk, getSubjectsListThunk } from '../../Store/edit-question-form-slice.jsx';
+import { EditQuestionFormActions, getPostListThunk, getSubjectsListThunk } from '../../Store/edit-question-form-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import PostListDropdown from '../QuestionForm/PostListDropdown/PostListDropdown.jsx';
 import SubjectListDropdown from '../QuestionForm/SubjectListDropdown/SubjectListDropdown.jsx';
 
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { ModalActions } from '../../Store/modal-slice.jsx';
+import { testsSliceActions } from '../../Store/tests-slice.jsx';
+import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
+import AddTestFormAuto from '../AddTestFormAuto/AddTestFormAuto.jsx';
+import { AUTO_TEST } from '../Dashboard/Dashboard.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
+import { H3 } from '../UI/Headings.jsx';
 import InfoContainer from '../UI/InfoContainer.jsx';
 import Spinner from '../UI/Spinner.jsx';
-import { H3 } from '../UI/Headings.jsx';
-import { testsSliceActions } from '../../Store/tests-slice.jsx';
-import { ModalActions } from '../../Store/modal-slice.jsx';
-import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 
 function QuestionsListAutoTest() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { sendRequest } = useHttp();
 
-	const { test, topicList, selectedTopicList } = useSelector((state) => state.tests);
+	const { test, topicList, selectedTopicList, isTestDetailsFilled } = useSelector((state) => state.tests);
 
 	const { data: _formData, postsList, subjectsList, topicsList } = useSelector((state) => state.questionForm);
 	const { isLoading } = useSelector((state) => state.loader);
-
-	useLayoutEffect(() => {
-		if (!test.test_name) {
-			navigate('/dashboard');
-		}
-	});
 
 	useEffect(() => {
 		if (postsList.length === 0) {
@@ -297,200 +293,215 @@ function QuestionsListAutoTest() {
 		return () => {
 			dispatch(testsSliceActions.resetTest());
 			dispatch(EditQuestionFormActions.reset());
+
+			dispatch(testsSliceActions.setTestDetailsFilled(false));
 		};
 	}, []);
 
+	const handleCreateTest = () => {
+		dispatch(ModalActions.toggleModal('create-test-modal-auto'));
+		dispatch(testsSliceActions.setTestCreationType(AUTO_TEST));
+	};
+
 	return (
 		<>
-			<CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
-			<div className="container mx-auto mt-6 shadow-sm">
-				<InfoContainer>
-					<div className="grid grid-cols-5 items-center gap-3">
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Test Type</p>
-							<FaAngleRight />
-							<span className="underline">{test.test_creation_type}</span>
-						</div>
-
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Test Name</p>
-							<FaAngleRight />
-							<span className="underline">{test.test_name}</span>
-						</div>
-
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Test Duration</p>
-							<FaAngleRight />
-							<span className="underline">{test.test_duration}</span>
-						</div>
-
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Marks Per Question</p>
-							<FaAngleRight />
-							<span className="underline">{test.marks_per_question}</span>
-						</div>
-					</div>
-
-					<div className="grid grid-cols-5 items-center py-3 gap-3">
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Total posts</p>
-							<FaAngleRight />
-							<span className="underline">{postsList.length}</span>
-						</div>
-
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Total Subjets</p>
-							<FaAngleRight />
-							<span className="underline">{subjectsList.length}</span>
-						</div>
-
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Total Topics</p>
-							<FaAngleRight />
-							<span className="underline">{topicsList.length}</span>
-						</div>
-					</div>
-
-					<div className="grid grid-cols-5 gap-3 ">
-						<PostListDropdown isShowAddNewBtn={false} />
-					</div>
-				</InfoContainer>
+			<div className="mt-6">
+				<AddTestFormAuto />
 			</div>
 
-			<InfoContainer>
-				<div className="grid grid-cols-2 mb-4">
-					<SubjectListDropdown isShowAddNewBtn={false} className={'w-fit'} />
+			<CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
 
-					{_formData.subject_id && (
-						<CButton icon={<BiReset />} className={'btn--danger w-fit justify-self-end h-fit self-end mb-1'} onClick={handleResetExam}>
-							Reset Exam
-						</CButton>
-					)}
-				</div>
+			{!isTestDetailsFilled && <CButton onClick={handleCreateTest}>Create Test</CButton>}
 
-				{topicList.length >= 1 && (
-					<div className="grid grid-cols-1 gap-2">
-						<form action="" className="">
-							<table className="w-full shadow-sm" id="questions-list-table">
-								<thead>
-									<tr className="bg-cyan-500 text-white">
-										<td className="p-2 text-center">#</td>
-										<td className="p-2">Check/Unckeck</td>
-										<td className="p-2">Section Name</td>
-										<td className="p-2">Select Question</td>
-										<td className="p-2">Question</td>
-									</tr>
-								</thead>
-								<tbody>
-									{topicList.length >= 1 &&
-										topicList.map((el, idx) => {
-											return (
-												<tr className="border hover:bg-gray-50">
-													<td className="p-2 text-center ">{idx + 1}</td>
-													<td className="p-2 text-center" width={'5%'}>
-														<input type="checkbox" name={el.id} value="" data-id={el.id} onChange={topicListCheckboxHandler} />
-													</td>
-													<td className="p-2">{el.topic_name}</td>
-													<td className="p-2">{el.question_count}</td>
-													<td>
-														<input
-															type=""
-															className="border w-16 p-1"
-															name={el.id}
-															value={el.selectedCount ? el.selectedCount : 0}
-															onChange={questionCountChangeHandler}
-															disabled={!el.isChecked}
-														/>
-													</td>
-												</tr>
-											);
-										})}
-								</tbody>
-							</table>
-						</form>
+			{isTestDetailsFilled && (
+				<>
+					<div className="container mx-auto mt-6 shadow-sm">
+						<InfoContainer>
+							<div className="grid grid-cols-5 items-center gap-3">
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Test Type</p>
+									<FaAngleRight />
+									<span className="underline">{test.test_creation_type}</span>
+								</div>
 
-						<CButton
-							icon={<CiViewList />}
-							className={'btn--danger h-fit w-fit justify-self-end'}
-							onClick={handleAddToTestChart}
-							isLoading={isLoading}>
-							Add to test chart
-						</CButton>
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Test Name</p>
+									<FaAngleRight />
+									<span className="underline">{test.test_name}</span>
+								</div>
+
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Test Duration</p>
+									<FaAngleRight />
+									<span className="underline">{test.test_duration}</span>
+								</div>
+
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Marks Per Question</p>
+									<FaAngleRight />
+									<span className="underline">{test.marks_per_question}</span>
+								</div>
+							</div>
+
+							<div className="grid grid-cols-5 items-center py-3 gap-3">
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Total posts</p>
+									<FaAngleRight />
+									<span className="underline">{postsList.length}</span>
+								</div>
+
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Total Subjets</p>
+									<FaAngleRight />
+									<span className="underline">{subjectsList.length}</span>
+								</div>
+
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Total Topics</p>
+									<FaAngleRight />
+									<span className="underline">{topicsList.length}</span>
+								</div>
+							</div>
+
+							<div className="grid grid-cols-5 gap-3 ">
+								<PostListDropdown isShowAddNewBtn={false} />
+							</div>
+						</InfoContainer>
 					</div>
-				)}
+					<InfoContainer>
+						<div className="grid grid-cols-2 mb-4">
+							<SubjectListDropdown isShowAddNewBtn={false} className={'w-fit'} />
 
-				{isLoading && <Spinner />}
-				{!isLoading && topicList.length === 0 && <p className="text-center text-[#555]">Woops! no questions found!</p>}
-			</InfoContainer>
+							{_formData.subject_id && (
+								<CButton icon={<BiReset />} className={'btn--danger w-fit justify-self-end h-fit self-end mb-1'} onClick={handleResetExam}>
+									Reset Exam
+								</CButton>
+							)}
+						</div>
 
-			{/* TEST chart */}
-			{selectedTopicList.length >= 1 && (
-				<InfoContainer>
-					<div className="grid grid-cols-2 mb-4">
-						<H3>Exam Chart</H3>
-						{_formData.subject_id && (
-							<CButton icon={<FaPlus />} className={'btn--success w-fit justify-self-end h-fit self-end mb-1'} onClick={finalTestSubmitHandler}>
-								Create Exam
-							</CButton>
-						)}
-					</div>
-					<div className="grid grid-cols-1 gap-2">
-						<form action="" className="">
-							<table className="w-full shadow-sm" id="questions-list-table">
-								<thead>
-									<tr className="bg-cyan-500 text-white text-center">
-										<td className="p-2 text-center">#</td>
-										<td className="p-2">Test Class</td>
-										<td className="p-2">Topic Name</td>
-										<td className="p-2">Section For Test</td>
-										<td className="p-2">Questions</td>
-										<td className="p-2">Edit|Remove</td>
-									</tr>
-								</thead>
-								<tbody>
-									{selectedTopicList.map((el, idx) => {
-										return (
-											<tr className="border hover:bg-gray-50 text-center">
-												<td className="p-2 text-center ">{idx + 1}</td>
-												<td className="p-2 text-center">-</td>
-												<td className="p-2">{el._subjectName}</td>
-												<td className="p-2">{el._topicsList.length}</td>
-												<td>{el._totalQuestionsCount}</td>
-												<td>
-													<div className="flex justify-center gap-2">
-														<CButton
-															icon={<FaEdit />}
-															className={'btn--success h-fit w-fit justify-self-end'}
-															onClick={handleEditFromExamChart.bind(null, { idx, el })}></CButton>
-														<CButton
-															icon={<FaTrash />}
-															className={'btn--danger h-fit w-fit justify-self-end'}
-															onClick={handleRemoveFromEamChart.bind(null, { idx, el })}></CButton>
-													</div>
-												</td>
+						{topicList.length >= 1 && (
+							<div className="grid grid-cols-1 gap-2">
+								<form action="" className="">
+									<table className="w-full shadow-sm" id="questions-list-table">
+										<thead>
+											<tr className="bg-cyan-500 text-white">
+												<td className="p-2 text-center">#</td>
+												<td className="p-2">Check/Unckeck</td>
+												<td className="p-2">Section Name</td>
+												<td className="p-2">Select Question</td>
+												<td className="p-2">Question</td>
 											</tr>
-										);
-									})}
-									<tr>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td></td>
-										<td>Total Questions&nbsp;&mdash;&nbsp;{test.total_questions}</td>
-										<td></td>
-									</tr>
-								</tbody>
-							</table>
-						</form>
-					</div>
-				</InfoContainer>
+										</thead>
+										<tbody>
+											{topicList.length >= 1 &&
+												topicList.map((el, idx) => {
+													return (
+														<tr className="border hover:bg-gray-50">
+															<td className="p-2 text-center ">{idx + 1}</td>
+															<td className="p-2 text-center" width={'5%'}>
+																<input type="checkbox" name={el.id} value="" data-id={el.id} onChange={topicListCheckboxHandler} />
+															</td>
+															<td className="p-2">{el.topic_name}</td>
+															<td className="p-2">{el.question_count}</td>
+															<td>
+																<input
+																	type=""
+																	className="border w-16 p-1"
+																	name={el.id}
+																	value={el.selectedCount ? el.selectedCount : 0}
+																	onChange={questionCountChangeHandler}
+																	disabled={!el.isChecked}
+																/>
+															</td>
+														</tr>
+													);
+												})}
+										</tbody>
+									</table>
+								</form>
+
+								<CButton
+									icon={<CiViewList />}
+									className={'btn--danger h-fit w-fit justify-self-end'}
+									onClick={handleAddToTestChart}
+									isLoading={isLoading}>
+									Add to test chart
+								</CButton>
+							</div>
+						)}
+
+						{isLoading && <Spinner />}
+						{!isLoading && topicList.length === 0 && <p className="text-center text-[#555]">Woops! no questions found!</p>}
+					</InfoContainer>
+					{selectedTopicList.length >= 1 && (
+						<InfoContainer>
+							<div className="grid grid-cols-2 mb-4">
+								<H3>Exam Chart</H3>
+								{_formData.subject_id && (
+									<CButton icon={<FaPlus />} className={'btn--success w-fit justify-self-end h-fit self-end mb-1'} onClick={finalTestSubmitHandler}>
+										Create Exam
+									</CButton>
+								)}
+							</div>
+							<div className="grid grid-cols-1 gap-2">
+								<form action="" className="">
+									<table className="w-full shadow-sm" id="questions-list-table">
+										<thead>
+											<tr className="bg-cyan-500 text-white text-center">
+												<td className="p-2 text-center">#</td>
+												<td className="p-2">Test Class</td>
+												<td className="p-2">Topic Name</td>
+												<td className="p-2">Section For Test</td>
+												<td className="p-2">Questions</td>
+												<td className="p-2">Edit|Remove</td>
+											</tr>
+										</thead>
+										<tbody>
+											{selectedTopicList.map((el, idx) => {
+												return (
+													<tr className="border hover:bg-gray-50 text-center">
+														<td className="p-2 text-center ">{idx + 1}</td>
+														<td className="p-2 text-center">-</td>
+														<td className="p-2">{el._subjectName}</td>
+														<td className="p-2">{el._topicsList.length}</td>
+														<td>{el._totalQuestionsCount}</td>
+														<td>
+															<div className="flex justify-center gap-2">
+																<CButton
+																	icon={<FaEdit />}
+																	className={'btn--success h-fit w-fit justify-self-end'}
+																	onClick={handleEditFromExamChart.bind(null, { idx, el })}></CButton>
+																<CButton
+																	icon={<FaTrash />}
+																	className={'btn--danger h-fit w-fit justify-self-end'}
+																	onClick={handleRemoveFromEamChart.bind(null, { idx, el })}></CButton>
+															</div>
+														</td>
+													</tr>
+												);
+											})}
+											<tr>
+												<td></td>
+												<td></td>
+												<td></td>
+												<td></td>
+												<td>Total Questions&nbsp;&mdash;&nbsp;{test.total_questions}</td>
+												<td></td>
+											</tr>
+										</tbody>
+									</table>
+								</form>
+							</div>
+						</InfoContainer>
+					)}
+				</>
 			)}
 		</>
 	);

@@ -13,6 +13,7 @@ const TEST_INITIAL_STATE = {
 		test_passing_mark: null,
 		test_creation_type: null,
 	},
+	isTestDetailsFilled: false,
 
 	topicList: [], // this is the topic list which includes questions count as well
 	selectedTopicList: [], // this is list of topics in test chart
@@ -103,6 +104,9 @@ const testsSlice = createSlice({
 	// 	publishedTestQuestionsList: [], // this is for storing of tests question for viewing of tests which are published
 	// },
 	reducers: {
+		setTestDetailsFilled: (state, action) => {
+			state.isTestDetailsFilled = action.payload;
+		},
 		setTopicList: (state, action) => {
 			// this is the topic list which includes questions count as well
 			state.topicList = action.payload;

@@ -17,15 +17,9 @@ function AddTestForm() {
 
 	const createTestFormSchema = Yup.object().shape({
 		test_name: Yup.string('Enter test name').required('Test name required'),
-		test_duration: Yup.string('Enter test duration').required(
-			'Test duration required'
-		),
-		marks_per_question: Yup.string('Enter marks per que.').required(
-			'Marks per que. required'
-		),
-		test_passing_mark: Yup.string('Enter passing marks').required(
-			'Passing marks required.'
-		),
+		test_duration: Yup.string('Enter test duration').required('Test duration required'),
+		marks_per_question: Yup.string('Enter marks per que.').required('Marks per que. required'),
+		test_passing_mark: Yup.string('Enter passing marks').required('Passing marks required.'),
 	});
 
 	const inputChangeHandler = async (e) => {
@@ -37,9 +31,7 @@ function AddTestForm() {
 			})
 			.catch((error) => {
 				console.log(error, '==error==');
-				dispatch(
-					testsSliceActions.setErrors({ ...errors, [name]: error.message })
-				);
+				dispatch(testsSliceActions.setErrors({ ...errors, [name]: error.message }));
 			});
 
 		dispatch(testsSliceActions.setTestDetails({ key: name, value }));
@@ -50,7 +42,7 @@ function AddTestForm() {
 		try {
 			await createTestFormSchema.validate({ ...test }, { abortEarly: false });
 			dispatch(ModalActions.toggleModal('create-test-modal'));
-			navigate('/create-test/manual');
+			dispatch(testsSliceActions.setTestDetailsFilled(true));
 		} catch (error) {
 			console.log(error, '---');
 			let __err = {};
@@ -59,16 +51,13 @@ function AddTestForm() {
 			});
 
 			dispatch(testsSliceActions.setErrors(__err));
+			dispatch(testsSliceActions.setTestDetailsFilled(false));
 		}
 	};
 	return (
 		<div>
 			<CModal id="create-test-modal" title={'Create New Test (Manual)'}>
-				<form
-					action=""
-					id="create-test-form"
-					onSubmit={createTestSubmitHandler}
-				>
+				<form action="" id="create-test-form" onSubmit={createTestSubmitHandler}>
 					<div className="grid grid-cols-3 gap-6 mb-5">
 						<div className="relative">
 							<Input
@@ -76,11 +65,8 @@ function AddTestForm() {
 								label={'Test name'}
 								name="test_name"
 								error={errors.test_name ? true : false}
-								onChange={inputChangeHandler}
-							></Input>
-							{errors.test_name && (
-								<span className="error">{errors.test_name}</span>
-							)}
+								onChange={inputChangeHandler}></Input>
+							{errors.test_name && <span className="error">{errors.test_name}</span>}
 						</div>
 
 						<div className="relative">
@@ -89,12 +75,9 @@ function AddTestForm() {
 								label={'Test duration'}
 								name="test_duration"
 								error={errors.test_duration ? true : false}
-								onChange={inputChangeHandler}
-							></Input>
+								onChange={inputChangeHandler}></Input>
 
-							{errors.test_duration && (
-								<span className="error">{errors.test_duration}</span>
-							)}
+							{errors.test_duration && <span className="error">{errors.test_duration}</span>}
 						</div>
 
 						<div className="relative">
@@ -103,12 +86,9 @@ function AddTestForm() {
 								label={'Marks per question'}
 								name="marks_per_question"
 								error={errors.marks_per_question ? true : false}
-								onChange={inputChangeHandler}
-							></Input>
+								onChange={inputChangeHandler}></Input>
 
-							{errors.marks_per_question && (
-								<span className="error">{errors.marks_per_question}</span>
-							)}
+							{errors.marks_per_question && <span className="error">{errors.marks_per_question}</span>}
 						</div>
 
 						<div className="relative">
@@ -117,12 +97,9 @@ function AddTestForm() {
 								label={'Passing marks'}
 								name="test_passing_mark"
 								error={errors.test_passing_mark ? true : false}
-								onChange={inputChangeHandler}
-							></Input>
+								onChange={inputChangeHandler}></Input>
 
-							{errors.test_passing_mark && (
-								<span className="error">{errors.test_passing_mark}</span>
-							)}
+							{errors.test_passing_mark && <span className="error">{errors.test_passing_mark}</span>}
 						</div>
 					</div>
 					<div className="flex justify-center">

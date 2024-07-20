@@ -1,8 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { FaGripLinesVertical, FaTrash } from 'react-icons/fa';
 
-import { GoPencil } from 'react-icons/go';
-
 import { FaAngleRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { EditQuestionFormActions, getPostListThunk, getSubjectsListThunk, getTopicsListThunk } from '../../Store/edit-question-form-slice.jsx';
@@ -19,8 +17,10 @@ import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 
-import './QuestionsList.css';
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
+import AddTestForm from '../AddTestForm/AddTestForm.jsx';
+import { MANUAL_TEST } from '../Dashboard/Dashboard.jsx';
+import './QuestionsList.css';
 
 const ALL_QUESTION = 'all-question';
 const SELECTED_QUESTION = 'selected-question';
@@ -28,7 +28,7 @@ const SELECTED_QUESTION = 'selected-question';
 function QuestionsList() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { test, selectedQuestionsList, sortedSelectedQuestionsList } = useSelector((state) => state.tests);
+	const { test, selectedQuestionsList, sortedSelectedQuestionsList, isTestDetailsFilled } = useSelector((state) => state.tests);
 
 	const [temp_QuestionList, set_temp_QuestionList] = useState([]);
 	const [showList, setShowList] = useState(ALL_QUESTION);
@@ -36,12 +36,6 @@ function QuestionsList() {
 	const { isLoading } = useSelector((state) => state.loader);
 
 	const { sendRequest } = useHttp();
-
-	useLayoutEffect(() => {
-		if (!test.test_name) {
-			navigate('/dashboard');
-		}
-	});
 
 	const { data: _formData, postsList, subjectsList, topicsList } = useSelector((state) => state.questionForm);
 
@@ -176,121 +170,139 @@ function QuestionsList() {
 		return () => {
 			dispatch(testsSliceActions.resetTest());
 			dispatch(EditQuestionFormActions.reset());
+
+			dispatch(testsSliceActions.setTestDetailsFilled(false));
 		};
 	}, []);
 
+	const handleCreateTest = () => {
+		dispatch(ModalActions.toggleModal('create-test-modal'));
+		dispatch(testsSliceActions.setTestCreationType(MANUAL_TEST));
+	};
+
 	return (
 		<>
+			<div className="mt-6">
+				<AddTestForm />
+			</div>
+
 			<CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
-			<div className="container mx-auto mt-6">
-				<div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
-					<div className="grid grid-cols-4 items-center gap-1">
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Test Type</p>
-							<FaAngleRight />
-							<span className="underline">{test.test_creation_type}</span>
-						</div>
 
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Test Name</p>
-							<FaAngleRight />
-							<span className="underline">{test.test_name}</span>
-						</div>
+			{!isTestDetailsFilled && <CButton onClick={handleCreateTest}>Create Test</CButton>}
 
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Test Duration</p>
-							<FaAngleRight />
-							<span className="underline">{test.test_duration}</span>
-						</div>
+			{isTestDetailsFilled && (
+				<>
+					<div className="container mx-auto mt-6">
+						<div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
+							<div className="grid grid-cols-4 items-center gap-1">
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Test Type</p>
+									<FaAngleRight />
+									<span className="underline">{test.test_creation_type}</span>
+								</div>
 
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Marks Per Question</p>
-							<FaAngleRight />
-							<span className="underline">{test.marks_per_question}</span>
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Test Name</p>
+									<FaAngleRight />
+									<span className="underline">{test.test_name}</span>
+								</div>
+
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Test Duration</p>
+									<FaAngleRight />
+									<span className="underline">{test.test_duration}</span>
+								</div>
+
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Marks Per Question</p>
+									<FaAngleRight />
+									<span className="underline">{test.marks_per_question}</span>
+								</div>
+							</div>
+
+							<div className="grid grid-cols-4 items-center py-3 gap-1">
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Total posts</p>
+									<FaAngleRight />
+									<span className="underline">{postsList.length}</span>
+								</div>
+
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Total Subjets</p>
+									<FaAngleRight />
+									<span className="underline">{subjectsList.length}</span>
+								</div>
+
+								<div className="flex items-center gap-1">
+									<FaGripLinesVertical />
+									<p>Total Topics</p>
+									<FaAngleRight />
+									<span className="underline">{topicsList.length}</span>
+								</div>
+							</div>
+
+							<div className="grid grid-cols-5 gap-3 ">
+								<PostListDropdown isShowAddNewBtn={false} disabled={selectedQuestionsList.length >= 1} />
+								<SubjectListDropdown isShowAddNewBtn={false} />
+								<TopicListDropdown isShowAddNewBtn={false} />
+
+								{test.total_questions >= 1 && (
+									<CButton className={'btn--success w-fit h-fit self-end'} onClick={createExamHandler}>
+										Create Exam
+									</CButton>
+								)}
+							</div>
 						</div>
 					</div>
 
-					<div className="grid grid-cols-4 items-center py-3 gap-1">
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Total posts</p>
-							<FaAngleRight />
-							<span className="underline">{postsList.length}</span>
-						</div>
-
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Total Subjets</p>
-							<FaAngleRight />
-							<span className="underline">{subjectsList.length}</span>
-						</div>
-
-						<div className="flex items-center gap-1">
-							<FaGripLinesVertical />
-							<p>Total Topics</p>
-							<FaAngleRight />
-							<span className="underline">{topicsList.length}</span>
-						</div>
+					<div className="container mx-auto flex justify-center gap-4 mt-5">
+						<CButton className={''} onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
+							All Questions
+						</CButton>
+						<CButton className={'btn--danger'} onClick={viewQuestionListChangeHandler.bind(null, SELECTED_QUESTION)}>
+							Question Paper ( {selectedQuestionsList.length} )
+						</CButton>
 					</div>
 
-					<div className="grid grid-cols-5 gap-3 ">
-						<PostListDropdown isShowAddNewBtn={false} disabled={selectedQuestionsList.length >= 1} />
-						<SubjectListDropdown isShowAddNewBtn={false} />
-						<TopicListDropdown isShowAddNewBtn={false} />
+					<div className="container mx-auto mt-6">
+						<div>
+							{temp_QuestionList.length >= 1 &&
+								showList == ALL_QUESTION &&
+								temp_QuestionList.map((el, idx) => {
+									return <AllQuestionsPreview el={el} idx={idx} handleAddQuestionToList={handleAddQuestionToList} />;
+								})}
 
-						{test.total_questions >= 1 && (
-							<CButton className={'btn--success w-fit h-fit self-end'} onClick={createExamHandler}>
-								Create Exam
-							</CButton>
+							{showList == SELECTED_QUESTION &&
+								selectedQuestionsList.map((el, idx) => {
+									const topicHeader = renderTopicHeader(el.main_topic_name, el.sub_topic_section);
+									return <SelectedQuestionPreview el={el} topicHeader={topicHeader} key={idx} />;
+								})}
+						</div>
+
+						{isLoading && <AiOutlineLoading3Quarters className="animate-spin text-2xl m-3 mx-auto" />}
+						{!isLoading && temp_QuestionList.length === 0 && <p className="text-center text-[#555]">Woops! no questions found!</p>}
+
+						{!isLoading && selectedQuestionsList.length === 0 && showList == SELECTED_QUESTION && (
+							<p className="text-center text-[#555] cursor-pointer">
+								Woops! no questions found!{' '}
+								<span
+									className="underline text-blue-500"
+									onClick={() => {
+										setShowList(ALL_QUESTION);
+									}}>
+									Add Question
+								</span>
+							</p>
 						)}
 					</div>
-				</div>
-			</div>
-
-			<div className="container mx-auto flex justify-center gap-4 mt-5">
-				<CButton className={''} onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
-					All Questions
-				</CButton>
-				<CButton className={'btn--danger'} onClick={viewQuestionListChangeHandler.bind(null, SELECTED_QUESTION)}>
-					Question Paper ( {selectedQuestionsList.length} )
-				</CButton>
-			</div>
-
-			<div className="container mx-auto mt-6">
-				<div>
-					{temp_QuestionList.length >= 1 &&
-						showList == ALL_QUESTION &&
-						temp_QuestionList.map((el, idx) => {
-							return <AllQuestionsPreview el={el} idx={idx} handleAddQuestionToList={handleAddQuestionToList} />;
-						})}
-
-					{showList == SELECTED_QUESTION &&
-						selectedQuestionsList.map((el, idx) => {
-							const topicHeader = renderTopicHeader(el.main_topic_name, el.sub_topic_section);
-							return <SelectedQuestionPreview el={el} topicHeader={topicHeader} key={idx} />;
-						})}
-				</div>
-
-				{isLoading && <AiOutlineLoading3Quarters className="animate-spin text-2xl m-3 mx-auto" />}
-				{!isLoading && temp_QuestionList.length === 0 && <p className="text-center text-[#555]">Woops! no questions found!</p>}
-
-				{!isLoading && selectedQuestionsList.length === 0 && showList == SELECTED_QUESTION && (
-					<p className="text-center text-[#555] cursor-pointer">
-						Woops! no questions found!{' '}
-						<span
-							className="underline text-blue-500"
-							onClick={() => {
-								setShowList(ALL_QUESTION);
-							}}>
-							Add Question
-						</span>
-					</p>
-				)}
-			</div>
+				</>
+			)}
 		</>
 	);
 }
@@ -422,7 +434,7 @@ function AllQuestionsPreview({ el, idx, handleAddQuestionToList }) {
 
 				<div className="py-3">
 					<span className="font-bold text-[#555] mb-4 me-3">Correct Option</span>
-					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans}</span>
+					<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans.toUpperCase()}</span>
 				</div>
 
 				<hr />
@@ -536,7 +548,7 @@ function SelectedQuestionPreview({ el, idx, topicHeader }) {
 
 					<div className="py-3">
 						<span className="font-bold text-[#555] mb-4 me-3">Correct Option</span>
-						<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans}</span>
+						<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans.toUpperCase()}</span>
 					</div>
 
 					<hr />

@@ -10,6 +10,7 @@ import { H1 } from '../UI/Headings.jsx';
 import './TestsList.css';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import Swal from 'sweetalert2';
+import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 
 function PublishedTestsList() {
 	const { sendRequest } = useHttp();
@@ -53,8 +54,15 @@ function PublishedTestsList() {
 		navigate('/view-published-test-questions');
 	};
 
-	const handleUnpublishExam = (el) => {
+	const handleUnpublishExam = async (el) => {
 		if (!el.id) return false;
+
+		const isConfirm = await confirmDialouge({
+			title: 'Are you sure?',
+			text: 'Do you want to unpublish exam?',
+		});
+		if (!isConfirm) return false;
+
 		let rD = {
 			url: '/api/test/unpublish',
 			method: 'DELETE',
@@ -74,7 +82,7 @@ function PublishedTestsList() {
 
 	return (
 		<>
-			<div className="mt-6 px-6">
+			<div className="mt-6">
 				<H1 className="text-center">Published Tests List</H1>
 
 				{publishedTestsList.length >= 1 && (
