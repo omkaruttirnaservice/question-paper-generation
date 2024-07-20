@@ -69,6 +69,15 @@ function QuestionsListAutoTest() {
 		});
 	};
 
+	const searchTopics = () => {
+		let subjectId = _formData?.subject_id;
+		if (!subjectId) {
+			Swal.fire('Warning', 'Please select subject');
+			return false;
+		}
+		getTopicAndQuestionCount();
+	};
+
 	const topicListCheckboxHandler = (e) => {
 		const isChecked = e.target.checked;
 		const topicId = parseInt(e.target.dataset.id);
@@ -377,7 +386,12 @@ function QuestionsListAutoTest() {
 					</div>
 					<InfoContainer>
 						<div className="grid grid-cols-2 mb-4">
-							<SubjectListDropdown isShowAddNewBtn={false} className={'w-fit'} />
+							<div className="flex gap-2">
+								<SubjectListDropdown isShowAddNewBtn={false} className={'w-fit'} />
+								<CButton className={'h-fit mt-auto'} onClick={searchTopics}>
+									Search
+								</CButton>
+							</div>
 
 							{_formData.subject_id && (
 								<CButton icon={<BiReset />} className={'btn--danger w-fit justify-self-end h-fit self-end mb-1'} onClick={handleResetExam}>

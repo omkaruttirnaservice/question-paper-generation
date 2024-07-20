@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import useHttp from '../Hooks/use-http.jsx';
 
 import { H2, H3 } from '../UI/Headings.jsx';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import Swal from 'sweetalert2';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,6 +16,12 @@ import { EDIT_QUESTION_OF_PUBLISHED_TEST } from '../Utils/Constants.jsx';
 
 function PublishedTestQuestionsView() {
 	const { previewPublishedTestDetails, publishedTestQuestionsList } = useSelector((state) => state.tests);
+
+	useLayoutEffect(() => {
+		if (!previewPublishedTestDetails.testId) {
+			navigate('/published-test');
+		}
+	}, []);
 
 	const { sendRequest } = useHttp();
 	const dispatch = useDispatch();
@@ -103,7 +109,13 @@ function PublishedTestQuestionsView() {
 				<PreviewTestDetails title={'Negative marks'} value={previewPublishedTestDetails.negative_mark} />
 				<PreviewTestDetails title={'Passing marks'} value={previewPublishedTestDetails.test_passing_mark} />
 
-				<PreviewTestDetails title={'Test created date'} value={previewPublishedTestDetails.test_created_on} />
+				<PreviewTestDetails
+					title={'Test created date'}
+					value={`
+					${previewPublishedTestDetails?.test_created_on.split('-')[2]}-
+					${previewPublishedTestDetails?.test_created_on.split('-')[1]}-
+					${previewPublishedTestDetails?.test_created_on.split('-')[0]}`}
+				/>
 
 				<PreviewTestDetails title={'Todays date'} value={previewPublishedTestDetails.todays_date} />
 			</div>

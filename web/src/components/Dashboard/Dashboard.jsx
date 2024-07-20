@@ -44,13 +44,13 @@ function Dashboard() {
 						Published Tests List
 					</CButton>
 
-					<CButton onClick={createTestHandler} icon={<IoCreateOutline />}>
+					{/* <CButton onClick={createTestHandler} icon={<IoCreateOutline />}>
 						Create Test (Manual)
 					</CButton>
 
 					<CButton className={'btn--success'} onClick={createTestHandlerAuto} icon={<IoCreateOutline />}>
 						Create Test (Auto)
-					</CButton>
+					</CButton> */}
 
 					<AddTestForm />
 					<AddTestFormAuto />

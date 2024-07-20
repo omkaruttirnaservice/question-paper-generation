@@ -180,6 +180,10 @@ function QuestionsList() {
 		dispatch(testsSliceActions.setTestCreationType(MANUAL_TEST));
 	};
 
+	const searchQuestions = () => {
+		getQuestions();
+	};
+
 	return (
 		<>
 			<div className="mt-6">
@@ -252,6 +256,10 @@ function QuestionsList() {
 								<SubjectListDropdown isShowAddNewBtn={false} />
 								<TopicListDropdown isShowAddNewBtn={false} />
 
+								<CButton className={'h-fit mt-auto'} onClick={searchQuestions}>
+									Search
+								</CButton>
+
 								{test.total_questions >= 1 && (
 									<CButton className={'btn--success w-fit h-fit self-end'} onClick={createExamHandler}>
 										Create Exam
@@ -261,7 +269,7 @@ function QuestionsList() {
 						</div>
 					</div>
 
-					<div className="container mx-auto flex justify-center gap-4 mt-5">
+					<div className="container mx-auto flex justify-center gap-4 mt-5 sticky top-0">
 						<CButton className={''} onClick={viewQuestionListChangeHandler.bind(null, ALL_QUESTION)}>
 							All Questions
 						</CButton>
