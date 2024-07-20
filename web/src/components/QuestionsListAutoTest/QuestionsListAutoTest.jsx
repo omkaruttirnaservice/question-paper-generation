@@ -473,6 +473,14 @@ function QuestionsListAutoTest() {
 											</tr>
 										);
 									})}
+									<tr>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td>Total Questions&nbsp;&mdash;&nbsp;{test.total_questions}</td>
+										<td></td>
+									</tr>
 								</tbody>
 							</table>
 						</form>
