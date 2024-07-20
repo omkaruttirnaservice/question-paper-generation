@@ -114,7 +114,7 @@ function PublishedTestQuestionsView() {
 						const topicHeader = renderTopicHeader(el.main_topic_name, el.sub_topic_section);
 						return (
 							<>
-								{topicHeader && <div className="border p-2 text-center">{topicHeader}</div>}
+								{topicHeader && <div className="border p-2 text-center bg-green-300">{topicHeader}</div>}
 								<div className={`border transition-all duration-300 mb-5 shadow-sm bg-gray-100 relative que-container`} key={idx}>
 									<CButton icon={<GoPencil />} onClick={handleEditQuestion.bind(null, el)} className={'absolute top-0 right-0 edit-que-btn'}>
 										Edit
