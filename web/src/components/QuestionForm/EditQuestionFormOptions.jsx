@@ -3,12 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { EditQuestionFormActions } from '../../Store/edit-question-form-slice.jsx';
 import CButton from '../UI/CButton.jsx';
 
-function EditQuestionOptionsInput({ showNewInputField, setShowNewInputField }) {
-	const {
-		data: _formData,
-		errors,
-		questionNumber,
-	} = useSelector((state) => state.questionForm);
+function EditQuestionOptionsInput({}) {
+	const { data: _formData, errors, questionNumber } = useSelector((state) => state.questionForm);
 	const dispatch = useDispatch();
 	useEffect(() => {
 		/**
@@ -108,54 +104,72 @@ function EditQuestionOptionsInput({ showNewInputField, setShowNewInputField }) {
 	}, []);
 
 	useEffect(() => {
+		if (_formData.showNewInputField || _formData.option_E) {
+			makeOptionE();
+		} else {
+			destroyOptionE();
+		}
+	}, [_formData.showNewInputField, _formData.option_E]);
+
+	function makeOptionE() {
 		let optionEInstance = window.CKEDITOR?.instances['option_E'];
 
-		if (!optionEInstance && !showNewInputField) {
-			return;
-		}
+		if (!optionEInstance) {
+			window.CKEDITOR.replace(`option_E`, {
+				height: 100,
+			});
 
+			window.CKEDITOR.instances[`option_E`].on('change', function () {
+				dispatch(
+					EditQuestionFormActions.handleInputChange({
+						key: `option_E`,
+						value: window.CKEDITOR.instances[`option_E`].getData(),
+					})
+				);
+			});
+		}
+	}
+
+	function destroyOptionE() {
+		let optionEInstance = window.CKEDITOR?.instances['option_E'];
 		if (optionEInstance) {
 			optionEInstance.destroy(true);
-			return;
 		}
+		dispatch(
+			EditQuestionFormActions.handleInputChange({
+				key: 'option_E',
+				value: null,
+			})
+		);
+	}
 
-		window.CKEDITOR.replace(`option_E`, {
-			height: 100,
-		});
+	function toggleShowNewInputField() {
+		if (_formData.showNewInputField || _formData.option_E) {
+			dispatch(EditQuestionFormActions.setShowNewInputField(false));
+		} else {
+			dispatch(EditQuestionFormActions.setShowNewInputField(true));
+		}
+	}
 
-		window.CKEDITOR.instances[`option_E`].on('change', function () {
-			dispatch(
-				EditQuestionFormActions.handleInputChange({
-					key: `option_E`,
-					value: window.CKEDITOR.instances[`option_E`].getData(),
-				})
-			);
-		});
-	}, [showNewInputField]);
+	useEffect(() => {
+		return () => {
+			destroyOptionE();
+		};
+	}, []);
 
 	return (
 		<>
 			<div className="flex flex-col gap-3 relative">
 				<div className="flex gap-2">
-					<label
-						htmlFor="question_content"
-						className="question-option !top-[-3rem] !rounded-sm">
+					<label htmlFor="question_content" className="question-option !top-[-3rem] !rounded-sm">
 						Question&nbsp;
 					</label>
 
-					<span className="bg-purple-200 text-gray-700 px-2 py-1 font-bold">
-						{questionNumber}
-					</span>
+					<span className="bg-purple-200 text-gray-700 px-2 py-1 font-bold">{questionNumber}</span>
 				</div>
 
-				<textarea
-					name={`question_content`}
-					id={`question_content`}
-					value={_formData.question_content}
-					className="top-10"></textarea>
-				{errors.question_content && (
-					<div className="error">{errors.question_content}</div>
-				)}
+				<textarea name={`question_content`} id={`question_content`} value={_formData.question_content} className="top-10"></textarea>
+				{errors.question_content && <div className="error">{errors.question_content}</div>}
 				<ImageInputComp label="Question image" inputFor="question_content" />
 			</div>
 
@@ -168,11 +182,7 @@ function EditQuestionOptionsInput({ showNewInputField, setShowNewInputField }) {
 					</label>
 					<AnswerOptionRadioBox value={'A'} />
 				</div>
-				<textarea
-					name={`option_A`}
-					id={`option_A`}
-					value={_formData.option_A}
-					className="top-10"></textarea>
+				<textarea name={`option_A`} id={`option_A`} value={_formData.option_A} className="top-10"></textarea>
 				{errors.option_A && <div className=" error">{errors.option_A}</div>}
 				<ImageInputComp label="Option A image" inputFor="option_A" />
 			</div>
@@ -187,11 +197,7 @@ function EditQuestionOptionsInput({ showNewInputField, setShowNewInputField }) {
 
 					<AnswerOptionRadioBox value={'B'} />
 				</div>
-				<textarea
-					name={`option_B`}
-					id={`option_B`}
-					value={_formData.option_B}
-					className="top-10"></textarea>
+				<textarea name={`option_B`} id={`option_B`} value={_formData.option_B} className="top-10"></textarea>
 				{errors.option_B && <div className=" error">{errors.option_B}</div>}
 				<ImageInputComp label="Option B image" inputFor="option_B" />
 			</div>
@@ -206,11 +212,7 @@ function EditQuestionOptionsInput({ showNewInputField, setShowNewInputField }) {
 
 					<AnswerOptionRadioBox value={'C'} />
 				</div>
-				<textarea
-					name={`option_C`}
-					id={`option_C`}
-					value={_formData.option_C}
-					className="top-10"></textarea>
+				<textarea name={`option_C`} id={`option_C`} value={_formData.option_C} className="top-10"></textarea>
 				{errors.option_C && <div className=" error">{errors.option_C}</div>}
 				<ImageInputComp label="Option C image" inputFor="option_C" />
 			</div>
@@ -225,37 +227,25 @@ function EditQuestionOptionsInput({ showNewInputField, setShowNewInputField }) {
 
 					<AnswerOptionRadioBox value={'D'} />
 				</div>
-				<textarea
-					name={`option_D`}
-					id={`option_D`}
-					value={_formData.option_D}
-					className="top-10"></textarea>
+				<textarea name={`option_D`} id={`option_D`} value={_formData.option_D} className="top-10"></textarea>
 				{errors.option_D && <div className=" error">{errors.option_D}</div>}
 				<ImageInputComp label="Option D image" inputFor="option_D" />
 			</div>
 
 			<hr />
 
-			{showNewInputField ? (
+			{_formData.showNewInputField || _formData.option_E ? (
 				<>
 					<div className="flex flex-col gap-3 relative">
 						<div className="flex gap-2 items-center">
-							<label
-								htmlFor="option_E"
-								className="question-option !top-[-3rem]">
+							<label htmlFor="option_E" className="question-option !top-[-3rem]">
 								Option E
 							</label>
 
 							<AnswerOptionRadioBox value={'E'} />
 						</div>
-						<textarea
-							name={`option_E`}
-							id={`option_E`}
-							value={_formData.option_E}
-							className="top-10"></textarea>
-						{errors.option_E && (
-							<div className="!top-[1rem]">{errors.option_E}</div>
-						)}
+						<textarea name={`option_E`} id={`option_E`} value={_formData.option_E} className="top-10"></textarea>
+						{errors.option_E && <div className="!top-[1rem]">{errors.option_E}</div>}
 						<ImageInputComp label="Option E image" inputFor="option_E" />
 					</div>
 
@@ -263,14 +253,8 @@ function EditQuestionOptionsInput({ showNewInputField, setShowNewInputField }) {
 						className="btn--danger w-fit"
 						id=""
 						onClick={() => {
-							window.CKEDITOR?.instances['option_E'].destroy(true);
-							dispatch(
-								EditQuestionFormActions.handleInputChange({
-									key: 'option_E',
-									value: null,
-								})
-							);
-							setShowNewInputField(!showNewInputField);
+							destroyOptionE();
+							// dispatch(EditQuestionFormActions.setShowNewInputField(!_formData.showNewInputField));
 						}}>
 						Remove
 					</CButton>
@@ -278,10 +262,7 @@ function EditQuestionOptionsInput({ showNewInputField, setShowNewInputField }) {
 					<hr />
 				</>
 			) : (
-				<CButton
-					className="btn--success w-fit"
-					id=""
-					onClick={() => setShowNewInputField(!showNewInputField)}>
+				<CButton className="btn--success w-fit" id="" onClick={toggleShowNewInputField}>
 					Add option
 				</CButton>
 			)}
@@ -351,13 +332,7 @@ function ImageInputComp({ label, inputFor }) {
 
 	return (
 		<div className="flex flex-col mt-2 absolute bottom-0 left-0">
-			<input
-				onPaste={handleImagePaste}
-				type="text"
-				data-image-for={inputFor}
-				className="input-el !w-[15rem]"
-				placeholder={`${label} paste image`}
-			/>
+			<input onPaste={handleImagePaste} type="text" data-image-for={inputFor} className="input-el !w-[15rem]" placeholder={`${label} paste image`} />
 		</div>
 	);
 }
@@ -370,7 +345,7 @@ function AnswerOptionRadioBox({ value, className }) {
 		dispatch(
 			EditQuestionFormActions.handleInputChange({
 				key: e.target.name,
-				value: e.target.value,
+				value: e.target.value.toUpperCase(),
 			})
 		);
 	};
@@ -379,8 +354,8 @@ function AnswerOptionRadioBox({ value, className }) {
 			className={`w-6 h-6 ${className}`}
 			type="radio"
 			name="correct_option"
-			value={value}
-			checked={_formData.correct_option == value ? true : false}
+			value={value.toUpperCase()}
+			checked={_formData.correct_option.toUpperCase() == value.toUpperCase() ? true : false}
 			onChange={handleOptionChange}
 		/>
 	);

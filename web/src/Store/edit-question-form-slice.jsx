@@ -25,6 +25,7 @@ let initialState = {
 		difficulty: null,
 		month: null,
 		year: null,
+		showNewInputField: false,
 	},
 	publicationsList: [],
 	bookNamesList: [],
@@ -41,6 +42,10 @@ const EditQuestionFormSlice = createSlice({
 	name: 'question-form-slice',
 	initialState,
 	reducers: {
+		setShowNewInputField(state, action) {
+			state.data.showNewInputField = action.payload;
+			// for toggling  option E input field
+		},
 		// question preview
 		toggleQuestionPreview(state, action) {
 			state.isQuestionPreview = !state.isQuestionPreview;

@@ -161,7 +161,7 @@ function TestQuestionsView() {
 
 										<hr />
 
-										{el.mqs_opt_five && (
+										{el.q_e && (
 											<div className="py-3">
 												<span className="font-bold text-[#555] mb-4 block text-start">Option E</span>
 												<p
@@ -175,7 +175,7 @@ function TestQuestionsView() {
 
 										<div className="py-3">
 											<span className="font-bold text-[#555] mb-4 me-3">Correct Option</span>
-											<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans}</span>
+											<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans.toUpperCase()}</span>
 										</div>
 
 										<hr />
