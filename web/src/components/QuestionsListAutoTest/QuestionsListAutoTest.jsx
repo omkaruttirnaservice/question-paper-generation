@@ -278,19 +278,24 @@ function QuestionsListAutoTest() {
 				topicList: __allTopicListToCreateExam,
 			}),
 		};
-		sendRequest(rD, (data) => {
-			if (data.success == 1) {
+		sendRequest(rD, ({ success, data }) => {
+			console.log(data, '==data after auto test==');
+			if (success == 1) {
 				Swal.fire('Success', 'Test has been generated!');
-				dispatch(EditQuestionFormActions.reset());
-				dispatch(testsSliceActions.reset());
-				navigate('/tests-list');
+
+				dispatch(testsSliceActions.setPreviewTestDetailsId(data.testDetails.id));
+				dispatch(testsSliceActions.setPreviewTestDetails(data.testDetails));
+
+				setTimeout(() => {
+					navigate('/view-test-questions');
+				}, 10);
 			}
 		});
 	};
 
 	useEffect(() => {
 		return () => {
-			dispatch(testsSliceActions.reset());
+			dispatch(testsSliceActions.resetTest());
 			dispatch(EditQuestionFormActions.reset());
 		};
 	}, []);

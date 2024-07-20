@@ -242,6 +242,11 @@ function TestsList() {
 					});
 
 					dispatch(ModalActions.toggleModal('publish-exam-modal'));
+					dispatch(testsSliceActions.setPreviewPublishedTestDetailsId(data.testDetails.id));
+					dispatch(testsSliceActions.setPreviewPublishedTestDetails(data.testDetails));
+					setTimeout(() => {
+						navigate('/view-published-test-questions');
+					}, 10);
 					setPublishExamForm(initialStatePublishForm);
 				}
 			});
@@ -256,7 +261,7 @@ function TestsList() {
 
 	return (
 		<>
-			<CModal id="publish-exam-modal" title={'Publish Exam'}>
+			<CModal id="publish-exam-modal" title={'Publish Exam'} className={''}>
 				<div className="grid grid-cols-2 gap-6">
 					<div className="relative">
 						<label htmlFor="" className="transition-all duration-300 text-gray-700 !mb-1  block">
@@ -316,7 +321,7 @@ function TestsList() {
 					</CButton>
 				</div>
 			</CModal>
-			<div className="mt-6 px-6">
+			<div className="mt-6 px-6 !h-[3rem]">
 				<H1 className="text-center">Tests List</H1>
 
 				{testsList.length >= 1 && (

@@ -199,7 +199,7 @@ const testsModel = {
 			});
 
 			await transact.commit();
-			return masterTestId;
+			return _masterTest.toJSON();
 		} catch (error) {
 			await transact.rollback();
 			console.log('error occured in query', error);
@@ -434,6 +434,8 @@ const testsModel = {
 		let _tmpPubDate = publish_date.split('-');
 		publish_date = `${_tmpPubDate[2]}-${_tmpPubDate[1]}-${_tmpPubDate[0]}`;
 
+		let [mt_date, mt_month, mt_year] = mt.mt_added_date.split('-');
+
 		// preparing insert data to save into database
 		let insertData = {
 			ptl_active_date: publish_date,
@@ -482,7 +484,7 @@ const testsModel = {
 				},
 			]),
 			mt_name: mt.mt_name,
-			mt_added_date: mt.mt_added_date,
+			mt_added_date: `${mt_year}-${mt_month}-${mt_date}`,
 			mt_descp: mt.mt_descp,
 			mt_is_live: mt.mt_is_live,
 			mt_time_stamp: mt.mt_time_stamp,

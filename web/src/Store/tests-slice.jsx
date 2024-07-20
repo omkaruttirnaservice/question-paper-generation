@@ -140,6 +140,10 @@ const testsSlice = createSlice({
 		setTestQuestionsList: (state, action) => {
 			state.testQuestionsList = action.payload;
 		},
+
+		setPreviewTestDetailsId: (state, action) => {
+			state.previewTestDetails.test_id = action.payload;
+		},
 		setPreviewTestDetails: (state, { payload }) => {
 			console.log(payload, '==payload==');
 			state.previewTestDetails.test_id = payload.id;
@@ -177,9 +181,10 @@ const testsSlice = createSlice({
 		setPublishedTestQuestionsList: (state, action) => {
 			state.publishedTestQuestionsList = action.payload;
 		},
+		setPreviewPublishedTestDetailsId: (state, action) => {
+			state.previewPublishedTestDetails.test_id = action.payload;
+		},
 		setPreviewPublishedTestDetails: (state, { payload }) => {
-			console.log(payload, '==payload 2==');
-
 			state.previewPublishedTestDetails.test_id = payload.ptl_test_id;
 			state.previewPublishedTestDetails.test_name = payload.mt_name;
 			state.previewPublishedTestDetails.test_duration = payload.mt_test_time;
@@ -224,6 +229,10 @@ const testsSlice = createSlice({
 			state.testQuestionsList = TEST_INITIAL_STATE.testQuestionsList;
 			state.previewPublishedTestDetails = TEST_INITIAL_STATE.previewPublishedTestDetails;
 			state.publishedTestQuestionsList = TEST_INITIAL_STATE.publishedTestQuestionsList;
+		},
+
+		resetTest(state, action) {
+			state.test = TEST_INITIAL_STATE.test;
 		},
 	},
 });

@@ -45,7 +45,7 @@ const testsController = {
 		try {
 			let _createTestRes = await testsModel.createTest(_t, _q);
 			if (_createTestRes) {
-				return sendSuccess(res, 'Successfully created test');
+				return sendSuccess(res, { testDetails: _createTestRes, message: 'Successfully created test' });
 			}
 		} catch (error) {
 			return sendError(res, error.message);
@@ -203,7 +203,7 @@ const testsController = {
 
 			await transact.commit();
 
-			return sendSuccess(res, 'Successfully created auto test');
+			return sendSuccess(res, { testDetails: _masterTest.toJSON(), message: 'Successfully created auto test' });
 		} catch (error) {
 			await transact.rollback();
 			return sendError(res, error.message);
@@ -241,6 +241,7 @@ const testsController = {
 			let _publishTestInsert = await testsModel.publishTest(req.body);
 			if (_publishTestInsert.toJSON().id) {
 				return sendSuccess(res, {
+					testDetails: _publishTestInsert.toJSON(),
 					message: 'Successfully published test',
 				});
 			}

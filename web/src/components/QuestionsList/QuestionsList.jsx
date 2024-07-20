@@ -130,15 +130,21 @@ function QuestionsList() {
 		};
 
 		sendRequest(requestData, ({ success, data }) => {
+			console.log(data, '==data after create test==');
 			if (success) {
 				Swal.fire({
 					title: 'Success!',
-					text: data,
+					text: data.message,
 					icon: 'success',
 				});
 
 				dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
-				navigate('/dashboard');
+				dispatch(testsSliceActions.setPreviewTestDetailsId(data.testDetails.id));
+				dispatch(testsSliceActions.setPreviewTestDetails(data.testDetails));
+
+				setTimeout(() => {
+					navigate('/view-test-questions');
+				}, 10);
 			}
 		});
 	};
@@ -168,7 +174,7 @@ function QuestionsList() {
 
 	useEffect(() => {
 		return () => {
-			dispatch(testsSliceActions.reset());
+			dispatch(testsSliceActions.resetTest());
 			dispatch(EditQuestionFormActions.reset());
 		};
 	}, []);
