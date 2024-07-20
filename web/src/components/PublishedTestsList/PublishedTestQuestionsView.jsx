@@ -133,7 +133,7 @@ function PublishedTestQuestionsView() {
 									</CButton>
 									<div className="py-3 px-4 text-start">
 										<div className="py-3">
-											<p className="font-bold text-[#555] mb-4 block text-start">Q. {el.id})</p>
+											<p className="font-bold text-[#555] mb-4 block text-start">Q. {idx + 1})</p>
 											<p
 												className="text-start"
 												dangerouslySetInnerHTML={{
