@@ -540,6 +540,7 @@ const testsModel = {
 	getTestQuestionsList: async (testId) => {
 		return tm_test_question_sets.findAll({
 			where: { tqs_test_id: testId },
+			order: [['sub_topic_id', 'ASC']],
 		});
 	},
 
