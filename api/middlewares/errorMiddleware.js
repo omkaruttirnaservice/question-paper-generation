@@ -4,7 +4,7 @@ dotenv.config();
 
 const errorHandler = (err, req, res, next) => {
 	let error = err;
-	console.log(error, '==error global handler==');
+	console.log(error.errors, '==error global handler==');
 
 	if (!(error instanceof ApiError)) {
 		const statusCode = error.statusCode || 500;

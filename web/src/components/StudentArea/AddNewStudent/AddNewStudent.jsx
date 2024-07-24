@@ -5,20 +5,17 @@ import Swal from 'sweetalert2';
 import { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
 import Input from '../../UI/Input.jsx';
-import { getServerIP, postServerIP } from './api.jsx';
+import { getServerIP, getStudentsList, postServerIP } from './api.jsx';
 
 function AddNewStudent() {
 	const { formFillingIP } = useSelector((state) => state.studentArea);
 	const dispatch = useDispatch();
-	const handleGetStudentsList = () => {};
+
 	const handleServerIpSubmit = (e) => {
 		e.preventDefault();
 		const formData = new FormData(e.target);
 		const ip = formData.get('form_filling_server_ip');
-		if (!ip) {
-			alert('Please enter IP');
-			return;
-		}
+		if (!ip) return alert('Please enter IP');
 		saveServerIP(ip);
 	};
 
@@ -50,6 +47,24 @@ function AddNewStudent() {
 		dispatch(StudentAreaActions.setFormFillingIP(e.target.value));
 	};
 
+	const { mutate: getStudetList, isPending: studentDataLoading } = useMutation({
+		mutationFn: getStudentsList,
+		onSuccess: (data, variables) => {
+			console.log(data, '==data==');
+			if (data.message == 'Validation error') {
+				Swal.fire('Error', 'Student data already present');
+				return false;
+			}
+			Swal.fire('Success', 'Downloaded students list');
+		},
+		onError: (error, variables) => {
+			console.log(error, '==error==');
+		},
+	});
+
+	const handleGetStudentsList = () => {
+		getStudetList(formFillingIP);
+	};
 	return (
 		<div className="mt-5 flex flex-col gap-4">
 			<form action="" className="flex items-center gap-2" onSubmit={handleServerIpSubmit}>
@@ -59,7 +74,7 @@ function AddNewStudent() {
 				</CButton>
 			</form>
 
-			<CButton type="button" onClick={handleGetStudentsList} className={'w-fit'}>
+			<CButton type="button" onClick={handleGetStudentsList} className={'w-fit'} isLoading={studentDataLoading}>
 				Get All Stuent List
 			</CButton>
 		</div>
