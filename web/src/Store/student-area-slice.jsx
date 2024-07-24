@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
 	formFillingIP: null,
+	studentsList: [],
 };
 
 const studentAreaSlice = createSlice({
@@ -10,6 +11,10 @@ const studentAreaSlice = createSlice({
 	reducers: {
 		setFormFillingIP: (state, action) => {
 			state.formFillingIP = action.payload;
+		},
+
+		setStudentsList: (state, action) => {
+			state.studentsList = action.payload;
 		},
 	},
 });

@@ -17,7 +17,7 @@ const StudentAreaController = {
 		}
 	}),
 
-	getAllStudentsList: asyncHandler(async (req, res) => {
+	getAllStudentsList_1: asyncHandler(async (req, res) => {
 		let { ip } = req.body;
 		if (!ip) throw new ApiError(404, 'Invalid IP address');
 
@@ -29,6 +29,12 @@ const StudentAreaController = {
 		let _studSaveRes = await studentAreaModel.saveAllStudentsList(data);
 
 		return res.status(200).json(new ApiResponse(200, '', 'Students list'));
+	}),
+
+	getAllStudentsList_2: asyncHandler(async (req, res) => {
+		let _studListAll = await studentAreaModel.getAllStudentsList_2();
+
+		return res.status(200).json(new ApiResponse(200, _studListAll, 'Students list'));
 	}),
 };
 export default StudentAreaController;

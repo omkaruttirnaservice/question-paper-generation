@@ -27,6 +27,7 @@ function AddNewStudent() {
 		queryKey: ['getServerIP'],
 		queryFn: getServerIP,
 	});
+
 	useEffect(() => {
 		if (serverIP) {
 			dispatch(StudentAreaActions.setFormFillingIP(serverIP.data));
