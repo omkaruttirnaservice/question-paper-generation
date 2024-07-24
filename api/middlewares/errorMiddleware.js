@@ -4,6 +4,7 @@ dotenv.config();
 
 const errorHandler = (err, req, res, next) => {
 	let error = err;
+	console.log(error, '==error global handler==');
 
 	if (!(error instanceof ApiError)) {
 		const statusCode = error.statusCode || 500;
@@ -16,7 +17,6 @@ const errorHandler = (err, req, res, next) => {
 		message: error.message,
 		...(process.env.NODE_ENV === 'dev' ? { stack: error.stack } : {}),
 	};
-
 	return res.status(error.statusCode).json(response);
 };
 
