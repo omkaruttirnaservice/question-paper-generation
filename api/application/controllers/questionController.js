@@ -1,15 +1,11 @@
 import questionModel from '../model/questionModel.js';
-import customValidate from '../utils/customValidate.js';
-
-const { isNonEmptyNullString, isNumber } = customValidate;
 import { sendError, sendSuccess } from '../utils/commonFunctions.js';
 
 const questionController = {
 	addNewQuestion: async (req, res) => {
 		try {
 			let response = await questionModel.addNewQuestion(req.body);
-			if (response[0].affectedRows === 0)
-				throw new Error('Question was not saved');
+			if (response[0].affectedRows === 0) throw new Error('Question was not saved');
 			return sendSuccess(res);
 		} catch (err) {
 			return sendError(res, err);
@@ -20,9 +16,7 @@ const questionController = {
 		try {
 			const { questionId } = req.body;
 			if (!questionId) {
-				throw new Error(
-					'Invalid questionID for restoration, please send valid id'
-				);
+				throw new Error('Invalid questionID for restoration, please send valid id');
 			}
 			let _deleteResponse = await questionModel.restoreQuestion(questionId);
 			if (_deleteResponse[0].affectedRows == 1) {
@@ -39,9 +33,7 @@ const questionController = {
 		try {
 			const { questionId } = req.body;
 			if (!questionId) {
-				throw new Error(
-					'Invalid questionID for deletion, please send valid id'
-				);
+				throw new Error('Invalid questionID for deletion, please send valid id');
 			}
 			let _deleteResponse = await questionModel.deleteQuestion(questionId);
 			if (_deleteResponse[0].affectedRows == 1) {
@@ -58,14 +50,9 @@ const questionController = {
 		try {
 			const { questionId } = req.body;
 			if (!questionId) {
-				throw new Error(
-					'Invalid questionID for deletion, please send valid id'
-				);
+				throw new Error('Invalid questionID for deletion, please send valid id');
 			}
-			let _deleteResponse = await questionModel.deleteQuestionPermenant(
-				questionId
-			);
-			console.log(_deleteResponse, '-after permenet delete');
+			let _deleteResponse = await questionModel.deleteQuestionPermenant(questionId);
 			if (_deleteResponse[0].affectedRows == 1) {
 				return sendSuccess(res, 'Successfully deleted');
 			} else {
@@ -78,8 +65,6 @@ const questionController = {
 
 	saveEditQuestion: async (req, res) => {
 		try {
-			console.log(req.body, '==req.body edit question controller==');
-
 			let _editRes = await questionModel.saveEditQuestion(req.body);
 			return sendSuccess(res, _editRes);
 		} catch (error) {
@@ -90,7 +75,6 @@ const questionController = {
 	editQuestionData: async (req, res) => {
 		try {
 			let qId = req.body.questionId;
-			console.log(qId, 'gettting data');
 			if (!qId) throw new Error('No question id sent');
 			let _data = await questionModel.getEditQuestionData(qId);
 			return sendSuccess(res, _data[0]);
@@ -118,10 +102,8 @@ const questionController = {
 				subject_id,
 				topic_id,
 			});
-			console.log(questionList[0], '==questionList==');
 			return sendSuccess(res, questionList[0]);
 		} catch (err) {
-			console.log('Error whlie fetching the questions: ', err);
 			return sendError(res, err);
 		}
 	},
@@ -158,7 +140,6 @@ const questionController = {
 			let [booksList] = await questionModel.getBooksList(pubName);
 			return sendSuccess(res, booksList);
 		} catch (error) {
-			console.log(error, '-error');
 			return sendError(res, err);
 		}
 	},

@@ -6,6 +6,7 @@ import { FaEye, FaPlus, FaTrash } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
@@ -15,7 +16,6 @@ import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
 import Input from '../UI/Input.jsx';
 import './TestsList.css';
-import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 
 function TestsList() {
 	const navigate = useNavigate();

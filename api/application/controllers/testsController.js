@@ -1,8 +1,8 @@
 import sequelize from '../config/db-connect-migration.js';
 import { myDate } from '../config/utils.js';
-import tm_mega_question_set from '../Migration_Scripts/tm_mega_question_set.js';
-import tm_test_question_sets from '../Migration_Scripts/tm_test_question_sets.js';
-import tm_test_user_master_list from '../Migration_Scripts/tm_test_user_master_list.js';
+import tm_mega_question_set from '../schemas/tm_mega_question_set.js';
+import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
+import tm_test_user_master_list from '../schemas/tm_test_user_master_list.js';
 import testsModel from '../model/testsModel.js';
 import { sendError, sendSuccess } from '../utils/commonFunctions.js';
 

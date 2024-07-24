@@ -8,6 +8,8 @@ import TestsList from './components/TestsList/TestsList.jsx';
 import PublishedTestsList from './components/PublishedTestsList/PublishedTestsList.jsx';
 import TestQuestionsView from './components/TestsList/TestQuestionsView.jsx';
 import PublishedTestQuestionsView from './components/PublishedTestsList/PublishedTestQuestionsView.jsx';
+import AddNewStudent from './components/StudentArea/AddNewStudent/AddNewStudent.jsx';
+import StudentsList from './components/StudentArea/StudentsList/StudentsList.jsx';
 
 const router = createBrowserRouter([
 	{
@@ -24,6 +26,9 @@ const router = createBrowserRouter([
 				path: '/view-published-test-questions',
 				element: <PublishedTestQuestionsView />,
 			},
+
+			{ path: '/add-new-student', element: <AddNewStudent /> },
+			{ path: '/students-list', element: <StudentsList /> },
 		],
 	},
 ]);

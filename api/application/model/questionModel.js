@@ -1,6 +1,6 @@
 import db from '../config/db.connect.js';
 import { myDate } from '../config/utils.js';
-import tm_mega_question_set from '../Migration_Scripts/tm_mega_question_set.js';
+import tm_mega_question_set from '../schemas/tm_mega_question_set.js';
 const questionModel = {
 	addNewQuestion: (data) => {
 		console.log(data, 'save question data.');
@@ -131,9 +131,7 @@ const questionModel = {
 	},
 
 	getQuestionNumber: () => {
-		return db.query(
-			`SELECT COUNT(id) AS total_questions FROM tm_mega_question_set;`
-		);
+		return db.query(`SELECT COUNT(id) AS total_questions FROM tm_mega_question_set;`);
 	},
 
 	getQuestionList: (d) => {

@@ -2,11 +2,11 @@ import { Op } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 import db from '../config/db.connect.js';
 import { myDate } from '../config/utils.js';
-import tm_publish_test_list from '../Migration_Scripts/tm_publish_test_list.js';
-import tm_test_question_sets from '../Migration_Scripts/tm_test_question_sets.js';
-import tm_test_user_master_list from '../Migration_Scripts/tm_test_user_master_list.js';
-import tm_master_test_list from '../Migration_Scripts/tm_master_test_list.js';
-import tm_mega_question_set from '../Migration_Scripts/tm_mega_question_set.js';
+import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
+import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
+import tm_test_user_master_list from '../schemas/tm_test_user_master_list.js';
+import tm_master_test_list from '../schemas/tm_master_test_list.js';
+import tm_mega_question_set from '../schemas/tm_mega_question_set.js';
 
 const testsModel = {
 	getList: async () => {
