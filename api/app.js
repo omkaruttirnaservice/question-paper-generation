@@ -9,6 +9,7 @@ import { errorHandler } from './middlewares/errorMiddleware.js';
 
 const app = express();
 dotenv.config();
+app.use(express.static('public'));
 
 app.use(upload());
 app.use(cors());

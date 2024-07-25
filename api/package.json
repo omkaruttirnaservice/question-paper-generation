@@ -21,6 +21,7 @@
 		"express-fileupload": "^1.2.0",
 		"express-myconnection": "^1.0.4",
 		"express-session": "^1.17.1",
+		"extract-zip": "^2.0.1",
 		"mysql2": "^2.1.0",
 		"react-data-table-component": "^7.6.2",
 		"sequelize": "^6.33.0"

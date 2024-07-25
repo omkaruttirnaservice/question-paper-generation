@@ -10,9 +10,9 @@ const studentAreaModel = {
 	addFormFillingIP: (ip) => {
 		return aouth.update({ a_form_filling_ip: ip }, { where: { id: 1 } });
 	},
-	saveAllStudentsList: (_data) => {
+	saveAllStudentsList: (_data, transact) => {
 		try {
-			return tn_student_list.bulkCreate(_data);
+			return tn_student_list.bulkCreate(_data, { transaction: transact });
 		} catch (error) {
 			throw new ApiError(500, error?.message || 'Something went wrong');
 		}

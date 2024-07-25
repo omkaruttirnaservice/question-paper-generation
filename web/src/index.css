@@ -186,3 +186,8 @@
 	margin: 0;
 	box-sizing: border-box;
 }
+
+/* override react datatabales component white space no wrap */
+.djUvQc div:first-child {
+	white-space: wrap !important;
+}
