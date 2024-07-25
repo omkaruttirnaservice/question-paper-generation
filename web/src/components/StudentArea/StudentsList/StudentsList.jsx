@@ -35,24 +35,31 @@ function StudentsList() {
 	const handleSearch = (e) => {
 		let searchKey = e.target.value;
 		setSearchTerm(searchKey);
-
-		if (searchKey == '') return setFilteredStudentsList(studentsList);
-		if (searchType == SEARCH_TYPE_ROLL_NO) {
-			let updatedList = studentsList.filter((stud) => +stud.sl_roll_number.match(+searchKey));
-			setFilteredStudentsList(updatedList);
-		}
-		if (searchType == SEARCH_TYPE_NAME) {
-			let updatedList = studentsList.filter((stud) => {
-				let fullName = `${stud.sl_f_name} ${stud.sl_m_name} ${stud.sl_l_name}`;
-				return fullName.toLowerCase().match(searchKey.toLowerCase());
-			});
-			setFilteredStudentsList(updatedList);
-		}
 	};
 	const handleSearchType = (e) => {
 		let searchType = e.target.value;
 		setSearchType(searchType);
 	};
+
+	useEffect(() => {
+		if (searchTerm == '') return setFilteredStudentsList(studentsList);
+		let timeOut = setTimeout(() => {
+			if (searchType == SEARCH_TYPE_ROLL_NO) {
+				let updatedList = studentsList.filter((stud) => +stud.sl_roll_number.match(+searchTerm));
+				setFilteredStudentsList(updatedList);
+			}
+			if (searchType == SEARCH_TYPE_NAME) {
+				let updatedList = studentsList.filter((stud) => {
+					let fullName = `${stud.sl_f_name} ${stud.sl_m_name} ${stud.sl_l_name}`;
+					return fullName.toLowerCase().match(searchTerm.toLowerCase());
+				});
+				setFilteredStudentsList(updatedList);
+			}
+		}, 1500);
+		return () => {
+			clearTimeout(timeOut);
+		};
+	}, [searchTerm]);
 
 	const columns = [
 		{ sortable: true, name: '#', selector: (row, idx) => idx + 1, width: '60px' },
@@ -100,8 +107,15 @@ function StudentsList() {
 					<option value={SEARCH_TYPE_NAME}>Name</option>
 				</InputSelect>
 
-				<Input label={'Search'} className={'w-fit'} value={searchTerm} onChange={handleSearch}></Input>
-				<CButton className={'h-fit mt-auto'} icon={<FaXmark />}></CButton>
+				<Input label={'Search'} className={'w-fit'} value={searchTerm} onChange={handleSearch} disabled={searchType == ''}></Input>
+				{searchType != '' && searchTerm != '' && (
+					<CButton
+						className={'h-fit mt-auto'}
+						icon={<FaXmark />}
+						onClick={() => {
+							setSearchTerm('');
+						}}></CButton>
+				)}
 			</div>
 			{filteredStudentsList.length >= 1 && (
 				<DataTable columns={columns} data={filteredStudentsList} pagination fixedHeader highlightOnHover></DataTable>
