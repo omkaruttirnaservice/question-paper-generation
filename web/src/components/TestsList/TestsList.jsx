@@ -16,6 +16,7 @@ import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
 import Input from '../UI/Input.jsx';
 import './TestsList.css';
+import DataTable from 'react-data-table-component';
 
 function TestsList() {
 	const navigate = useNavigate();
@@ -259,6 +260,40 @@ function TestsList() {
 		}
 	};
 
+	const columns = [
+		{ sortable: true, name: '#', selector: (row, idx) => idx + 1, width: '4rem' },
+		{ sortable: true, name: 'Published Test Id', selector: (row) => row.id, width: '7rem' },
+		{ sortable: true, name: 'Test Name', selector: (row) => row.mt_name, width: '10rem' },
+		{ sortable: true, name: 'Duration', selector: (row) => row.mt_test_time, width: '7rem' },
+		{ sortable: true, name: 'Total Questions', selector: (row) => row.mt_total_test_question, width: '8rem' },
+		{ sortable: true, name: 'Marks Per Q.', selector: (row) => row.mt_mark_per_question, width: '6rem' },
+		{ sortable: true, name: 'Is -ve marking', selector: (row) => (row.mt_is_negative == 1 ? 'Yes' : 'No'), width: '8rem' },
+		{ sortable: true, name: 'Passing Marks', selector: (row) => row.mt_passing_out_of, width: '6rem' },
+		{
+			name: 'Publish Exam',
+			cell: (row) => (
+				<div className="flex justify-center">
+					<CButton className="btn--primary text-xs" onClick={handlePublishExam.bind(null, row)}>
+						Publish
+					</CButton>
+				</div>
+			),
+			selector: (row) => row.sl_roll_number,
+			width: '8rem',
+		},
+		{
+			name: 'Action',
+			cell: (row) => (
+				<div className="flex gap-2 items-center justify-center">
+					<CButton className="btn--danger m-0" onClick={handleDeleteTest.bind(null, row.id)} icon={<FaTrash />}></CButton>
+					<CButton className="btn--info m-0" onClick={handleViewQuestions.bind(null, row)} icon={<FaEye />}></CButton>
+				</div>
+			),
+			selector: (row) => row.sl_roll_number,
+			width: '6rem',
+		},
+	];
+
 	return (
 		<>
 			<CModal id="publish-exam-modal" title={'Publish Exam'} className={''}>
@@ -324,7 +359,9 @@ function TestsList() {
 			<div className="mt-6">
 				<H1 className="text-center">Tests List</H1>
 
-				{testsList.length >= 1 && (
+				<DataTable columns={columns} data={testsList} pagination highlightOnHover width="5rem"></DataTable>
+
+				{/* {testsList.length == -1 && (
 					<table className="w-[100%]">
 						<thead>
 							<tr className="bg-cyan-300 text-center cursor-pointer">
@@ -375,9 +412,9 @@ function TestsList() {
 								})}
 						</tbody>
 					</table>
-				)}
+				)} */}
 
-				{testsList.length == 0 && !isLoading && (
+				{/* {testsList.length == 0 && !isLoading && (
 					<div className="text-center mt-6 flex justify-center">
 						<span>Woops! no test list found.&nbsp;&nbsp;</span>
 						<Link className="underline font-semibold flex items-center gap-2 " to={'/dashboard'}>
@@ -390,7 +427,7 @@ function TestsList() {
 					<div className="flex justify-center mt-6">
 						<AiOutlineLoading3Quarters className="animate-spin text-2xl font-semibold" />{' '}
 					</div>
-				)}
+				)} */}
 			</div>
 		</>
 	);
