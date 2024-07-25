@@ -6,11 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import useHttp from '../Hooks/use-http.jsx';
 import CButton from '../UI/CButton.jsx';
-import { H1 } from '../UI/Headings.jsx';
+import { H1, H3 } from '../UI/Headings.jsx';
 import './TestsList.css';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import Swal from 'sweetalert2';
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
+import DataTable from 'react-data-table-component';
 
 function PublishedTestsList() {
 	const { sendRequest } = useHttp();
@@ -80,12 +81,81 @@ function PublishedTestsList() {
 		});
 	};
 
+	const columns = [
+		{
+			sortable: true,
+			name: '#',
+			selector: (row, idx) => idx + 1,
+			width: '4rem',
+		},
+		{
+			sortable: true,
+			name: 'Published test id',
+			selector: (row) => row.ptl_test_id,
+		},
+		{
+			sortable: true,
+			name: 'Test Name',
+			selector: (row) => row.mt_name,
+		},
+
+		{
+			sortable: true,
+			name: 'Batch',
+			selector: (row) => 'Batch-' + row.tm_allow_to,
+		},
+		{
+			sortable: true,
+			name: 'Duration',
+			selector: (row) => row.mt_test_time,
+		},
+		{
+			sortable: true,
+			name: 'Total Questions',
+			selector: (row) => row.mt_total_test_question,
+		},
+		{
+			sortable: true,
+			name: 'Test Date',
+			selector: (row) => row.ptl_active_date,
+		},
+		{
+			sortable: true,
+			name: 'Scheduled',
+			cell: (row) => (
+				<>
+					{isExamToday(row.ptl_active_date) == 1 && <span className="bg-blue-300 p-1">Today</span>}
+					{isExamToday(row.ptl_active_date) == 2 && <span className="bg-green-300 p-1">Upcomming</span>}
+				</>
+			),
+		},
+		{
+			sortable: true,
+			name: 'Unpublish',
+			cell: (row) => (
+				<>{isExamToday(row.ptl_active_date) == 2 && <CButton icon={<FaXmark />} onClick={handleUnpublishExam.bind(null, row)}></CButton>}</>
+			),
+		},
+
+		{
+			sortable: true,
+			name: 'View Questions',
+			cell: (row) => (
+				<>
+					<CButton className="btn--info m-0" onClick={handlePublishedTestQuePreview.bind(null, row)} icon={<FaEye />}></CButton>
+				</>
+			),
+		},
+	];
+
 	return (
 		<>
 			<div className="mt-6">
-				<H1 className="text-center">Published Tests List</H1>
+				<H3 className="text-center">Published Tests List</H3>
 
-				{publishedTestsList.length >= 1 && (
+				<DataTable columns={columns} data={publishedTestsList} pagination highlightOnHover />
+
+				{/* {publishedTestsList.length == false && (
 					<table className="w-[100%]">
 						<thead>
 							<tr className="bg-cyan-300 text-center cursor-pointer">
@@ -136,9 +206,9 @@ function PublishedTestsList() {
 								})}
 						</tbody>
 					</table>
-				)}
+				)} */}
 
-				{publishedTestsList.length == 0 && !isLoading && (
+				{/* {publishedTestsList.length == 0 && !isLoading && (
 					<div className="text-center mt-6 flex justify-center">
 						<span>Woops! no test list found.&nbsp;&nbsp;</span>
 						<Link className="underline font-semibold flex items-center gap-2 " to={'/tests-list'}>
@@ -151,7 +221,7 @@ function PublishedTestsList() {
 					<div className="flex justify-center mt-6">
 						<AiOutlineLoading3Quarters className="animate-spin text-2xl font-semibold" />{' '}
 					</div>
-				)}
+				)} */}
 			</div>
 		</>
 	);
