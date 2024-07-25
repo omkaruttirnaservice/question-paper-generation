@@ -1,17 +1,21 @@
 import { FaEye, FaTrash, FaXmark } from 'react-icons/fa6';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getStudList } from './stud-list-api.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
 
 import DataTable from 'react-data-table-component';
-import Input from '../../UI/Input.jsx';
+import Input, { InputSelect } from '../../UI/Input.jsx';
+import { SEARCH_TYPE_NAME, SEARCH_TYPE_ROLL_NO } from '../../Utils/Constants.jsx';
 
 function StudentsList() {
+	const [searchTerm, setSearchTerm] = useState('');
+	const [searchType, setSearchType] = useState('');
 	const dispatch = useDispatch();
 	const { studentsList } = useSelector((state) => state.studentArea);
+	const [filteredStudentsList, setFilteredStudentsList] = useState([]);
 	const {
 		data: _studList,
 		isError: getStudentListErr,
@@ -24,8 +28,31 @@ function StudentsList() {
 	useEffect(() => {
 		if (_studList?.data) {
 			dispatch(StudentAreaActions.setStudentsList(_studList.data));
+			setFilteredStudentsList(_studList.data);
 		}
 	}, [_studList]);
+
+	const handleSearch = (e) => {
+		let searchKey = e.target.value;
+		setSearchTerm(searchKey);
+
+		if (searchKey == '') return setFilteredStudentsList(studentsList);
+		if (searchType == SEARCH_TYPE_ROLL_NO) {
+			let updatedList = studentsList.filter((stud) => +stud.sl_roll_number.match(+searchKey));
+			setFilteredStudentsList(updatedList);
+		}
+		if (searchType == SEARCH_TYPE_NAME) {
+			let updatedList = studentsList.filter((stud) => {
+				let fullName = `${stud.sl_f_name} ${stud.sl_m_name} ${stud.sl_l_name}`;
+				return fullName.toLowerCase().match(searchKey.toLowerCase());
+			});
+			setFilteredStudentsList(updatedList);
+		}
+	};
+	const handleSearchType = (e) => {
+		let searchType = e.target.value;
+		setSearchType(searchType);
+	};
 
 	const columns = [
 		{ sortable: true, name: '#', selector: (row, idx) => idx + 1, width: '60px' },
@@ -66,11 +93,19 @@ function StudentsList() {
 
 	return (
 		<div className=" ">
-			<div className="flex gap-3 mb-5">
-				<Input label={'Search'} className={'w-fit'}></Input>
+			<div className="flex gap-3 mb-5 mt-3 items-center">
+				<InputSelect label={'Search Type'} className={'w-fit'} value={searchType} onChange={handleSearchType}>
+					<option value="">-- Select --</option>
+					<option value={SEARCH_TYPE_ROLL_NO}>Roll No</option>
+					<option value={SEARCH_TYPE_NAME}>Name</option>
+				</InputSelect>
+
+				<Input label={'Search'} className={'w-fit'} value={searchTerm} onChange={handleSearch}></Input>
 				<CButton className={'h-fit mt-auto'} icon={<FaXmark />}></CButton>
 			</div>
-			{studentsList.length >= 1 && <DataTable columns={columns} data={studentsList} pagination fixedHeader highlightOnHover></DataTable>}
+			{filteredStudentsList.length >= 1 && (
+				<DataTable columns={columns} data={filteredStudentsList} pagination fixedHeader highlightOnHover></DataTable>
+			)}
 			{getStudentsListPending && <p>Getting students list...</p>}
 		</div>
 	);
