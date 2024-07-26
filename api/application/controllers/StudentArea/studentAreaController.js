@@ -114,7 +114,6 @@ const StudentAreaController = {
 		}
 
 		let _res = await studentAreaModel.getStudentsListByFilter(req.body);
-		console.log(_res, '==_res==');
 		return res.status(200).json(new ApiResponse(200, _res, 'Students list'));
 
 		// {
@@ -145,7 +144,6 @@ const StudentAreaController = {
 		});
 
 		let [_saveCenterListRes] = await studentAreaModel.saveCentersList(centersListToSave);
-		console.log(_saveCenterListRes.toJSON(), '==_saveCenterListRes==');
 
 		return res.status(200).json(new ApiResponse(200, _saveCenterListRes.toJSON(), 'Centers list downloaded successfully'));
 	}),
@@ -154,7 +152,6 @@ const StudentAreaController = {
 		let _centersList = await studentAreaModel.getCentersList();
 		let _batchList = await studentAreaModel.getBatchList();
 		let _postsList = await studentAreaModel.getPostsList();
-		console.log(_postsList, '==_postsList==');
 		let resData = { _centersList, _batchList, _postsList };
 		return res.status(200).json(new ApiResponse(200, resData, 'Centers list and batch list'));
 	}),
