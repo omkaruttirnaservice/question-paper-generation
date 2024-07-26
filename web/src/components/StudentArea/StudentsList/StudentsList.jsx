@@ -25,12 +25,15 @@ function StudentsList() {
 		queryFn: getStudList,
 	});
 
+	console.log(_studList, '==_studList==');
+
 	useEffect(() => {
-		if (_studList?.data) {
+		if (Array.isArray(_studList?.data)) {
+			console.log(_studList.data, '==_studList.data==');
 			dispatch(StudentAreaActions.setStudentsList(_studList.data));
 			setFilteredStudentsList(_studList.data);
 		}
-	}, [_studList]);
+	}, [_studList?.data]);
 
 	const handleSearch = (e) => {
 		let searchKey = e.target.value;
@@ -97,6 +100,13 @@ function StudentsList() {
 			),
 		},
 	];
+
+	useEffect(() => {
+		return () => {
+			dispatch(StudentAreaActions.setStudentsList([]));
+			setFilteredStudentsList([]);
+		};
+	}, []);
 
 	return (
 		<div className=" ">

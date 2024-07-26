@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { FaXmark } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
@@ -135,6 +135,12 @@ function StudentsListByCenter() {
 		{ sortable: true, name: 'Exam Date', selector: (row) => row.sl_exam_date },
 		{ sortable: true, name: 'Post', cell: (row) => <span className="bg-cyan-700 p-1 text-white">{row.sl_post}</span> },
 	];
+
+	useEffect(() => {
+		return () => {
+			dispatch(StudentAreaActions.setStudentsList([]));
+		};
+	}, []);
 
 	return (
 		<div className=" ">
