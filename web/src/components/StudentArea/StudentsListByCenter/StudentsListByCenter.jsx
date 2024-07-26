@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import { FaEye, FaTrash, FaXmark } from 'react-icons/fa6';
+import { FaXmark } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import CButton from '../../UI/CButton.jsx';
 
@@ -8,8 +8,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import DatePicker from 'react-datepicker';
 import { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
 import Input, { InputSelect } from '../../UI/Input.jsx';
-import { getBatchAndCenterList, getStudentsListFilter } from './stud-list-by-center-api.jsx';
 import { SEARCH_TYPE_NAME, SEARCH_TYPE_ROLL_NO } from '../../Utils/Constants.jsx';
+import { getBatchAndCenterList, getStudentsListFilter } from './stud-list-by-center-api.jsx';
 
 function StudentsListByCenter() {
 	const [studentsByCenterSearch, setStudentsByCenterSearch] = useState({
@@ -70,11 +70,7 @@ function StudentsListByCenter() {
 		isPending: _getStudentDataStatus,
 	} = useMutation({
 		mutationFn: getStudentsListFilter,
-		onSuccess: (data, variables) => {
-			console.log(data, '==data==');
-		},
 	});
-	console.log(_getStudentDataStatus, '==_getStudentDataStatus==');
 
 	useEffect(() => {
 		if (_studentsData) {
@@ -85,8 +81,20 @@ function StudentsListByCenter() {
 
 	const handleGetData = (e) => {
 		e.preventDefault();
-		getStudentsData(studentsByCenterSearch);
+
+		let sendData = { ...studentsByCenterSearch };
+		sendData.date = toYYYYMMDD(studentsByCenterSearch.date);
+
+		getStudentsData(sendData);
 	};
+
+	function toYYYYMMDD(_date) {
+		let [date, month, year] = _date.split('-');
+		if (month >= 9) {
+			month = `0${month}`;
+		}
+		return `${year}-${month}-${date}`;
+	}
 
 	useEffect(() => {
 		if (searchTerm == '') return setFilteredStudentsList(studentsList);
@@ -177,8 +185,8 @@ function StudentsListByCenter() {
 							setStudentsByCenterSearch((prev) => {
 								return {
 									...prev,
-									// date: `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
-									date: `${date.getFullYear()}-0${date.getMonth() + 1}-${date.getDate()}`,
+									date: `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
+									// date: `${date.getFullYear()}-0${date.getMonth() + 1}-${date.getDate()}`,
 								};
 							});
 						}}
@@ -221,6 +229,7 @@ function StudentsListByCenter() {
 				<DataTable columns={columns} data={filteredStudentsList} pagination fixedHeader highlightOnHover></DataTable>
 			)}
 			{_getStudentDataStatus && <p>Getting students list...</p>}
+			{filteredStudentsList.length == 0 && <p className="text-center mt-4">Sorry no students found....</p>}
 		</div>
 	);
 }
