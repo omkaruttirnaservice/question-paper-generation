@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import extractZip from 'extract-zip';
 import fs from 'fs';
 import path from 'path';
@@ -96,5 +97,67 @@ const StudentAreaController = {
 
 		return res.status(200).json(new ApiResponse(200, _studListAll, 'Students list'));
 	}),
+
+	getStudentsListByFilter: asyncHandler(async (req, res) => {
+		const schema = Joi.object({
+			centerNumber: Joi.number().required(),
+			batchNumber: Joi.number().required(),
+			postName: Joi.string().required(),
+			date: Joi.date(),
+		});
+		let { centerNumber, batchNumber, postName, date } = req.body;
+		let { value, error } = await schema.validate({ centerNumber, batchNumber, postName, date }, { abortEarly: false });
+		console.log(error, '==_isValid==');
+
+		if (error) {
+			throw new ApiError(400, 'Invalid data', error.details);
+		}
+
+		let _res = await studentAreaModel.getStudentsListByFilter(req.body);
+		console.log(_res, '==_res==');
+		return res.status(200).json(new ApiResponse(200, _res, 'Students list'));
+
+		// {
+		//     "centerNumber": "101",
+		//     "batchNumber": "3",
+		//     "date": "26-7-2024"
+		// }
+	}),
+
+	// get centers list
+	downloadCentersList: asyncHandler(async (req, res) => {
+		let { ip } = req.body;
+		if (!ip) throw new ApiError(400, 'Invalid IP address');
+		let _centersListRes = await fetch(`${ip}/master/students-data/download-centers-list`);
+		let _centersList = await _centersListRes.json();
+		if (_centersList.data.length == 0) throw new ApiError(200, 'No centers found to download');
+
+		let centersListToSave = [];
+		_centersList.data.forEach((el) => {
+			centersListToSave.push({
+				cl_number: el.c_collageCode,
+				cl_name: el.c_collageName,
+				cl_address: el.c_collageAddress,
+				cl_user_name: 'utr',
+				cl_password: 'utr',
+				cl_server_number: null, // TODO (Omkar): find What is this value?
+			});
+		});
+
+		let [_saveCenterListRes] = await studentAreaModel.saveCentersList(centersListToSave);
+		console.log(_saveCenterListRes.toJSON(), '==_saveCenterListRes==');
+
+		return res.status(200).json(new ApiResponse(200, _saveCenterListRes.toJSON(), 'Centers list downloaded successfully'));
+	}),
+
+	getCenterAndBatchList: asyncHandler(async (req, res) => {
+		let _centersList = await studentAreaModel.getCentersList();
+		let _batchList = await studentAreaModel.getBatchList();
+		let _postsList = await studentAreaModel.getPostsList();
+		console.log(_postsList, '==_postsList==');
+		let resData = { _centersList, _batchList, _postsList };
+		return res.status(200).json(new ApiResponse(200, resData, 'Centers list and batch list'));
+	}),
 };
+
 export default StudentAreaController;

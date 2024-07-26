@@ -3,6 +3,9 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
 	formFillingIP: null,
 	studentsList: [],
+	centersList: [],
+	batchList: [],
+	postsList: [],
 };
 
 const studentAreaSlice = createSlice({
@@ -15,6 +18,18 @@ const studentAreaSlice = createSlice({
 
 		setStudentsList: (state, action) => {
 			state.studentsList = action.payload;
+		},
+
+		setCentersList: (state, action) => {
+			state.centersList = action.payload;
+		},
+
+		setBatchList: (state, action) => {
+			state.batchList = action.payload;
+		},
+
+		setPostsList: (state, action) => {
+			state.postsList = action.payload;
 		},
 	},
 });

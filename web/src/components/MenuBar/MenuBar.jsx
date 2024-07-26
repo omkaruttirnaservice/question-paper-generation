@@ -85,6 +85,11 @@ function MenuBar({ isSidebarOpen }) {
 							<MdOutlineChecklist className="text-xl" />
 							{isSidebarOpen && <span> Students List</span>}
 						</NavLink>
+
+						<NavLink to={'/students-list-by-center'} className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}>
+							<MdOutlineChecklist className="text-xl" />
+							{isSidebarOpen && <span> Students List By Center</span>}
+						</NavLink>
 					</div>
 				</div>
 			</div>

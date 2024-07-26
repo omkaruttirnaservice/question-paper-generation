@@ -25,3 +25,14 @@ export const getStudentsList = async (ip) => {
 	});
 	return _res.json();
 };
+
+export const getCentersList = async (ip) => {
+	let _res = await fetch('/api/students-area/download-centers-list', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ ip }),
+	});
+	return _res.json();
+};

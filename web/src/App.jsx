@@ -10,6 +10,7 @@ import TestQuestionsView from './components/TestsList/TestQuestionsView.jsx';
 import PublishedTestQuestionsView from './components/PublishedTestsList/PublishedTestQuestionsView.jsx';
 import AddNewStudent from './components/StudentArea/AddNewStudent/AddNewStudent.jsx';
 import StudentsList from './components/StudentArea/StudentsList/StudentsList.jsx';
+import StudentsListByCenter from './components/StudentArea/StudentsListByCenter/StudentsListByCenter.jsx';
 
 const router = createBrowserRouter([
 	{
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
 
 			{ path: '/add-new-student', element: <AddNewStudent /> },
 			{ path: '/students-list', element: <StudentsList /> },
+			{ path: '/students-list-by-center', element: <StudentsListByCenter /> },
 		],
 	},
 ]);
