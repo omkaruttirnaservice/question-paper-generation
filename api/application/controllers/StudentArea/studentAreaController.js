@@ -102,11 +102,10 @@ const StudentAreaController = {
 		const schema = Joi.object({
 			centerNumber: Joi.number().required(),
 			batchNumber: Joi.number().required(),
-			postName: Joi.string().required(),
 			date: Joi.date(),
 		});
 		let { centerNumber, batchNumber, postName, date } = req.body;
-		let { value, error } = await schema.validate({ centerNumber, batchNumber, postName, date }, { abortEarly: false });
+		let { value, error } = await schema.validate({ centerNumber, batchNumber, date }, { abortEarly: false });
 		console.log(error, '==_isValid==');
 
 		if (error) {
@@ -151,8 +150,8 @@ const StudentAreaController = {
 	getCenterAndBatchList: asyncHandler(async (req, res) => {
 		let _centersList = await studentAreaModel.getCentersList();
 		let _batchList = await studentAreaModel.getBatchList();
-		let _postsList = await studentAreaModel.getPostsList();
-		let resData = { _centersList, _batchList, _postsList };
+		// let _postsList = await studentAreaModel.getPostsList();
+		let resData = { _centersList, _batchList };
 		return res.status(200).json(new ApiResponse(200, resData, 'Centers list and batch list'));
 	}),
 };

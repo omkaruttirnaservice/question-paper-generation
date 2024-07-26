@@ -18,6 +18,10 @@ const studentAreaSlice = createSlice({
 
 		setStudentsList: (state, action) => {
 			state.studentsList = action.payload;
+
+			let _uniquePostName = [...new Set(action.payload.map((item) => item.sl_post))];
+
+			state.postsList = _uniquePostName;
 		},
 
 		setCentersList: (state, action) => {

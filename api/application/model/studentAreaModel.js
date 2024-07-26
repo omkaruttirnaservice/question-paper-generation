@@ -109,7 +109,6 @@ const studentAreaModel = {
 					sl_center_code: data.centerNumber,
 					sl_batch_no: data.batchNumber,
 					sl_exam_date: data.date,
-					sl_post: data.postName,
 				},
 				raw: true,
 			});

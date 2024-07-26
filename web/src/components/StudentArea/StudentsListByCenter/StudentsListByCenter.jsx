@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { FaXmark } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,7 @@ import CButton from '../../UI/CButton.jsx';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import DatePicker from 'react-datepicker';
-import { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
+import studentAreaSlice, { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
 import Input, { InputSelect } from '../../UI/Input.jsx';
 import { SEARCH_TYPE_NAME, SEARCH_TYPE_ROLL_NO } from '../../Utils/Constants.jsx';
 import { getBatchAndCenterList, getStudentsListFilter } from './stud-list-by-center-api.jsx';
@@ -16,10 +16,10 @@ function StudentsListByCenter() {
 	const [studentsByCenterSearch, setStudentsByCenterSearch] = useState({
 		centerNumber: null,
 		batchNumber: null,
-		postName: null,
 		date: null,
 	});
 
+	const [filterPost, setFilterPost] = useState('');
 	const [searchTerm, setSearchTerm] = useState('');
 	const [searchType, setSearchType] = useState('');
 	const dispatch = useDispatch();
@@ -37,10 +37,9 @@ function StudentsListByCenter() {
 
 	useEffect(() => {
 		if (_batchAndCenterList?.data) {
-			let { _batchList, _centersList, _postsList } = _batchAndCenterList.data;
+			let { _batchList, _centersList } = _batchAndCenterList.data;
 			dispatch(StudentAreaActions.setBatchList(_batchList));
 			dispatch(StudentAreaActions.setCentersList(_centersList));
-			dispatch(StudentAreaActions.setPostsList(_postsList));
 		}
 	}, [_batchAndCenterList]);
 
@@ -63,6 +62,17 @@ function StudentsListByCenter() {
 				[name]: value,
 			};
 		});
+	};
+
+	const handlePostChange = (e) => {
+		let _post = e.target.value;
+		setFilterPost(_post);
+		if (_post == '') {
+			setFilteredStudentsList(studentsList);
+		} else {
+			let updatedList = studentsList.filter((el) => el.sl_post == _post);
+			setFilteredStudentsList(updatedList);
+		}
 	};
 
 	const {
@@ -123,7 +133,7 @@ function StudentsListByCenter() {
 		{ sortable: true, name: 'Password', selector: (row) => row.sl_password },
 		{ sortable: true, name: 'Contact number', selector: (row) => row.sl_contact_number },
 		{ sortable: true, name: 'Exam Date', selector: (row) => row.sl_exam_date },
-		{ sortable: true, name: 'Post', selector: (row) => row.sl_post },
+		{ sortable: true, name: 'Post', cell: (row) => <span className="bg-cyan-700 p-1 text-white">{row.sl_post}</span> },
 	];
 
 	return (
@@ -144,14 +154,6 @@ function StudentsListByCenter() {
 						);
 					})}
 					{centersList.length == 0 && <option>No centers available</option>}
-				</InputSelect>
-
-				<InputSelect label={'Post List'} name={'postName'} className={'w-full'} value={studentsByCenterSearch.postName} onChange={handleChange}>
-					<option value="">-- Select --</option>
-					{postsList.map((batch) => {
-						return <option value={batch.sl_post}>{batch.sl_post}</option>;
-					})}
-					{postsList.length == 0 && <option>No post available</option>}
 				</InputSelect>
 
 				<InputSelect
@@ -187,7 +189,7 @@ function StudentsListByCenter() {
 						defaultValue
 						name="publish_date"
 						value={studentsByCenterSearch.date}
-						className="block !w-full border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
+						className="!z-[1000] block !w-full border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
 					/>
 				</div>
 
@@ -195,7 +197,9 @@ function StudentsListByCenter() {
 					Get data
 				</CButton>
 
-				<div></div>
+				<div className="col-span-2">
+					Total Students: <span className="font-semibold">{studentsList.length}</span>
+				</div>
 
 				<div className="col-span-1">
 					<InputSelect label={'Search Type'} className={'w-full'} value={searchType} onChange={handleSearchType}>
@@ -205,7 +209,7 @@ function StudentsListByCenter() {
 					</InputSelect>
 				</div>
 
-				<div className="col-span-2 flex items-center gap-2">
+				<div className="col-span-1 flex items-center gap-2">
 					<Input label={'Search'} className={'w-fit'} value={searchTerm} onChange={handleSearch} disabled={searchType == ''}></Input>
 
 					{searchType != '' && searchTerm != '' && (
@@ -217,12 +221,20 @@ function StudentsListByCenter() {
 							}}></CButton>
 					)}
 				</div>
+
+				<InputSelect label={'Post List'} name={'postName'} className={'w-full'} value={filterPost} onChange={handlePostChange}>
+					<option value="">-- Select --</option>
+					{postsList.map((post) => {
+						return <option value={post}>{post}</option>;
+					})}
+					{postsList.length == 0 && <option>No post available</option>}
+				</InputSelect>
 			</div>
 			{filteredStudentsList.length >= 1 && (
 				<DataTable columns={columns} data={filteredStudentsList} pagination fixedHeader highlightOnHover></DataTable>
 			)}
 			{_getStudentDataStatus && <p>Getting students list...</p>}
-			{filteredStudentsList.length == 0 && <p className="text-center mt-4">Sorry no students found....</p>}
+			{filteredStudentsList.length == 0 && !_getStudentDataStatus && <p className="text-center mt-4">Sorry no students found....</p>}
 		</div>
 	);
 }
