@@ -10,6 +10,7 @@ import { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
 import Input, { InputSelect } from '../../UI/Input.jsx';
 import { SEARCH_TYPE_NAME, SEARCH_TYPE_ROLL_NO } from '../../Utils/Constants.jsx';
 import { getBatchAndCenterList, getStudentsListFilter } from './stud-list-by-center-api.jsx';
+import { toYYYYMMDD } from '../../../helpers/myDate.jsx';
 
 function StudentsListByCenter() {
 	const [studentsByCenterSearch, setStudentsByCenterSearch] = useState({
@@ -87,14 +88,6 @@ function StudentsListByCenter() {
 
 		getStudentsData(sendData);
 	};
-
-	function toYYYYMMDD(_date) {
-		let [date, month, year] = _date.split('-');
-		if (month >= 9) {
-			month = `0${month}`;
-		}
-		return `${year}-${month}-${date}`;
-	}
 
 	useEffect(() => {
 		if (searchTerm == '') return setFilteredStudentsList(studentsList);
