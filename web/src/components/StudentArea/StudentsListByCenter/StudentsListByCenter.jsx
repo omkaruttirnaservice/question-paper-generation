@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { FaXmark } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,25 +6,21 @@ import CButton from '../../UI/CButton.jsx';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import DatePicker from 'react-datepicker';
-import studentAreaSlice, { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
+import { toYYYYMMDD } from '../../../helpers/myDate.jsx';
+import { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
 import Input, { InputSelect } from '../../UI/Input.jsx';
 import { SEARCH_TYPE_NAME, SEARCH_TYPE_ROLL_NO } from '../../Utils/Constants.jsx';
 import { getBatchAndCenterList, getStudentsListFilter } from './stud-list-by-center-api.jsx';
-import { toYYYYMMDD } from '../../../helpers/myDate.jsx';
 
 function StudentsListByCenter() {
-	const [studentsByCenterSearch, setStudentsByCenterSearch] = useState({
-		centerNumber: null,
-		batchNumber: null,
-		date: null,
-	});
-
 	const [filterPost, setFilterPost] = useState('');
 	const [searchTerm, setSearchTerm] = useState('');
 	const [searchType, setSearchType] = useState('');
 	const dispatch = useDispatch();
-	const { studentsList, centersList, batchList, postsList } = useSelector((state) => state.studentArea);
-	const [filteredStudentsList, setFilteredStudentsList] = useState([]);
+	const { listByCenter } = useSelector((state) => state.studentArea);
+	const { studentsList_BY_CENTER, centersList_BY_CENTER, batchList_BY_CENTER, postsList_BY_CENTER, centerNumber, batchNumber, date } = listByCenter;
+
+	const [filteredStudentsList_BY_CENTER, setFilteredStudentsList_BY_CENTER] = useState([]);
 
 	const {
 		data: _batchAndCenterList,
@@ -56,22 +52,23 @@ function StudentsListByCenter() {
 		let name = e.target.name;
 		let value = e.target.value;
 
-		setStudentsByCenterSearch((prev) => {
-			return {
-				...prev,
-				[name]: value,
-			};
-		});
+		dispatch(StudentAreaActions.setStudentsByCenterSearch({ name, value }));
+		// (prev) => {
+		// 	return {
+		// 		...prev,
+		// 		[name]: value,
+		// 	};
+		// };
 	};
 
 	const handlePostChange = (e) => {
 		let _post = e.target.value;
 		setFilterPost(_post);
 		if (_post == '') {
-			setFilteredStudentsList(studentsList);
+			setFilteredStudentsList_BY_CENTER(studentsList_BY_CENTER);
 		} else {
-			let updatedList = studentsList.filter((el) => el.sl_post == _post);
-			setFilteredStudentsList(updatedList);
+			let updatedList = studentsList_BY_CENTER.filter((el) => el.sl_post == _post);
+			setFilteredStudentsList_BY_CENTER(updatedList);
 		}
 	};
 
@@ -85,36 +82,37 @@ function StudentsListByCenter() {
 
 	useEffect(() => {
 		if (_studentsData) {
-			dispatch(StudentAreaActions.setStudentsList(_studentsData.data));
-			setFilteredStudentsList(_studentsData.data);
+			dispatch(StudentAreaActions.setStudentsList_BY_CENTER(_studentsData.data));
+			setFilteredStudentsList_BY_CENTER(_studentsData.data);
 		}
 	}, [_studentsData]);
 
 	const handleGetData = (e) => {
 		e.preventDefault();
 
-		let sendData = { ...studentsByCenterSearch };
-		sendData.date = toYYYYMMDD(studentsByCenterSearch.date);
+		let sendData = { centerNumber, batchNumber, date };
+		// sendData.date = toYYYYMMDD(sendData.date);
 
 		getStudentsData(sendData);
 	};
 
 	useEffect(() => {
-		if (searchTerm == '') return setFilteredStudentsList(studentsList);
+		if (searchTerm == '') return setFilteredStudentsList_BY_CENTER(studentsList_BY_CENTER);
 		let timeOut = setTimeout(() => {
 			if (searchType == SEARCH_TYPE_ROLL_NO) {
-				let updatedList = studentsList.filter((stud) => +stud.sl_roll_number.match(+searchTerm));
-				setFilteredStudentsList(updatedList);
+				let updatedList = studentsList_BY_CENTER.filter((stud) => +stud.sl_roll_number.match(+searchTerm));
+				setFilteredStudentsList_BY_CENTER(updatedList);
 			}
 			if (searchType == SEARCH_TYPE_NAME) {
-				let updatedList = studentsList.filter((stud) => {
+				let updatedList = studentsList_BY_CENTER.filter((stud) => {
 					let fullName = `${stud.sl_f_name} ${stud.sl_m_name} ${stud.sl_l_name}`;
 					return fullName.toLowerCase().match(searchTerm.toLowerCase());
 				});
-				setFilteredStudentsList(updatedList);
+				setFilteredStudentsList_BY_CENTER(updatedList);
 			}
 		}, 1500);
 		return () => {
+			console.log(timeOut, '==timeOut==');
 			clearTimeout(timeOut);
 		};
 	}, [searchTerm]);
@@ -136,43 +134,31 @@ function StudentsListByCenter() {
 		{ sortable: true, name: 'Post', cell: (row) => <span className="bg-cyan-700 p-1 text-white">{row.sl_post}</span> },
 	];
 
-	useEffect(() => {
-		return () => {
-			dispatch(StudentAreaActions.setStudentsList([]));
-		};
-	}, []);
-
 	return (
 		<div className=" ">
 			<div className="grid grid-cols-6 gap-3 mb-5 mt-3 items-center">
-				<InputSelect
-					label={'Centers List'}
-					value={studentsByCenterSearch.centerNumber}
-					name={'centerNumber'}
-					className={'w-full'}
-					onChange={handleChange}>
+				<InputSelect label={'Centers List'} value={centerNumber} name={'centerNumber'} className={'w-full'} onChange={handleChange}>
 					<option value="">-- Select --</option>
-					{centersList.map((center) => {
+					{centersList_BY_CENTER.map((center) => {
 						return (
-							<option value={center.cl_number} selected={center.cl_number == studentsByCenterSearch.centerNumber}>
+							<option value={center.cl_number} selected={+center.cl_number == +centerNumber}>
 								({center.cl_number}){center.cl_name}
 							</option>
 						);
 					})}
-					{centersList.length == 0 && <option>No centers available</option>}
+					{centersList_BY_CENTER.length == 0 && <option>No centers available</option>}
 				</InputSelect>
 
-				<InputSelect
-					label={'Batch List'}
-					name={'batchNumber'}
-					className={'w-full'}
-					value={studentsByCenterSearch.batchNumber}
-					onChange={handleChange}>
+				<InputSelect label={'Batch List'} name={'batchNumber'} className={'w-full'} value={batchNumber} onChange={handleChange}>
 					<option value="">-- Select --</option>
-					{batchList.map((batch) => {
-						return <option value={batch.sl_batch_no}>Batch-{batch.sl_batch_no}</option>;
+					{batchList_BY_CENTER.map((batch) => {
+						return (
+							<option value={batch.sl_batch_no} selected={+batch.sl_batch_no == +batchNumber}>
+								Batch-{batch.sl_batch_no}
+							</option>
+						);
 					})}
-					{batchList.length == 0 && <option>No batch available</option>}
+					{batchList_BY_CENTER.length == 0 && <option>No batch available</option>}
 				</InputSelect>
 
 				<div>
@@ -182,19 +168,24 @@ function StudentsListByCenter() {
 
 					<DatePicker
 						autoComplete="off"
+						selected={date}
 						onChange={(date) => {
-							setStudentsByCenterSearch((prev) => {
-								return {
-									...prev,
-									date: `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
-									// date: `${date.getFullYear()}-0${date.getMonth() + 1}-${date.getDate()}`,
-								};
-							});
+							let name = 'date';
+							// let _date = date.getDate();
+							// if (_date <= 9) _date = `0${_date}`;
+							// let _month = date.getMonth() + 1;
+							// if (_month <= 9) _month = `0${_month}`;
+							// let _year = date.getFullYear();
+
+							// let value = `${_date}-${_month}-${_year}`;
+							let value = date;
+
+							dispatch(StudentAreaActions.setStudentsByCenterSearch({ name, value }));
 						}}
 						placeholderText="select date"
-						defaultValue
-						name="publish_date"
-						value={studentsByCenterSearch.date}
+						name="date"
+						dateFormat="dd-MM-YYYY"
+						// date={date}
 						className="!z-[1000] block !w-full border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
 					/>
 				</div>
@@ -204,7 +195,7 @@ function StudentsListByCenter() {
 				</CButton>
 
 				<div className="col-span-2">
-					Total Students: <span className="font-semibold">{studentsList.length}</span>
+					Total Students: <span className="font-semibold">{studentsList_BY_CENTER.length}</span>
 				</div>
 
 				<div className="col-span-1">
@@ -230,17 +221,17 @@ function StudentsListByCenter() {
 
 				<InputSelect label={'Post List'} name={'postName'} className={'w-full'} value={filterPost} onChange={handlePostChange}>
 					<option value="">-- Select --</option>
-					{postsList.map((post) => {
+					{postsList_BY_CENTER.map((post) => {
 						return <option value={post}>{post}</option>;
 					})}
-					{postsList.length == 0 && <option>No post available</option>}
+					{postsList_BY_CENTER.length == 0 && <option>No post available</option>}
 				</InputSelect>
 			</div>
-			{filteredStudentsList.length >= 1 && (
-				<DataTable columns={columns} data={filteredStudentsList} pagination fixedHeader highlightOnHover></DataTable>
+			{filteredStudentsList_BY_CENTER.length >= 1 && (
+				<DataTable columns={columns} data={filteredStudentsList_BY_CENTER} pagination fixedHeader highlightOnHover></DataTable>
 			)}
 			{_getStudentDataStatus && <p>Getting students list...</p>}
-			{filteredStudentsList.length == 0 && !_getStudentDataStatus && <p className="text-center mt-4">Sorry no students found....</p>}
+			{filteredStudentsList_BY_CENTER.length == 0 && !_getStudentDataStatus && <p className="text-center mt-4">Sorry no students found....</p>}
 		</div>
 	);
 }

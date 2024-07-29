@@ -11,11 +11,10 @@ import Input, { InputSelect } from '../../UI/Input.jsx';
 import { SEARCH_TYPE_NAME, SEARCH_TYPE_ROLL_NO } from '../../Utils/Constants.jsx';
 
 function StudentsList() {
-	const [searchTerm, setSearchTerm] = useState('');
-	const [searchType, setSearchType] = useState('');
 	const dispatch = useDispatch();
-	const { studentsList } = useSelector((state) => state.studentArea);
-	const [filteredStudentsList, setFilteredStudentsList] = useState([]);
+	const { allList } = useSelector((state) => state.studentArea);
+	const [filterStudentsList_All, setFilterStudentsList_All] = useState([]);
+
 	const {
 		data: _studList,
 		isError: getStudentListErr,
@@ -26,47 +25,45 @@ function StudentsList() {
 	});
 
 	console.log(_studList, '==_studList==');
-
 	useEffect(() => {
-		if (Array.isArray(_studList?.data)) {
-			console.log(_studList.data, '==_studList.data==');
-			dispatch(StudentAreaActions.setStudentsList(_studList.data));
-			setFilteredStudentsList(_studList.data);
+		if (_studList?.data) {
+			dispatch(StudentAreaActions.setStudentsList_All(_studList.data));
+			setFilterStudentsList_All(_studList.data);
 		}
-	}, [_studList?.data]);
+	}, [_studList]);
 
-	const handleSearch = (e) => {
-		let searchKey = e.target.value;
-		setSearchTerm(searchKey);
-	};
+	const handleSearch = (e) => dispatch(StudentAreaActions.setSearchTerm_ALL(e.target.value));
+
 	const handleSearchType = (e) => {
-		let searchType = e.target.value;
-		setSearchType(searchType);
+		dispatch(StudentAreaActions.setSearchTerm_ALL(''));
+		dispatch(StudentAreaActions.setSearchType_ALL(e.target.value));
 	};
 
 	useEffect(() => {
-		if (searchTerm == '') return setFilteredStudentsList(studentsList);
+		if (allList.searchTerm == '') return setFilterStudentsList_All(allList.studentsList_ALL);
+
 		let timeOut = setTimeout(() => {
-			if (searchType == SEARCH_TYPE_ROLL_NO) {
-				let updatedList = studentsList.filter((stud) => +stud.sl_roll_number.match(+searchTerm));
-				setFilteredStudentsList(updatedList);
+			if (allList.searchType == SEARCH_TYPE_ROLL_NO) {
+				let updatedList = allList.studentsList_ALL.filter((stud) => +stud.sl_roll_number.match(+allList.searchTerm));
+				console.log(updatedList, '==updatedList==');
+				setFilterStudentsList_All(updatedList);
 			}
-			if (searchType == SEARCH_TYPE_NAME) {
-				let updatedList = studentsList.filter((stud) => {
+			if (allList.searchType == SEARCH_TYPE_NAME) {
+				let updatedList = allList.studentsList_ALL.filter((stud) => {
 					let fullName = `${stud.sl_f_name} ${stud.sl_m_name} ${stud.sl_l_name}`;
-					return fullName.toLowerCase().match(searchTerm.toLowerCase());
+					return fullName.toLowerCase().match(allList.searchTerm.toLowerCase());
 				});
-				setFilteredStudentsList(updatedList);
+
+				setFilterStudentsList_All(updatedList);
 			}
 		}, 1500);
 		return () => {
-			clearTimeout(timeOut);
+			if (timeOut) clearTimeout(timeOut);
 		};
-	}, [searchTerm]);
+	}, [allList.searchTerm]);
 
 	const columns = [
 		{ sortable: true, name: '#', selector: (row, idx) => idx + 1, width: '60px' },
-		// { sortable: true, name: 'Name', selector: (row) => row.sl_f_name + ' ' + row.sl_m_name + ' ' + row.sl_l_name, width: '10rem' },
 		{
 			sortable: true,
 			name: 'Name',
@@ -101,35 +98,28 @@ function StudentsList() {
 		},
 	];
 
-	useEffect(() => {
-		return () => {
-			dispatch(StudentAreaActions.setStudentsList([]));
-			setFilteredStudentsList([]);
-		};
-	}, []);
-
 	return (
-		<div className=" ">
+		<div className="">
 			<div className="flex gap-3 mb-5 mt-3 items-center">
-				<InputSelect label={'Search Type'} className={'w-fit'} value={searchType} onChange={handleSearchType}>
+				<InputSelect label={'Search Type'} className={'w-fit'} value={allList.searchType} onChange={handleSearchType}>
 					<option value="">-- Select --</option>
 					<option value={SEARCH_TYPE_ROLL_NO}>Roll No</option>
 					<option value={SEARCH_TYPE_NAME}>Name</option>
 				</InputSelect>
 
-				<Input label={'Search'} className={'w-fit'} value={searchTerm} onChange={handleSearch} disabled={searchType == ''}></Input>
-				{searchType != '' && searchTerm != '' && (
-					<CButton
-						className={'h-fit mt-auto'}
-						icon={<FaXmark />}
-						onClick={() => {
-							setSearchTerm('');
-						}}></CButton>
-				)}
+				<Input label={'Search'} className={'w-fit'} value={allList.searchTerm} onChange={handleSearch} disabled={allList.searchType == ''}></Input>
+				<CButton
+					className={'h-fit mt-auto'}
+					icon={<FaXmark />}
+					onClick={() => {
+						dispatch(StudentAreaActions.setSearchTerm_ALL(''));
+					}}></CButton>
 			</div>
-			{filteredStudentsList.length >= 1 && (
-				<DataTable columns={columns} data={filteredStudentsList} pagination fixedHeader highlightOnHover></DataTable>
+			{filterStudentsList_All.length >= 1 && (
+				<DataTable columns={columns} data={filterStudentsList_All} pagination fixedHeader highlightOnHover></DataTable>
 			)}
+
+			{filterStudentsList_All.length == 0 && !getStudentsListPending && <p>Students not found...</p>}
 			{getStudentsListPending && <p>Getting students list...</p>}
 		</div>
 	);

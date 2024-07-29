@@ -152,6 +152,7 @@ const StudentAreaController = {
 		let _batchList = await studentAreaModel.getBatchList();
 		// let _postsList = await studentAreaModel.getPostsList();
 		let resData = { _centersList, _batchList };
+		console.log(resData, '==resData==');
 		return res.status(200).json(new ApiResponse(200, resData, 'Centers list and batch list'));
 	}),
 };

@@ -2,10 +2,21 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
 	formFillingIP: null,
-	studentsList: [],
-	centersList: [],
-	batchList: [],
-	postsList: [],
+	allList: {
+		studentsList_ALL: [],
+		searchTerm: null,
+		searchType: null,
+	},
+	listByCenter: {
+		studentsList_BY_CENTER: [],
+		centersList_BY_CENTER: [],
+		batchList_BY_CENTER: [],
+		postsList_BY_CENTER: [],
+
+		centerNumber: null,
+		batchNumber: null,
+		date: null,
+	},
 };
 
 const studentAreaSlice = createSlice({
@@ -16,24 +27,42 @@ const studentAreaSlice = createSlice({
 			state.formFillingIP = action.payload;
 		},
 
-		setStudentsList: (state, action) => {
-			state.studentsList = action.payload;
+		setSearchTerm_ALL: (state, action) => {
+			state.allList.searchTerm = action.payload;
+		},
+
+		setSearchType_ALL: (state, action) => {
+			state.allList.searchType = action.payload;
+		},
+
+		setStudentsList_All: (state, action) => {
+			state.allList.studentsList_ALL = action.payload;
+		},
+
+		setStudentsList_BY_CENTER: (state, action) => {
+			state.listByCenter.studentsList_BY_CENTER = action.payload;
 
 			let _uniquePostName = [...new Set(action.payload.map((item) => item.sl_post))];
 
-			state.postsList = _uniquePostName;
+			state.listByCenter.postsList_BY_CENTER = _uniquePostName;
 		},
 
 		setCentersList: (state, action) => {
-			state.centersList = action.payload;
+			state.listByCenter.centersList_BY_CENTER = action.payload;
 		},
 
 		setBatchList: (state, action) => {
-			state.batchList = action.payload;
+			state.listByCenter.batchList_BY_CENTER = action.payload;
 		},
 
 		setPostsList: (state, action) => {
-			state.postsList = action.payload;
+			state.listByCenter.postsList_BY_CENTER = action.payload;
+		},
+
+		setStudentsByCenterSearch: (state, action) => {
+			let { name, value } = action.payload;
+			console.log(name, value, '==name, value==');
+			state.listByCenter[name] = value;
 		},
 	},
 });
