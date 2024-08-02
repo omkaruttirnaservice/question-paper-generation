@@ -7,14 +7,16 @@ export default function CButton({
 	type = 'button',
 	varient = 'btn--primary',
 	isLoading = false,
+	disabled = false,
+	disabledCursor = 'cursor-wait',
 }) {
 	return (
 		<>
 			<button
-				className={`cd-btn flex justify-center items-center gap-1 ${className} ${varient} disabled:hover:cursor-wait`}
+				className={`cd-btn flex justify-center items-center gap-1 ${className} ${varient} disabled:hover:${disabledCursor}`}
 				type={type}
 				onClick={onClick}
-				disabled={isLoading}>
+				disabled={isLoading || disabled}>
 				<span className="flex items-center gap-2 justify-center">
 					{!icon ? '' : icon} {children}
 				</span>

@@ -59,6 +59,7 @@ const reportsController = {
 			console.log(deleteResultRes, '==deleteResultRes==');
 
 			await transact.commit();
+			return res.status(201).json(new ApiResponse(201, {}, 'Successfully generated result'));
 		} catch (error) {
 			await transact.rollback();
 			next(error);

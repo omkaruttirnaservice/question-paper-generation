@@ -54,6 +54,8 @@
 
 	.cd-btn {
 		@apply shadow-md py-1 px-2 text-base hover:shadow-lg transition-all duration-75 active:scale-75 font-medium focus:outline-none focus:ring;
+
+		@apply disabled:scale-100 disabled:opacity-90;
 	}
 
 	.btn--primary {

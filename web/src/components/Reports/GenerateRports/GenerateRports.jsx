@@ -5,12 +5,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { generateResult, getPublishedTestLists } from './gen-reports-api.jsx';
 import CButton from '../../UI/CButton.jsx';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
+import Swal from 'sweetalert2';
 
 function GenerateRports() {
 	const { examServerIP, testsList } = useSelector((state) => state.reports);
 	const dispatch = useDispatch();
 
-	const { data: publishedTestsList } = useQuery({
+	const { data: publishedTestsList, refetch } = useQuery({
 		queryKey: ['get-published-test-list'],
 		queryFn: getPublishedTestLists,
 	});
@@ -26,13 +27,13 @@ function GenerateRports() {
 		<div className="mt-5 flex flex-col gap-4">
 			<H3>Test Reports</H3>
 			{testsList.map((el, idx) => {
-				return <TestDetails el={el} idx={idx} key={idx} />;
+				return <TestDetails el={el} idx={idx} key={idx} refetch={refetch} />;
 			})}
 		</div>
 	);
 }
 
-function TestDetails({ el: details, idx }) {
+function TestDetails({ el: details, idx, refetch }) {
 	const {
 		mutate: _generateResult,
 		isError: _generateResultErr,
@@ -40,7 +41,10 @@ function TestDetails({ el: details, idx }) {
 	} = useMutation({
 		mutationFn: generateResult,
 		onSuccess: (data) => {
-			console.log(data, '==data==');
+			Swal.fire('Success', data.message);
+			if (data.success) {
+				refetch();
+			}
 		},
 		onError: (err) => {
 			console.log(err, '==err==');
@@ -73,9 +77,13 @@ function TestDetails({ el: details, idx }) {
 			<div className="flex-1">
 				<div className="flex flex-col justify-center gap-1 items-end h-full">
 					{details.is_test_generated != 1 ? (
-						<CButton onClick={handleGenerateResult.bind(null, details.id)}>Generate Result</CButton>
+						<CButton onClick={handleGenerateResult.bind(null, details.id)} isLoading={_generateResultLoading}>
+							Generate Result
+						</CButton>
 					) : (
-						<CButton className={'btn--success'}> Result Generated </CButton>
+						<CButton disabledCursor="cursor-ban" disabled={true} className={'btn--success'}>
+							Result Generated
+						</CButton>
 					)}
 				</div>
 			</div>
