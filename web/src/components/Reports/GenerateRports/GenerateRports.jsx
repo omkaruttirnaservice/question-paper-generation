@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { H3 } from '../../UI/Headings.jsx';
-import { useQuery } from '@tanstack/react-query';
-import { getPublishedTestLists } from './gen-reports-api.jsx';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { generateResult, getPublishedTestLists } from './gen-reports-api.jsx';
 import CButton from '../../UI/CButton.jsx';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
 
@@ -33,6 +33,23 @@ function GenerateRports() {
 }
 
 function TestDetails({ el: details, idx }) {
+	const {
+		mutate: _generateResult,
+		isError: _generateResultErr,
+		isPending: _generateResultLoading,
+	} = useMutation({
+		mutationFn: generateResult,
+		onSuccess: (data) => {
+			console.log(data, '==data==');
+		},
+		onError: (err) => {
+			console.log(err, '==err==');
+		},
+	});
+	const handleGenerateResult = (publishedTestId) => {
+		// Converting the published test id to base 64 string
+		_generateResult(btoa(publishedTestId));
+	};
 	return (
 		<div className="border flex gap-6 px-7 mx-10">
 			<div className="border-r p-6 text-2xl font-bold">{idx + 1}</div>
@@ -55,7 +72,11 @@ function TestDetails({ el: details, idx }) {
 			</div>
 			<div className="flex-1">
 				<div className="flex flex-col justify-center gap-1 items-end h-full">
-					{details.is_test_generated != 1 ? <CButton>Generate Result</CButton> : <CButton className={'btn--success'}> Result Generated </CButton>}
+					{details.is_test_generated != 1 ? (
+						<CButton onClick={handleGenerateResult.bind(null, details.id)}>Generate Result</CButton>
+					) : (
+						<CButton className={'btn--success'}> Result Generated </CButton>
+					)}
 				</div>
 			</div>
 		</div>

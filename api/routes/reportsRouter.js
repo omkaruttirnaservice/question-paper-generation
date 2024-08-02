@@ -8,4 +8,6 @@ reportsRouter.post('/set-exam-server-ip', reportsController.setExamServerIP);
 
 reportsRouter.get('/get-published-tests', reportsController.getPublishedTests)
 
+reportsRouter.post('/generate-result', reportsController.generateResult)
+
 export default reportsRouter;

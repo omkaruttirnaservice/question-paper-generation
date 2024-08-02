@@ -29,6 +29,7 @@ const StudentAreaController = {
 			let { ip } = req.body;
 
 			if (!ip) throw new ApiError(404, 'Invalid IP address');
+			
 
 			let _res = await fetch(`${ip}/master/students-data/data-download`);
 			if (!_res.ok) throw new ApiError(404, 'Unable to get students data');
