@@ -22,7 +22,7 @@ const tm_test_question_sets = sequelize.define('tm_test_question_sets', {
 	q_c: { type: Sequelize.TEXT('long') },
 	q_d: { type: Sequelize.TEXT('long') },
 	q_e: { type: Sequelize.TEXT('long') },
-	q_display_type: { type: Sequelize.INTEGER },
+	q_display_type: { type: Sequelize.INTEGER, defaultValue: 1 },
 	q_ask_in: { type: Sequelize.TEXT('long') },
 	q_data_type: { type: Sequelize.INTEGER() },
 	q_mat_data: { type: Sequelize.TEXT('long') },

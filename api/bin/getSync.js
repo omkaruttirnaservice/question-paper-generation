@@ -14,6 +14,9 @@ import tn_student_list from '../application/schemas/tn_student_list.js';
 import tn_center_list from '../application/schemas/tn_center_list.js';
 import aouth from '../application/schemas/aouth.js';
 
+import tm_student_test_list from '../application/schemas/tm_student_test_list.js';
+import tm_student_question_paper from '../application/schemas/tm_student_question_paper.js';
+
 tm_master_test_list.hasMany(tm_main_topic_list, {
 	foreignKey: 'mtl_master_test_list_id',
 });

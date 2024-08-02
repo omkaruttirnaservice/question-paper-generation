@@ -96,7 +96,7 @@ q_b = `option B`
 q_c = `option C`
 q_d = `option D`
 q_e = `option E`
-q_display_type =
+q_display_type = type of question 1 = mcq, 2= , 3= ,4=
 q_ask_in
 q_data_type
 q_mat_data

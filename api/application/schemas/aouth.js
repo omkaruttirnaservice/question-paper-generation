@@ -36,6 +36,9 @@ const aouth = sequelize.define('aouth', {
 	a_form_filling_ip: {
 		type: STRING(1024),
 	},
+	exam_server_ip: {
+		type: STRING(1024),
+	},
 	createdAt: {
 		type: DATE,
 		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),

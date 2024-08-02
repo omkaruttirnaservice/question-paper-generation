@@ -9,7 +9,7 @@ import { RxHamburgerMenu } from 'react-icons/rx';
 import { useState } from 'react';
 
 function RootComponent() {
-	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
 	const toggleSidebar = () => {
 		setIsSidebarOpen(!isSidebarOpen);
