@@ -6,6 +6,7 @@ import { generateResult, getPublishedTestLists, getResultViewData } from './gen-
 import CButton from '../../UI/CButton.jsx';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 function GenerateRports() {
 	const { examServerIP, testsList } = useSelector((state) => state.reports);
@@ -34,6 +35,8 @@ function GenerateRports() {
 }
 
 function TestDetails({ el: details, idx, refetch }) {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const {
 		mutate: _generateResult,
 		isError: _generateResultErr,
@@ -58,8 +61,15 @@ function TestDetails({ el: details, idx, refetch }) {
 	};
 	const { mutate: _getResultViewData } = useMutation({
 		mutationFn: getResultViewData,
-		onSuccess: (data) => {
+		onSuccess: ({ data }) => {
 			console.log(data, '==data==');
+			if (data.length == 0) {
+				Swal.fire('Warning', 'No results found!');
+				return;
+			}
+			dispatch(reportsAction.setViewTestReportDetails(details));
+			dispatch(reportsAction.setResultsList(data));
+			navigate('/view-reports');
 		},
 		onError: (err) => {
 			console.log(err, '==err==');

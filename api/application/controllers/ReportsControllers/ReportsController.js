@@ -1,7 +1,9 @@
+import { Sequelize } from 'sequelize';
 import sequelize from '../../config/db-connect-migration.js';
 import reportsModel from '../../model/reportsModel.js';
 import tm_publish_test_list from '../../schemas/tm_publish_test_list.js';
 import tm_student_final_result_set from '../../schemas/tm_student_final_result_set.js';
+import tn_student_list from '../../schemas/tn_student_list.js';
 import ApiError from '../../utils/ApiError.js';
 import ApiResponse from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
@@ -71,11 +73,22 @@ const reportsController = {
 		if (!testId) throw new ApiError(400, 'Invalid test ID');
 
 		let _resultDetilsRes = await tm_student_final_result_set.findAll({
+			include: [
+				{
+					model: tn_student_list,
+					as: 'tn_student_list',
+					attributes: [
+						[Sequelize.fn('CONCAT', Sequelize.col('sl_f_name'), ' ', Sequelize.col('sl_m_name'), ' ', Sequelize.col('sl_l_name')), 'full_name'],
+					],
+					required: true,
+				},
+			],
 			where: {
 				sfrs_publish_id: testId,
 			},
 			raw: true,
 		});
+		console.log(_resultDetilsRes, '====');
 
 		return res.status(200).json(new ApiResponse(200, _resultDetilsRes, 'Result details list'));
 	}),
