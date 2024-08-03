@@ -7,16 +7,13 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 
 const remoteController = {
 	getTodaysExamList: asyncHandler(async (req, res) => {
-		console.log(1, '==1==');
-		console.log(req.body, '==req.body==');
 		let _examsList = await remoteModel.getTodaysExamList(req.body);
-		console.log(_examsList.length, '==_examsList==');
+
 		if (_examsList.length == 0) throw new ApiError(200, 'No exams list found');
 
 		return res.status(200).json(new ApiResponse(200, _examsList));
 	}),
 	downloadExam: asyncHandler(async (req, res) => {
-		console.log(req.params, '==req.params==');
 		const { id } = req.params;
 
 		// gettting test information
@@ -41,7 +38,7 @@ const remoteController = {
 			},
 			raw: true,
 		});
-		console.log(question_paper, '==question_paper==');
+
 		if (question_paper.length == 0) {
 			return res.status(404).json({
 				call: 3,

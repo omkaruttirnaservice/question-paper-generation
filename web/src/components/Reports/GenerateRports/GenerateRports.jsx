@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { H3 } from '../../UI/Headings.jsx';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { generateResult, getPublishedTestLists, getResultViewData } from './gen-reports-api.jsx';
+import { generateResult, getPublishedTestLists, getResultExcel, getResultViewData } from './gen-reports-api.jsx';
 import CButton from '../../UI/CButton.jsx';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
 import Swal from 'sweetalert2';
@@ -37,6 +37,8 @@ function GenerateRports() {
 function TestDetails({ el: details, idx, refetch }) {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+
+	// START: generate result===============
 	const {
 		mutate: _generateResult,
 		isError: _generateResultErr,
@@ -56,6 +58,30 @@ function TestDetails({ el: details, idx, refetch }) {
 		_generateResult(btoa(publishedTestId));
 	};
 
+	// END: generate result===============
+
+	// START: excel generate result===============
+	const {
+		mutate: _getResultExcel,
+		isPending: _getResultExcelPending,
+		isError: _getResultExcelErr,
+	} = useMutation({
+		mutationFn: getResultExcel,
+		onSuccess: (data) => {
+			console.log(data, '==data==');
+		},
+		onError: (err) => {
+			console.log(err, '==err==');
+		},
+	});
+	const handleExelResult = (publishedTestId) => {
+		console.log(publishedTestId, '==publishedTestId==')
+		// Converting the published test id to base 64 string
+		_getResultExcel(btoa(publishedTestId));
+	};
+	// END: excel generate result===============
+
+	// START: View result ======================
 	const handleViewResult = (publishedTestId) => {
 		_getResultViewData(publishedTestId);
 	};
@@ -75,6 +101,7 @@ function TestDetails({ el: details, idx, refetch }) {
 			console.log(err, '==err==');
 		},
 	});
+	// END: View result ======================
 
 	return (
 		<div className="border flex gap-6 ">
@@ -103,12 +130,13 @@ function TestDetails({ el: details, idx, refetch }) {
 							Generate Result
 						</CButton>
 					) : (
-						<CButton disabledCursor="cursor-ban" disabled={true} className={'btn--success'}>
-							Result Generated
-						</CButton>
+						<span>Result Generated</span>
 					)}
 
 					<CButton onClick={handleViewResult.bind(null, details.id)}>View Result</CButton>
+					<CButton onClick={handleExelResult.bind(null, details.id)} isLoading={_getResultExcelPending}>
+						Excel
+					</CButton>
 				</div>
 			</div>
 		</div>
