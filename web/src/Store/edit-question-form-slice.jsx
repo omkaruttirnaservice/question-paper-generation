@@ -1,3 +1,4 @@
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import { createSlice } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { loaderActions } from './loader-slice.jsx';
@@ -176,7 +177,7 @@ const EditQuestionFormSlice = createSlice({
 export const getBooksListThunk = (pubName, sendRequest) => {
 	return async (dispatch) => {
 		let requestData = {
-			url: '/api/questions/books-list',
+			url: SERVER_IP + '/api/questions/books-list',
 			method: 'POST',
 			body: JSON.stringify({ pubName: pubName }),
 		};
@@ -193,7 +194,7 @@ export const getBooksListThunk = (pubName, sendRequest) => {
 export const getPublicationsListThunk = (sendRequest) => {
 	return async (dispatch) => {
 		let requestData = {
-			url: '/api/questions/publications-list',
+			url: SERVER_IP + '/api/questions/publications-list',
 		};
 		sendRequest(requestData, ({ success, data }) => {
 			if (data.length == 0) {
@@ -209,7 +210,7 @@ export const getPostListThunk = () => {
 	return async (dispatch) => {
 		try {
 			dispatch(loaderActions.showLoader());
-			let response = await fetch('/api/posts/list');
+			let response = await fetch(SERVER_IP + '/api/posts/list');
 			console.log('getting post list');
 			console.log(response);
 			let { success, data } = await response.json();
@@ -230,7 +231,7 @@ export const getPostListThunk = () => {
 export const getSubjectsListThunk = (post_id, sendRequest) => {
 	return async (dispatch) => {
 		const reqData = {
-			url: '/api/get-subject-list',
+			url: SERVER_IP + '/api/get-subject-list',
 			method: 'POST',
 			body: JSON.stringify({ post_id }),
 		};
@@ -251,7 +252,7 @@ export const getSubjectsListThunk = (post_id, sendRequest) => {
 export const getTopicsListThunk = (subject_id, sendRequest) => {
 	return async (dispatch) => {
 		const requestData = {
-			url: '/api/get-topic-list',
+			url: SERVER_IP + '/api/get-topic-list',
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

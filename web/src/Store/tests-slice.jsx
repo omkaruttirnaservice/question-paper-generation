@@ -1,3 +1,4 @@
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import { createSlice } from '@reduxjs/toolkit';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -245,7 +246,7 @@ export const getTestQuestionsListThunk = (testId, sendRequest, navigate) => {
 	console.log(1, testId, '==going type 1, testId==');
 	return async (dispatch) => {
 		let reqData = {
-			url: '/api/test/questions',
+			url: SERVER_IP + '/api/test/questions',
 			method: 'POST',
 			body: JSON.stringify({ testId }),
 		};
@@ -269,7 +270,7 @@ export const getPublishedTestQuestionsListThunk = (testId, sendRequest, navigate
 	console.log(2, '==going type 2==');
 	return async (dispatch) => {
 		let reqData = {
-			url: '/api/test/questions',
+			url: SERVER_IP + '/api/test/questions',
 			method: 'POST',
 			body: JSON.stringify({ testId }),
 		};

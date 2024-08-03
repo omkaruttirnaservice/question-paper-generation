@@ -1,3 +1,4 @@
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { BiReset } from 'react-icons/bi';
 import { CiViewList } from 'react-icons/ci';
@@ -67,7 +68,7 @@ function QuestionsListAutoTest() {
 
 	const getTopicAndQuestionCount = (subjectId) => {
 		let reqData = {
-			url: '/api/get-topic-list-and-question-count',
+			url: SERVER_IP + '/api/get-topic-list-and-question-count',
 			method: 'POST',
 			body: JSON.stringify({
 				subjectId,
@@ -179,7 +180,7 @@ function QuestionsListAutoTest() {
 		const topicsListForEdit = el._topicsList;
 
 		let reqData = {
-			url: '/api/get-topic-list-and-question-count',
+			url: SERVER_IP + '/api/get-topic-list-and-question-count',
 			method: 'POST',
 			body: JSON.stringify({
 				subjectId,
@@ -258,7 +259,7 @@ function QuestionsListAutoTest() {
 		});
 		if (!isConfirm) return false;
 		let rD = {
-			url: '/api/test/v2/create-auto',
+			url: SERVER_IP + '/api/test/v2/create-auto',
 			method: 'POST',
 			body: JSON.stringify({
 				test: test,

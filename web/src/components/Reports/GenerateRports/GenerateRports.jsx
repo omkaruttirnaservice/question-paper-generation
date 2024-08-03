@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { H3 } from '../../UI/Headings.jsx';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { generateResult, getPublishedTestLists } from './gen-reports-api.jsx';
+import { generateResult, getPublishedTestLists, getResultViewData } from './gen-reports-api.jsx';
 import CButton from '../../UI/CButton.jsx';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
 import Swal from 'sweetalert2';
@@ -42,9 +42,7 @@ function TestDetails({ el: details, idx, refetch }) {
 		mutationFn: generateResult,
 		onSuccess: (data) => {
 			Swal.fire('Success', data.message);
-			if (data.success) {
-				refetch();
-			}
+			if (data.success) refetch();
 		},
 		onError: (err) => {
 			console.log(err, '==err==');
@@ -54,12 +52,26 @@ function TestDetails({ el: details, idx, refetch }) {
 		// Converting the published test id to base 64 string
 		_generateResult(btoa(publishedTestId));
 	};
+
+	const handleViewResult = (publishedTestId) => {
+		_getResultViewData(publishedTestId);
+	};
+	const { mutate: _getResultViewData } = useMutation({
+		mutationFn: getResultViewData,
+		onSuccess: (data) => {
+			console.log(data, '==data==');
+		},
+		onError: (err) => {
+			console.log(err, '==err==');
+		},
+	});
+
 	return (
-		<div className="border flex gap-6 px-7 mx-10">
-			<div className="border-r p-6 text-2xl font-bold">{idx + 1}</div>
-			<div className="flex flex-col justify-center gap-3">
+		<div className="border flex gap-6 ">
+			<div className="border-r p-2 text-2xl font-bold min-w-[3rem] flex justify-center items-center">{idx + 1}</div>
+			<div className="flex flex-col justify-center gap-3 py-3">
 				<p className="text-xl">{details.mt_name}</p>
-				<div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+				<div className="grid grid-cols-1 lg:grid-cols-4 gap-1">
 					<p>
 						Date: <span className="font-semibold">{details.mt_added_date}</span>
 					</p>
@@ -85,6 +97,8 @@ function TestDetails({ el: details, idx, refetch }) {
 							Result Generated
 						</CButton>
 					)}
+
+					<CButton onClick={handleViewResult.bind(null, details.id)}>View Result</CButton>
 				</div>
 			</div>
 		</div>

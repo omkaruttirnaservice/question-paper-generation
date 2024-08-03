@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import useHttp from '../Hooks/use-http.jsx';
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 
 import { H2, H3 } from '../UI/Headings.jsx';
 import { useEffect, useLayoutEffect } from 'react';
@@ -30,7 +31,7 @@ function PublishedTestQuestionsView() {
 	useEffect(() => {
 		if (publishedTestQuestionsList.length == 0) {
 			let reqData = {
-				url: '/api/test/questions',
+				url: SERVER_IP + '/api/test/questions',
 				method: 'POST',
 				body: JSON.stringify({ testId: previewPublishedTestDetails.test_id }),
 			};

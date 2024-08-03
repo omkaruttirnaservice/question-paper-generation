@@ -1,3 +1,4 @@
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import React, { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
@@ -26,7 +27,7 @@ function PublishedTestsList() {
 
 	function getExamsList() {
 		const reqData = {
-			url: '/api/test/list-published',
+			url: SERVER_IP + '/api/test/list-published',
 		};
 		sendRequest(reqData, ({ data }) => {
 			if (data.length >= 1) {
@@ -65,7 +66,7 @@ function PublishedTestsList() {
 		if (!isConfirm) return false;
 
 		let rD = {
-			url: '/api/test/unpublish',
+			url: SERVER_IP + '/api/test/unpublish',
 			method: 'DELETE',
 			body: JSON.stringify({ id: el.id }),
 		};

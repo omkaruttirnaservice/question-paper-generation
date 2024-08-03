@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FaAngleRight, FaGripLinesVertical } from 'react-icons/fa';
@@ -14,10 +15,7 @@ import {
 	getTopicsListThunk,
 } from '../../Store/edit-question-form-slice.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
-import {
-	getPublishedTestQuestionsListThunk,
-	getTestQuestionsListThunk,
-} from '../../Store/tests-slice.jsx';
+import { getPublishedTestQuestionsListThunk, getTestQuestionsListThunk } from '../../Store/tests-slice.jsx';
 import useHttp from '../Hooks/use-http';
 import CButton from '../UI/CButton.jsx';
 import AddBookModal from './AddBook/AddBookModal.jsx';
@@ -31,21 +29,14 @@ import QuestionMonthDropdown from './QuestionMonthDropdown/QuestionMonthDropdown
 import QuestionPgNo from './QuestionPgNo/QuestionPgNo.jsx';
 import QuestionYearDropdown from './QuestionYearDropdown/QuestionYearDropdown.jsx';
 import editQuestionFormSchemaYUP from './editQuestionFormSchemaYUP.jsx';
-import {
-	EDIT_QUESTION_OF_GENERATED_TEST,
-	EDIT_QUESTION_OF_PUBLISHED_TEST,
-} from '../Utils/Constants.jsx';
+import { EDIT_QUESTION_OF_GENERATED_TEST, EDIT_QUESTION_OF_PUBLISHED_TEST } from '../Utils/Constants.jsx';
 
 const EditAddQuestionForm = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { sendRequest } = useHttp();
-	let { data: _formData, edit_test_type } = useSelector(
-		(state) => state.questionForm
-	);
-	const { previewTestDetails, previewPublishedTestDetails } = useSelector(
-		(state) => state.tests
-	);
+	let { data: _formData, edit_test_type } = useSelector((state) => state.questionForm);
+	const { previewTestDetails, previewPublishedTestDetails } = useSelector((state) => state.tests);
 
 	const [showNewInputField, setShowNewInputField] = useState(false);
 
@@ -85,7 +76,7 @@ const EditAddQuestionForm = () => {
 
 	async function postQuestionData() {
 		let reqData = {
-			url: '/api/test/update-test-question',
+			url: SERVER_IP + '/api/test/update-test-question',
 			method: 'PUT',
 			body: JSON.stringify(_formData),
 		};
@@ -101,23 +92,11 @@ const EditAddQuestionForm = () => {
 				dispatch(ModalActions.toggleModal('edit-que-modal'));
 
 				if (edit_test_type == EDIT_QUESTION_OF_PUBLISHED_TEST) {
-					dispatch(
-						getPublishedTestQuestionsListThunk(
-							previewPublishedTestDetails.test_id,
-							sendRequest,
-							navigate
-						)
-					);
+					dispatch(getPublishedTestQuestionsListThunk(previewPublishedTestDetails.test_id, sendRequest, navigate));
 				}
 
 				if (edit_test_type == EDIT_QUESTION_OF_GENERATED_TEST) {
-					dispatch(
-						getTestQuestionsListThunk(
-							previewTestDetails.test_id,
-							sendRequest,
-							navigate
-						)
-					);
+					dispatch(getTestQuestionsListThunk(previewTestDetails.test_id, sendRequest, navigate));
 				}
 				dispatch(EditQuestionFormActions.resetFormData());
 			}
@@ -129,10 +108,7 @@ const EditAddQuestionForm = () => {
 			<AddPublicationModal />
 			<AddBookModal />
 			<div className="container mx-auto">
-				<form
-					id="add-question-form"
-					className="grid gap-6"
-					onSubmit={handleUpdateQuestion}>
+				<form id="add-question-form" className="grid gap-6" onSubmit={handleUpdateQuestion}>
 					<div className={`bg-white sticky top-0 z-30`}>
 						<div className="container mx-auto mb-3">
 							<div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
@@ -166,20 +142,14 @@ const EditAddQuestionForm = () => {
 					<hr />
 
 					<div className="flex flex-col gap-3">
-						<EditQuestionOptionsInput
-							showNewInputField={showNewInputField}
-							setShowNewInputField={setShowNewInputField}
-						/>
+						<EditQuestionOptionsInput showNewInputField={showNewInputField} setShowNewInputField={setShowNewInputField} />
 					</div>
 
 					<hr />
 
 					<EditQuestionExplanationInput />
 
-					<CButton
-						className="w-[10%] flex justify-center items-center"
-						type="submit"
-						isLoading={useSelector((state) => state.loader.isLoading)}>
+					<CButton className="w-[10%] flex justify-center items-center" type="submit" isLoading={useSelector((state) => state.loader.isLoading)}>
 						Update
 					</CButton>
 				</form>

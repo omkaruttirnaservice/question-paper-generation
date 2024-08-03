@@ -1,3 +1,4 @@
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -52,7 +53,7 @@ function TestsList() {
 
 	function getExamsList() {
 		const reqData = {
-			url: '/api/test/list',
+			url: SERVER_IP + '/api/test/list',
 		};
 		sendRequest(reqData, ({ data }) => {
 			if (data.length >= 1) {
@@ -84,7 +85,7 @@ function TestsList() {
 		if (!isConfirm) return false;
 
 		let reqData = {
-			url: '/api/test/delete',
+			url: SERVER_IP + '/api/test/delete',
 			method: 'DELETE',
 			body: JSON.stringify({ deleteId: id }),
 		};
@@ -164,7 +165,7 @@ function TestsList() {
 
 	const validateTestKey = async (testKey) => {
 		let _req = {
-			url: '/api/test/check-for-duplicate-test-key',
+			url: SERVER_IP + '/api/test/check-for-duplicate-test-key',
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -229,7 +230,7 @@ function TestsList() {
 			console.log(publishExamForm, '==publishExamForm==');
 
 			let _req = {
-				url: '/api/test/publish',
+				url: SERVER_IP + '/api/test/publish',
 				method: 'POST',
 				body: JSON.stringify(publishExamForm),
 			};

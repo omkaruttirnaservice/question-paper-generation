@@ -10,4 +10,6 @@ reportsRouter.get('/get-published-tests', reportsController.getPublishedTests)
 
 reportsRouter.post('/generate-result', reportsController.generateResult)
 
+reportsRouter.post('/get-result-view-data', reportsController.getResultViewData)
+
 export default reportsRouter;

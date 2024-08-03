@@ -1,5 +1,6 @@
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 export const postServerIP = async (ip) => {
-	let _res = await fetch('/api/students-area/set-server-ip', {
+	let _res = await fetch(SERVER_IP + '/api/students-area/set-server-ip', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -11,12 +12,12 @@ export const postServerIP = async (ip) => {
 };
 
 export const getServerIP = async () => {
-	let _res = await fetch('/api/students-area/get-server-ip');
+	let _res = await fetch(SERVER_IP + '/api/students-area/get-server-ip');
 	return _res.json();
 };
 
 export const getStudentsList = async (ip) => {
-	let _res = await fetch('/api/students-area/all-list', {
+	let _res = await fetch(SERVER_IP + '/api/students-area/all-list', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -27,7 +28,7 @@ export const getStudentsList = async (ip) => {
 };
 
 export const getCentersList = async (ip) => {
-	let _res = await fetch('/api/students-area/download-centers-list', {
+	let _res = await fetch(SERVER_IP + '/api/students-area/download-centers-list', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

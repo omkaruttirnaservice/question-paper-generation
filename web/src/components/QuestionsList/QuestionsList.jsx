@@ -1,3 +1,4 @@
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import { useEffect, useLayoutEffect, useState } from 'react';
 import { FaGripLinesVertical, FaTrash } from 'react-icons/fa';
 
@@ -75,7 +76,7 @@ function QuestionsList() {
 
 	async function getQuestions() {
 		let reqData = {
-			url: '/api/questions/list',
+			url: SERVER_IP + '/api/questions/list',
 			method: 'POST',
 			body: JSON.stringify({
 				post_id: _formData.post_id,
@@ -114,7 +115,7 @@ function QuestionsList() {
 
 	const finalTestSubmitHandler = () => {
 		let requestData = {
-			url: '/api/test/create',
+			url: SERVER_IP + '/api/test/create',
 			method: 'POST',
 			body: JSON.stringify({
 				test,

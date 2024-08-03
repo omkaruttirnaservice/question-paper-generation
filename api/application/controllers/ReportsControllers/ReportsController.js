@@ -65,6 +65,20 @@ const reportsController = {
 			next(error);
 		}
 	},
+
+	getResultViewData: asyncHandler(async (req, res) => {
+		let { testId } = req.body;
+		if (!testId) throw new ApiError(400, 'Invalid test ID');
+
+		let _resultDetilsRes = await tm_student_final_result_set.findAll({
+			where: {
+				sfrs_publish_id: testId,
+			},
+			raw: true,
+		});
+
+		return res.status(200).json(new ApiResponse(200, _resultDetilsRes, 'Result details list'));
+	}),
 };
 
 export default reportsController;
