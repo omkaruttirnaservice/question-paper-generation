@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import remoteController from '../application/controllers/RemoteController/RemoteController.js';
+import remoteController from '../application/controllers/remoteController/remoteController.js';
 const remoteRouter = Router();
 
 remoteRouter.post('/getNewExamList', remoteController.getTodaysExamList);
