@@ -6,8 +6,6 @@ const saveExamsRouter = Router();
 
 saveExamsRouter.post('/saveUploadedExam', saveExamsController.saveExamData);
 
-
-
-
+saveExamsRouter.get('/single-candidate-paper', saveExamsController.getCandiateExamPaperInfo);
 
 export default saveExamsRouter;

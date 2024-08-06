@@ -1,35 +1,36 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { H3 } from '../../UI/Headings.jsx';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { generateResult, getPublishedTestLists, getResultExcel, getResultViewData } from './gen-reports-api.jsx';
-import CButton from '../../UI/CButton.jsx';
-import { reportsAction } from '../../../Store/reports-slice.jsx';
-import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { reportsAction } from '../../../Store/reports-slice.jsx';
+import CButton from '../../UI/CButton.jsx';
+import { H3 } from '../../UI/Headings.jsx';
+import { generateResult, getPublishedTestLists, getResultExcel, getResultViewData } from './gen-reports-api.jsx';
 
 function GenerateRports() {
-	const { examServerIP, testsList } = useSelector((state) => state.reports);
+	const { testsList } = useSelector((state) => state.reports);
 	const dispatch = useDispatch();
 
 	const { data: publishedTestsList, refetch } = useQuery({
 		queryKey: ['get-published-test-list'],
 		queryFn: getPublishedTestLists,
 	});
+
 	useEffect(() => {
-		if (publishedTestsList?.data.length >= 1) {
+		if (publishedTestsList?.data?.length >= 1) {
 			dispatch(reportsAction.setTestsList(publishedTestsList.data));
 		}
 	}, [publishedTestsList]);
 
-	console.log(publishedTestsList, '==publishedTestsList==');
-
 	return (
 		<div className="mt-5 flex flex-col gap-4">
 			<H3>Test Reports</H3>
-			{testsList.map((el, idx) => {
-				return <TestDetails el={el} idx={idx} key={idx} refetch={refetch} />;
-			})}
+			{testsList.length >= 1 &&
+				testsList.map((el, idx) => {
+					return <TestDetails el={el} idx={idx} key={idx} refetch={refetch} />;
+				})}
+			{testsList.length == 0 && <p>Woops! no tests found!</p>}
 		</div>
 	);
 }
@@ -71,11 +72,12 @@ function TestDetails({ el: details, idx, refetch }) {
 			console.log(data, '==data==');
 		},
 		onError: (err) => {
+			alert(err.message || 'Something went wrong');
 			console.log(err, '==err==');
 		},
 	});
 	const handleExelResult = (publishedTestId) => {
-		console.log(publishedTestId, '==publishedTestId==')
+		console.log(publishedTestId, '==publishedTestId==');
 		// Converting the published test id to base 64 string
 		_getResultExcel(btoa(publishedTestId));
 	};
@@ -85,7 +87,7 @@ function TestDetails({ el: details, idx, refetch }) {
 	const handleViewResult = (publishedTestId) => {
 		_getResultViewData(publishedTestId);
 	};
-	const { mutate: _getResultViewData } = useMutation({
+	const { mutate: _getResultViewData, isPending: gettingTestViewDataLoading } = useMutation({
 		mutationFn: getResultViewData,
 		onSuccess: ({ data }) => {
 			console.log(data, '==data==');
@@ -99,6 +101,7 @@ function TestDetails({ el: details, idx, refetch }) {
 		},
 		onError: (err) => {
 			console.log(err, '==err==');
+			alert(err.message || 'Something went wrong');
 		},
 	});
 	// END: View result ======================
@@ -133,7 +136,9 @@ function TestDetails({ el: details, idx, refetch }) {
 						<span>Result Generated</span>
 					)}
 
-					<CButton onClick={handleViewResult.bind(null, details.id)}>View Result</CButton>
+					<CButton onClick={handleViewResult.bind(null, details.id)} isLoading={gettingTestViewDataLoading}>
+						View Result
+					</CButton>
 					<CButton onClick={handleExelResult.bind(null, details.id)} isLoading={_getResultExcelPending}>
 						Excel
 					</CButton>

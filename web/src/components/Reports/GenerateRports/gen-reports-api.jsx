@@ -51,3 +51,8 @@ export const getResultExcel = async (testId) => {
 	window.URL.revokeObjectURL(url);
 	document.body.removeChild(a);
 };
+
+export const singleCandiatePaper = async ({ studentRollNumber, publishedTestId }) => {
+	let _res = await fetch(`${SERVER_IP}/api/exams/single-candidate-paper?stud_roll=${studentRollNumber}&pub_test_id=${publishedTestId}`);
+	return await _res.json();
+};
