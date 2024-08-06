@@ -12,6 +12,8 @@ import StudentsList from './components/StudentArea/StudentsList/StudentsList.jsx
 import StudentsListByCenter from './components/StudentArea/StudentsListByCenter/StudentsListByCenter.jsx';
 import TestQuestionsView from './components/TestsList/TestQuestionsView.jsx';
 import TestsList from './components/TestsList/TestsList.jsx';
+import ViewReports from './components/Reports/GenerateRports/ViewReports.jsx';
+import StudentExamReportSingle from './components/Reports/GenerateRports/StudentExamReportSingle.jsx';
 
 const router = createBrowserRouter([
 	{
@@ -36,6 +38,8 @@ const router = createBrowserRouter([
 
 			// reports
 			{ path: '/gen-reports', element: <GenerateRports /> },
+			{ path: '/view-reports', element: <ViewReports /> },
+			{ path: '/single-student-report', element: <StudentExamReportSingle /> },
 		],
 	},
 ]);

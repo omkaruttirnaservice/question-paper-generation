@@ -1,6 +1,7 @@
 import { Op, Sequelize } from 'sequelize';
 import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
 import { myDate } from '../config/utils.js';
+import sequelize from '../config/db-connect-migration.js';
 
 const remoteModel = {
 	getTodaysExamList: async ({ exam_list }) => {

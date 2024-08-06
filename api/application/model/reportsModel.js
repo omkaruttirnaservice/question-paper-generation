@@ -100,6 +100,55 @@ const reportsModel = {
 							AND set_1.sfrs_student_id = set_2.sfrs_student_id )`;
 		return await sequelize.query(query, { transaction: transact });
 	},
+
+	getTestDetails: async (testId) => {
+		
+		let q = ` SELECT  
+					post_list.mtl_test_name as post_name,
+					test.mt_name as test_name,
+					test.ptl_active_date as test_date
+				FROM 
+					tm_publish_test_list as test INNER JOIN 
+					tm_master_test_list as post_list 
+				ON test.mt_pattern_type = post_list.id
+				WHERE test.id = ${testId} LIMIT 1`;
+		return await sequelize.query(q);
+	},
+
+	getTestReportsForExcel: async (testId) => {
+		let q = ` SELECT 
+                      IFNULL(student_list.sl_f_name,'') as f_name ,
+                      IFNULL(student_list.sl_m_name,'') as m_name ,
+                      IFNULL(student_list.sl_l_name,'') as l_name ,
+                        sfrc_total_marks as count,
+                        student_list.id as student_id,
+                        student_list.sl_roll_number as roll_number,
+                        student_list.sl_application_number as student_application_no,
+                        student_list.sl_post as student_post,
+                        student_list.sl_catagory as student_catatory,
+                        DATE_FORMAT(student_list.sl_date_of_birth,'%d-%m-%Y') as dob,
+                        student_list.sl_contact_number as mobile_number,
+                        student_list.sl_image as student_image,
+                        IF(sl_is_physical_handicap=0,'No','Yes')as ph,
+                        sfrs_correct as correct,
+                        sfrs_correct as correct_score,
+                        sfrs_unattempted as unattempted,
+                        sfrs_wrong as wrong,
+                        IFNULL(0,0) as wrong_score,
+                        main_test_list.mt_mark_per_question as per_question,
+                        IF(main_test_list.mt_negativ_mark='',0,main_test_list.mt_negativ_mark) as negative
+                      FROM 
+                        tn_student_list as student_list INNER JOIN
+                         tm_student_final_result_set as student_paper ON
+                        student_paper.sfrs_student_id = student_list.id INNER JOIN 
+                        tm_publish_test_list as main_test_list ON
+                        main_test_list.id = student_paper.sfrs_publish_id
+                        WHERE 
+                         main_test_list.id = ${testId}
+                          GROUP BY student_paper.sfrs_student_id
+                        ORDER BY roll_number`;
+		return await sequelize.query(q);
+	},
 };
 
 export default reportsModel;

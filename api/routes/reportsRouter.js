@@ -12,4 +12,7 @@ reportsRouter.post('/generate-result', reportsController.generateResult)
 
 reportsRouter.post('/get-result-view-data', reportsController.getResultViewData)
 
+
+reportsRouter.post('/get-result-excel', reportsController.getResultExcel);
+
 export default reportsRouter;
