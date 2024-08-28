@@ -5,6 +5,7 @@ import sequelize from '../config/db-connect-migration.js';
 
 const remoteModel = {
 	getTodaysExamList: async ({ exam_list }) => {
+		console.log(exam_list, '====exam_list=====');
 		if (exam_list.exam_list.length == 0) {
 			return await tm_publish_test_list.findAll({
 				attributes: [
@@ -58,7 +59,6 @@ const remoteModel = {
 		}
 
 		console.log(exam_list.exam_list, '==exam_list.exam_list==');
-		// await
 	},
 };
 
