@@ -7,6 +7,7 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 
 const remoteController = {
 	getTodaysExamList: asyncHandler(async (req, res) => {
+		console.log('==here=====1==');
 		let _examsList = await remoteModel.getTodaysExamList(req.body);
 
 		if (_examsList.length == 0) throw new ApiError(200, 'No exams list found');
