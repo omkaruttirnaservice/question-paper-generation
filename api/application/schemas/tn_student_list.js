@@ -1,130 +1,193 @@
-import { BIGINT, TEXT, STRING, DATEONLY, INTEGER, Sequelize, DATE, TIME } from 'sequelize';
+import {
+	BIGINT,
+	TEXT,
+	STRING,
+	DATEONLY,
+	INTEGER,
+	Sequelize,
+	DATE,
+	TIME,
+	DataTypes,
+} from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 
 const tn_student_list = sequelize.define(
 	'tn_student_list',
 	{
 		id: {
-			type: INTEGER,
+			type: DataTypes.BIGINT,
+			allowNull: false,
 			primaryKey: true,
 			autoIncrement: true,
 		},
 		sl_f_name: {
-			type: STRING(1024),
+			type: DataTypes.STRING(1024),
+			allowNull: false,
 		},
 		sl_m_name: {
-			type: STRING(1024),
+			type: DataTypes.STRING(1024),
+			allowNull: true,
 		},
 		sl_l_name: {
-			type: STRING(1024),
+			type: DataTypes.STRING(1024),
+			allowNull: true,
 		},
 		sl_image: {
-			type: TEXT('long'),
+			type: DataTypes.TEXT('long'),
+			allowNull: true,
 		},
 		sl_sign: {
-			type: TEXT('long'),
+			type: DataTypes.TEXT('long'),
+			allowNull: true,
 		},
 		sl_email: {
-			type: TEXT('long'),
+			type: DataTypes.STRING(1024),
+			allowNull: true,
 		},
 		sl_father_name: {
-			type: STRING(50),
+			type: DataTypes.STRING(50),
+			allowNull: true,
 		},
 		sl_mother_name: {
-			type: STRING(50),
+			type: DataTypes.STRING(50),
+			allowNull: true,
 		},
 		sl_address: {
-			type: TEXT('medium'),
+			type: DataTypes.TEXT('medium'),
+			allowNull: true,
 		},
 		sl_mobile_number_parents: {
-			type: STRING(15),
+			type: DataTypes.STRING(15),
+			allowNull: true,
 		},
 		sl_tenth_marks: {
-			type: INTEGER,
+			type: DataTypes.STRING(1024),
+			allowNull: true,
 		},
 		sl_contact_number: {
-			type: STRING(15),
+			type: DataTypes.STRING(1024),
+			allowNull: false,
 		},
 		sl_class: {
-			type: STRING(50),
+			type: DataTypes.STRING(50),
+			allowNull: true,
 		},
 		sl_roll_number: {
-			type: STRING(50),
+			type: DataTypes.STRING(20),
+			allowNull: true,
+			unique: true,
 		},
 		sl_subject: {
-			type: STRING(50),
+			type: DataTypes.STRING(50),
+			allowNull: true,
 		},
 		sl_stream: {
-			type: STRING(70),
+			type: DataTypes.STRING(70),
+			allowNull: true,
 		},
 		sl_addmit_type: {
-			type: STRING(70),
+			type: DataTypes.STRING(70),
+			allowNull: true,
 		},
 		sl_time: {
-			type: STRING(20),
+			type: DataTypes.STRING(20),
+			allowNull: true,
 		},
 		sl_date: {
-			type: DATEONLY,
+			type: DataTypes.DATE,
+			allowNull: true,
 		},
 		sl_time_stamp: {
-			type: DATE,
+			type: DataTypes.STRING(20),
+			allowNull: true,
 		},
 		sl_added_by_login_id: {
-			type: INTEGER,
+			type: DataTypes.BIGINT,
+			allowNull: true,
 		},
 		sl_is_live: {
-			type: INTEGER,
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 1,
 		},
 		sl_date_of_birth: {
-			type: DATE,
+			type: DataTypes.DATE,
+			allowNull: true,
 		},
 		sl_school_name: {
-			type: STRING(500),
+			type: DataTypes.STRING(500),
+			allowNull: true,
 		},
 		sl_catagory: {
-			type: STRING(40),
+			type: DataTypes.STRING(128),
+			allowNull: true,
 		},
 		sl_application_number: {
-			type: STRING(20),
+			type: DataTypes.TEXT,
+			allowNull: true,
 		},
 		sl_is_physical_handicap: {
-			type: STRING(10),
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 1,
 		},
 		sl_is_physical_handicap_desc: {
-			type: STRING(100),
+			type: DataTypes.TEXT,
+			allowNull: true,
 		},
 		sl_post: {
-			type: STRING(20),
+			type: DataTypes.TEXT,
+			allowNull: true,
 		},
 		sl_center_code: {
-			type: INTEGER,
+			type: DataTypes.BIGINT,
+			allowNull: true,
 		},
 		sl_batch_no: {
-			type: INTEGER(2),
+			type: DataTypes.INTEGER,
+			allowNull: true,
 		},
 		sl_exam_date: {
-			type: DATEONLY,
+			type: DataTypes.DATEONLY,
+			allowNull: true,
 		},
 		sl_password: {
-			type: TEXT('long'),
+			type: DataTypes.TEXT('long'),
+			allowNull: true,
+		},
+		sl_present_status: {
+			type: DataTypes.INTEGER,
+			defaultValue: 2,
+		},
+		sl_cam_image: {
+			type: DataTypes.STRING(255),
+			defaultValue: '',
 		},
 
-		createdAt: {
-			type: DATE,
-			defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+		center_id: {
+			type: DataTypes.STRING(10),
+			defaultValue: '',
 		},
-		updatedAt: {
-			type: DATE,
-			defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+		floor: {
+			type: DataTypes.STRING(10),
+			defaultValue: '',
+		},
+		department: {
+			type: DataTypes.STRING(10),
+			defaultValue: '',
+		},
+		lab_no: {
+			type: DataTypes.STRING(10),
+			defaultValue: '',
+		},
+		lab_name: {
+			type: DataTypes.STRING(10),
+			defaultValue: '',
 		},
 	},
 	{
-		indexes: [
-			{
-				unique: true,
-				fields: ['sl_roll_number'],
-			},
-		],
+		tableName: 'tn_student_list',
+		timestamps: false,
 	}
 );
 

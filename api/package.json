@@ -4,8 +4,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"start": "nodemon app.js",
-		"modelSync": "node ./bin/modelSync.js"
+		"dbSync": "node ./bin/modelSync.js",
+		"dev": "nodemon app.js"
 	},
 	"nodemonConfig": {
 		"ignore": [

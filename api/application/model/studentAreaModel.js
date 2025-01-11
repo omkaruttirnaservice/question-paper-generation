@@ -46,7 +46,14 @@ const studentAreaModel = {
 						'sl_time_stamp',
 						'sl_added_by_login_id',
 						'sl_is_live',
-						[Sequelize.fn('DATE_FORMAT', Sequelize.col('sl_date_of_birth'), '%d-%m-%Y'), 'sl_date_of_birth'],
+						[
+							Sequelize.fn(
+								'DATE_FORMAT',
+								Sequelize.col('sl_date_of_birth'),
+								'%d-%m-%Y'
+							),
+							'sl_date_of_birth',
+						],
 						'sl_school_name',
 						'sl_catagory',
 						'sl_application_number',
@@ -93,7 +100,14 @@ const studentAreaModel = {
 					'sl_time_stamp',
 					'sl_added_by_login_id',
 					'sl_is_live',
-					[Sequelize.fn('DATE_FORMAT', Sequelize.col('sl_date_of_birth'), '%d-%m-%Y'), 'sl_date_of_birth'],
+					[
+						Sequelize.fn(
+							'DATE_FORMAT',
+							Sequelize.col('sl_date_of_birth'),
+							'%d-%m-%Y'
+						),
+						'sl_date_of_birth',
+					],
 					'sl_school_name',
 					'sl_catagory',
 					'sl_application_number',
@@ -119,6 +133,16 @@ const studentAreaModel = {
 		}
 	},
 
+	deleteCentersListOld: () => {
+		try {
+			return tn_center_list.destroy({
+				truncate: true,
+			});
+		} catch (error) {
+			throw new ApiError(500, error || 'Something went wrong');
+		}
+	},
+
 	saveCentersList: (centersList) => {
 		try {
 			return tn_center_list.bulkCreate(centersList);
@@ -129,7 +153,10 @@ const studentAreaModel = {
 
 	getCentersList: async () => {
 		try {
-			const result = await tn_center_list.findAll({ group: ['cl_number'], raw: true });
+			const result = await tn_center_list.findAll({
+				group: ['cl_number'],
+				raw: true,
+			});
 			return result;
 		} catch (error) {
 			throw new ApiError(500, error.message);

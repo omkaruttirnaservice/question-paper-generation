@@ -12,6 +12,11 @@ const sequelize = new Sequelize(
 		loggin: false,
 		define: {
 			freezeTableName: true,
+			charset: 'utf8mb4',
+			dialectOptions: {
+				collate: 'utf8mb4_0900_ai_ci',
+			},
+			timestamps: true
 		},
 		timezone: '+05:30',
 	}
