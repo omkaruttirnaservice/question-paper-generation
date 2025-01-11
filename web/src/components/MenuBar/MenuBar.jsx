@@ -79,6 +79,7 @@ function MenuBar({ isSidebarOpen }) {
 				</div>
 				<div className="overflow-hidden">
 					<div className={`${showStudentArea ? '-translate-y-full h-0' : '-translate-y-0 h-full'} transition-all overflow-hidden bg-cyan-800`}>
+
 						<NavLink to={'/add-new-student'} className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}>
 							<FaList className="text-xl" />
 							{isSidebarOpen && <span>Add New Student</span>}

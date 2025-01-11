@@ -3,13 +3,28 @@ import aouth from '../schemas/aouth.js';
 import tn_student_list from '../schemas/tn_student_list.js';
 import ApiError from '../utils/ApiError.js';
 import tn_center_list from '../schemas/tn_center_list.js';
+import tm_form_filling_server_ip_list from '../schemas/tm_form_filling_server_ip_list.js';
 
 const studentAreaModel = {
 	getServerIP: async () => {
-		return aouth.findAll({ raw: true });
+		return tm_form_filling_server_ip_list.findAll({ raw: true });
 	},
 	addFormFillingIP: (ip) => {
-		return aouth.update({ a_form_filling_ip: ip }, { where: { id: 1 } });
+		return tm_form_filling_server_ip_list.create({
+			server_ip: ip,
+		});
+	},
+	updateFormFillingIP: (ip, id) => {
+		return tm_form_filling_server_ip_list.update(
+			{
+				server_ip: ip,
+			},
+			{
+				where: {
+					id: id,
+				},
+			}
+		);
 	},
 	saveAllStudentsList: (_data, transact) => {
 		try {

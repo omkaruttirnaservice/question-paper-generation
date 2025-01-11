@@ -2,15 +2,15 @@ import axios from 'axios';
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 export const postServerIP = async (ip) => {
 	console.log(ip, '==ip==');
-	let _res = await fetch(SERVER_IP + '/api/students-area/set-server-ip', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ ip }),
-	});
+	const url = SERVER_IP + '/api/students-area/set-server-ip';
+	return await axios.post(url, { ip });
+};
 
-	return _res.json();
+export const updateServerIP = async ({ip, id}) => {
+	console.log(ip, id, '==ip, id==')
+	
+	const url = SERVER_IP + '/api/students-area/update-server-ip';
+	return await axios.put(url, { ip, id });
 };
 
 export const getServerIP = async () => {
@@ -25,7 +25,7 @@ export const getServerIP = async () => {
 };
 
 export const getStudentsList = async (ip) => {
-	console.log(ip, '==ip==')
+	console.log(ip, '==ip==');
 	const url = SERVER_IP + '/api/students-area/all-list';
 	return await axios.post(url, { ip });
 };

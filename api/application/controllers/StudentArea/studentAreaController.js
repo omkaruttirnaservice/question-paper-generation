@@ -14,19 +14,27 @@ const StudentAreaController = {
 		let _serverIP = await studentAreaModel.getServerIP();
 		console.log(_serverIP, '==_serverIP==');
 		if (_serverIP.length > 0) {
-			return res
-				.status(200)
-				.json(new ApiResponse(201, _serverIP[0].a_form_filling_ip));
+			return res.status(200).json(new ApiResponse(200, _serverIP));
 		}
-		return res.status(400).json(new ApiResponse(400, [], 'No ip found.'));
+		return res.status(404).json(new ApiResponse(404, [], 'No ip found.'));
 	}),
 	saveFormFillingIP: asyncHandler(async (req, res) => {
 		let { ip } = req.body;
 		if (!ip) throw new ApiError(404, 'Invalid IP address');
-		let [_updateRes] = await studentAreaModel.addFormFillingIP(ip);
-		if ([_updateRes] == 1) {
-			return res.status(201).json(new ApiResponse(201, ip));
-		}
+		await studentAreaModel.addFormFillingIP(ip);
+		return res
+			.status(201)
+			.json(new ApiResponse(201, null, 'Successfully added new ip.'));
+	}),
+
+	updateFormFillingIP: asyncHandler(async (req, res) => {
+		let { ip, id } = req.body;
+		if (!ip) throw new ApiError(404, 'Invalid IP address');
+		if (!id) throw new ApiError(404, 'Invalid edit ID');
+		await studentAreaModel.updateFormFillingIP(ip, id);
+		return res
+			.status(201)
+			.json(new ApiResponse(201, null, 'Successfully updated new ip.'));
 	}),
 
 	getAllStudentsList_1: async (req, res, next) => {
@@ -34,7 +42,7 @@ const StudentAreaController = {
 		try {
 			let { ip } = req.body;
 
-			console.log(ip, '==ip==')
+			console.log(ip, '==ip==');
 			if (!ip) throw new ApiError(404, 'Invalid IP address');
 
 			// let _res = await fetch(`${ip}/master/students-data/data-download`);
@@ -119,9 +127,8 @@ const StudentAreaController = {
 			// fs.unlinkSync(DIR.TEMP_DIR + '/' + fileName);
 
 			await transact.commit();
-			console.log(1, '==1==')
+			console.log(1, '==1==');
 			return res.status(200).json(new ApiResponse(200, '', 'Students list'));
-			
 		} catch (error) {
 			console.log(error, '==error=================================');
 			await transact.rollback();
@@ -153,9 +160,9 @@ const StudentAreaController = {
 	getAllStudentsList_2: asyncHandler(async (req, res) => {
 		/**
 		 * getting students list from local database (i.e. downlaoded db)
-		 * */ 
+		 * */
 		let _studListAll = await studentAreaModel.getAllStudentsList_2();
-		console.log(_studListAll, '==_studListAll==')
+		console.log(_studListAll, '==_studListAll==');
 
 		return res
 			.status(200)

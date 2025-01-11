@@ -1,27 +1,37 @@
+import { FaPencilAlt } from 'react-icons/fa';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { FaPlus } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 import { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
-import Input from '../../UI/Input.jsx';
+import Input, { InputSelect } from '../../UI/Input.jsx';
 import {
 	getCentersList,
 	getServerIP,
 	getStudentsList,
 	postServerIP,
+	updateServerIP,
 } from './api.jsx';
-import { toast } from 'react-toastify';
+import CModal from '../../UI/CModal.jsx';
+import modalSlice, { ModalActions } from '../../../Store/modal-slice.jsx';
 
 function AddNewStudent() {
-	const { formFillingIP } = useSelector((state) => state.studentArea);
+	const [formFillingIpInputValue, setFormFillingIpInputValue] = useState('');
+	const [editFormFillingIpInputValue, setEditFormFillingIpInputValue] =
+		useState('');
+	const { formFillingIP, selectedFormFillingIP } = useSelector(
+		(state) => state.studentArea
+	);
 	const dispatch = useDispatch();
 
 	const handleServerIpSubmit = (e) => {
 		e.preventDefault();
 		const formData = new FormData(e.target);
 		const ip = formData.get('form_filling_server_ip');
-		if (!ip) return alert('Please enter IP');
+		if (!ip) return toast.warn('Please enter IP');
 		saveServerIP(ip);
 	};
 
@@ -30,6 +40,7 @@ function AddNewStudent() {
 		error: getServerIPErr,
 		isLoading: getServerIPLoading,
 		isError,
+		refetch: refetchServerIPList,
 	} = useQuery({
 		queryKey: ['getServerIP'],
 		queryFn: getServerIP,
@@ -55,15 +66,41 @@ function AddNewStudent() {
 	} = useMutation({
 		mutationFn: postServerIP,
 		onSuccess: (data, variables) => {
-			Swal.fire('Success', 'Upated form filling IP');
+			refetchServerIPList();
+			toast.success('Successfully added form filling IP.');
+
+			dispatch(ModalActions.toggleModal('add-process-url-modal'));
 		},
 		onError: (data) => {
-			alert('Error while saving IP', data);
+			const er = data?.response?.data?.message || 'Server errror';
+			toast.warn(er);
 		},
 	});
-	const handleFormFilligIPChange = (e) => {
-		dispatch(StudentAreaActions.setFormFillingIP(e.target.value));
+
+	const handleServerIpUpdate = (e) => {
+		e.preventDefault();
+		const formData = new FormData(e.target);
+		const ip = formData.get('form_filling_server_ip');
+		const id = formData.get('edit_id');
+		if (!ip) return toast.warn('Please enter IP');
+
+		if (!id) return toast.warn('Edit id not set.');
+		updateServerIpMutation.mutate({ ip, id });
 	};
+
+	const updateServerIpMutation = useMutation({
+		mutationFn: updateServerIP,
+		onSuccess: (data, variables) => {
+			refetchServerIPList();
+			toast.success('Successfully updated form filling IP.');
+
+			dispatch(ModalActions.toggleModal('edit-process-url-modal'));
+		},
+		onError: (data) => {
+			const er = data?.response?.data?.message || 'Server errror';
+			toast.warn(er);
+		},
+	});
 
 	const { mutate: getStudetList, isPending: studentDataLoading } = useMutation({
 		mutationFn: getStudentsList,
@@ -82,7 +119,7 @@ function AddNewStudent() {
 	});
 
 	const handleGetStudentsList = () => {
-		getStudetList(formFillingIP);
+		getStudetList(selectedFormFillingIP);
 	};
 
 	const { mutate: getCenterList, isPending: centersListLoading } = useMutation({
@@ -98,48 +135,138 @@ function AddNewStudent() {
 		},
 	});
 	const handleGetCentersList = () => {
-		getCenterList(formFillingIP);
+		getCenterList(selectedFormFillingIP);
 	};
+
+	function onServerIPChange(e) {
+		dispatch(StudentAreaActions.setSelectedFormFillingIP(e.target.value));
+	}
+	console.log(selectedFormFillingIP, '==selectedFormFillingIP==');
 	return (
-		<div className="mt-5 flex flex-col gap-4">
-			<form
-				action=""
-				className="flex items-center gap-2"
-				onSubmit={handleServerIpSubmit}
-			>
-				<Input
-					label={'Set Form Filling Server IP'}
-					name={'form_filling_server_ip'}
-					value={formFillingIP}
-					onChange={handleFormFilligIPChange}
-				></Input>
+		<>
+			<div className="mt-5 flex flex-col gap-4">
+				<div className="flex gap-1">
+					<InputSelect
+						onChange={onServerIPChange}
+						label={'Select Form Filling URL'}
+						className={'w-[15%]'}
+						value={JSON.stringify(selectedFormFillingIP)}
+					>
+						<option value="">-- Select --</option>
+						{formFillingIP &&
+							formFillingIP.map((_el, idx) => {
+								return (
+									<>
+										<option value={JSON.stringify(_el)} key={_el.id}>
+											{_el.server_ip}
+										</option>
+									</>
+								);
+							})}
+					</InputSelect>
+
+					<CButton
+						icon={<FaPencilAlt />}
+						onClick={() => {
+							dispatch(ModalActions.toggleModal('edit-process-url-modal'));
+						}}
+						className={'btn--primary self-end'}
+					/>
+
+					<CButton
+						icon={<FaPlus />}
+						onClick={() => {
+							dispatch(ModalActions.toggleModal('add-process-url-modal'));
+						}}
+						className={'btn--primary self-end'}
+					/>
+				</div>
+
 				<CButton
-					type="submit"
-					className={'btn--danger self-end'}
-					isLoading={saveIpPending}
+					type="button"
+					onClick={handleGetCentersList}
+					className={'w-fit'}
+					isLoading={studentDataLoading}
 				>
-					Save
+					Get All Centers List
 				</CButton>
-			</form>
 
-			<CButton
-				type="button"
-				onClick={handleGetCentersList}
-				className={'w-fit'}
-				isLoading={studentDataLoading}
-			>
-				Get All Centers List
-			</CButton>
+				<CButton
+					type="button"
+					onClick={handleGetStudentsList}
+					className={'w-fit'}
+					isLoading={studentDataLoading}
+				>
+					Get All Stuent List
+				</CButton>
+			</div>
 
-			<CButton
-				type="button"
-				onClick={handleGetStudentsList}
-				className={'w-fit'}
-				isLoading={studentDataLoading}
-			>
-				Get All Stuent List
-			</CButton>
-		</div>
+			{/* add process url */}
+			<CModal id="add-process-url-modal" title={'Add Process Url'}>
+				<form
+					action=""
+					className="flex items-center gap-2"
+					onSubmit={handleServerIpSubmit}
+				>
+					<Input
+						type="url"
+						label={'Set Form Filling Server IP'}
+						name={'form_filling_server_ip'}
+						value={formFillingIpInputValue}
+						onChange={(e) => {
+							setFormFillingIpInputValue(e.target.value);
+						}}
+					></Input>
+					<CButton
+						type="submit"
+						className={'btn--danger self-end'}
+						isLoading={saveIpPending}
+					>
+						Save
+					</CButton>
+				</form>
+			</CModal>
+
+			{/* update process url */}
+			<CModal id="edit-process-url-modal" title={'Update Process Url'}>
+				<form
+					action=""
+					className="flex items-center gap-2"
+					onSubmit={handleServerIpUpdate}
+				>
+					<Input
+						type="hidden"
+						// label={'edit id'}
+						name={'edit_id'}
+						value={selectedFormFillingIP?.id}
+					></Input>
+
+					<Input
+						type="url"
+						label={'Set Form Filling Server IP'}
+						name={'form_filling_server_ip'}
+						value={selectedFormFillingIP?.server_ip}
+						onChange={(e) => {
+							dispatch(
+								StudentAreaActions.setSelectedFormFillingIP(
+									JSON.stringify({
+										id: selectedFormFillingIP?.id,
+										server_ip: e.target.value,
+									})
+								)
+							);
+						}}
+					></Input>
+					<CButton
+						type="submit"
+						className={'btn--danger self-end'}
+						isLoading={saveIpPending}
+					>
+						Update
+					</CButton>
+				</form>
+			</CModal>
+		</>
 	);
 }
 
