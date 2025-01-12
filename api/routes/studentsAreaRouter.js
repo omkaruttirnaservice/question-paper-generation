@@ -16,4 +16,9 @@ studentsAreaRouter.post('/download-centers-list', StudentAreaController.download
 
 studentsAreaRouter.get('/get-center-and-batch-list', StudentAreaController.getCenterAndBatchList);
 
+
+// downlaod student question paper from exam server
+studentsAreaRouter.post('/get-students-question-paper', StudentAreaController.downloadStudentQuestionPaper)
+
+
 export default studentsAreaRouter;

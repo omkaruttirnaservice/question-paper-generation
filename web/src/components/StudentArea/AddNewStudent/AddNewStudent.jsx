@@ -1,4 +1,4 @@
-import { FaPencilAlt, FaTrash } from 'react-icons/fa';
+import { FaPencilAlt, FaRegClipboard, FaTrash } from 'react-icons/fa';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
@@ -11,6 +11,7 @@ import Input, { InputSelect } from '../../UI/Input.jsx';
 import {
 	deleteServerIP,
 	getCentersList,
+	getQuestionPaper,
 	getServerIP,
 	getStudentsList,
 	postServerIP,
@@ -21,20 +22,11 @@ import modalSlice, { ModalActions } from '../../../Store/modal-slice.jsx';
 
 function AddNewStudent() {
 	const [formFillingIpInputValue, setFormFillingIpInputValue] = useState('');
-	const [editFormFillingIpInputValue, setEditFormFillingIpInputValue] =
-		useState('');
-	const { formFillingIP, selectedFormFillingIP } = useSelector(
-		(state) => state.studentArea
-	);
-	const dispatch = useDispatch();
 
-	const handleServerIpSubmit = (e) => {
-		e.preventDefault();
-		const formData = new FormData(e.target);
-		const ip = formData.get('form_filling_server_ip');
-		if (!ip) return toast.warn('Please enter IP');
-		saveServerIP(ip);
-	};
+	const [ipDetails, setIpDetails] = useState({});
+
+	const { formFillingIP } = useSelector((state) => state.studentArea);
+	const dispatch = useDispatch();
 
 	const {
 		data: serverIP,
@@ -60,6 +52,17 @@ function AddNewStudent() {
 		}
 	}, [serverIP]);
 
+	const handleServerIpSubmit = (e) => {
+		e.preventDefault();
+
+		if (!ipDetails?.form_filling_server_ip)
+			return toast.warn('Please enter Form Filling Server IP');
+		if (!ipDetails?.exam_panel_server_ip)
+			return toast.warn('Please enter Exam Panel IP');
+
+		saveServerIP(ipDetails);
+	};
+
 	const {
 		mutate: saveServerIP,
 		isError: saveIpError,
@@ -69,7 +72,7 @@ function AddNewStudent() {
 		onSuccess: (data, variables) => {
 			refetchServerIPList();
 			toast.success('Successfully added form filling IP.');
-
+			setIpDetails({});
 			dispatch(ModalActions.toggleModal('add-process-url-modal'));
 		},
 		onError: (data) => {
@@ -80,13 +83,15 @@ function AddNewStudent() {
 
 	const handleServerIpUpdate = (e) => {
 		e.preventDefault();
-		const formData = new FormData(e.target);
-		const ip = formData.get('form_filling_server_ip');
-		const id = formData.get('edit_id');
-		if (!ip) return toast.warn('Please enter IP');
 
-		if (!id) return toast.warn('Edit id not set.');
-		updateServerIpMutation.mutate({ ip, id });
+		if (!ipDetails?.form_filling_server_ip)
+			return toast.warn('Please enter Form Filling Server IP');
+		if (!ipDetails?.exam_panel_server_ip)
+			return toast.warn('Please enter Exam Panel IP');
+
+		if (!ipDetails?.id) return toast.warn('Edit id not set.');
+
+		updateServerIpMutation.mutate(ipDetails);
 	};
 
 	const updateServerIpMutation = useMutation({
@@ -95,6 +100,7 @@ function AddNewStudent() {
 			refetchServerIPList();
 			toast.success('Successfully updated form filling IP.');
 
+			setIpDetails({});
 			dispatch(ModalActions.toggleModal('edit-process-url-modal'));
 		},
 		onError: (data) => {
@@ -104,10 +110,7 @@ function AddNewStudent() {
 	});
 
 	// delete server ip
-	function handleDeleteFormFillingIP() {
-		console.log(1, '==1==');
-		const deleteId = selectedFormFillingIP?.id;
-		console.log(deleteId, '==deleteId==');
+	function handleDeleteFormFillingIP(deleteId) {
 		if (!deleteId) {
 			toast.warn('No delete id found.');
 			return false;
@@ -118,8 +121,6 @@ function AddNewStudent() {
 	const deleteFormFillingIPMutation = useMutation({
 		mutationFn: deleteServerIP,
 		onSuccess: (data) => {
-			console.log(data, '==data success delete==');
-
 			refetchServerIPList();
 			toast.success(data?.data?.message || 'Successful.');
 		},
@@ -129,86 +130,179 @@ function AddNewStudent() {
 		},
 	});
 
-	const { mutate: getStudetList, isPending: studentDataLoading } = useMutation({
+	const getStudetListMutation = useMutation({
 		mutationFn: getStudentsList,
 		onSuccess: (data, variables) => {
-			if (data.message == 'Validation error') {
-				Swal.fire('Error', 'Student data already present');
-				return false;
-			}
 			Swal.fire('Success', 'Downloaded students list');
 		},
 		onError: (error, variables) => {
-			console.log(error, '==error==');
 			const er = error?.response?.data?.message || 'Server error.';
-			toast.warn(er);
+			if (er == 'Validation error') {
+				Swal.fire('Error', 'Student data already present');
+				return false;
+			} else {
+				toast.warn(er);
+			}
 		},
 	});
 
-	const handleGetStudentsList = () => {
-		getStudetList(selectedFormFillingIP);
+	const handleGetStudentsList = (form_filling_server_ip) => {
+		getStudetListMutation.mutate(form_filling_server_ip);
 	};
 
-	const { mutate: getCenterList, isPending: centersListLoading } = useMutation({
+	const getCenterListMutation = useMutation({
 		mutationFn: getCentersList,
 		onSuccess: (data, variables) => {
-			console.log(data, '==data centers list==');
-
 			Swal.fire('Success', 'Downloaded centers list');
+			toast.success(data?.data?.success || 'Successful.');
 		},
 		onError: (error, variables) => {
 			const er = error?.response?.data?.message || 'Server error.';
 			toast.warn(er);
 		},
 	});
-	const handleGetCentersList = () => {
-		getCenterList(selectedFormFillingIP);
+
+	const handleGetCentersList = (form_filling_server_ip) => {
+		getCenterListMutation.mutate(form_filling_server_ip);
 	};
 
-	function onServerIPChange(e) {
-		dispatch(StudentAreaActions.setSelectedFormFillingIP(e.target.value));
+	const getQuestionPaperMutation = useMutation({
+		mutationFn: getQuestionPaper,
+		onSuccess: (data, variables) => {
+			toast.success(data?.data?.message || 'Successful.');
+		},
+		onError: (error, variables) => {
+			const er = error?.response?.data?.message || 'Server error.';
+			toast.warn(er);
+		},
+	});
+
+	function handleGetStudentsQuestionPaper(exam_panel_server_ip) {
+		if (!exam_panel_server_ip) {
+			toast.warn('Exam panel server IP not selected.');
+			return false;
+		}
+		getQuestionPaperMutation.mutate(exam_panel_server_ip);
 	}
-	console.log(selectedFormFillingIP, '==selectedFormFillingIP==');
+
 	return (
 		<>
 			<div className="mt-5 flex flex-col gap-4">
-				<div className="flex gap-1">
-					<InputSelect
-						onChange={onServerIPChange}
-						label={'Select Form Filling URL'}
-						className={'w-[15%]'}
-						value={JSON.stringify(selectedFormFillingIP)}
-					>
-						<option value="">-- Select --</option>
-						{formFillingIP &&
-							formFillingIP.map((_el, idx) => {
-								return (
-									<>
-										<option value={JSON.stringify(_el)} key={_el.id}>
-											{_el.server_ip}
-										</option>
-									</>
-								);
-							})}
-					</InputSelect>
+				<div className="">
+					<table className="w-[100%]">
+						<thead>
+							<tr>
+								<th className="border p-2">Form Filling IP</th>
+								<th className="border p-2">Exam Panel IP</th>
+								<th className="border p-2">Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							{formFillingIP &&
+								formFillingIP.map((_el, idx) => {
+									return (
+										<tr>
+											<td className="border p-2">
+												<CButton
+													varient=""
+													className={`!bg-transparent !shadow-none !text-md !p-1 !inline-block !text-gray-500`}
+													icon={<FaRegClipboard />}
+													onClick={() => {
+														navigator.clipboard.writeText(
+															_el.form_filling_server_ip
+														);
 
-					{selectedFormFillingIP?.id && (
-						<>
-							<CButton
-								icon={<FaTrash />}
-								onClick={handleDeleteFormFillingIP}
-								className={'btn--danger self-end'}
-							/>
+														toast.success('Copied to clipbaord.');
+													}}
+												></CButton>
+												<span>{_el.form_filling_server_ip}</span>
+											</td>
+											<td className="border p-2">
+												<CButton
+													varient=""
+													className={`!bg-transparent !shadow-none !text-md !p-1 !inline-block !text-gray-500`}
+													icon={<FaRegClipboard />}
+													onClick={() => {
+														navigator.clipboard.writeText(
+															_el.exam_panel_server_ip
+														);
 
-							<CButton
-								icon={<FaPencilAlt />}
-								onClick={() => {
-									dispatch(ModalActions.toggleModal('edit-process-url-modal'));
-								}}
-								className={'btn--primary self-end'}
-							/>
-						</>
-					)}
+														toast.success('Copied to clipbaord.');
+													}}
+												></CButton>
+												<span>{_el.exam_panel_server_ip}</span>
+											</td>
+											<td className="border p-2">
+												<div className="flex gap-2">
+													<CButton
+														icon={<FaTrash />}
+														onClick={handleDeleteFormFillingIP.bind(
+															null,
+															_el.id
+														)}
+														className={'btn--danger self-end'}
+													/>
+
+													<CButton
+														icon={<FaPencilAlt />}
+														onClick={() => {
+															dispatch(
+																ModalActions.toggleModal(
+																	'edit-process-url-modal'
+																)
+															);
+															setIpDetails({
+																id: _el.id,
+																form_filling_server_ip:
+																	_el.form_filling_server_ip,
+																exam_panel_server_ip: _el.exam_panel_server_ip,
+															});
+														}}
+														className={'btn--primary self-end'}
+													/>
+
+													<CButton
+														type="button"
+														onClick={handleGetCentersList.bind(
+															null,
+															_el.form_filling_server_ip
+														)}
+														className={'w-fit'}
+														isLoading={getCenterListMutation.isPending}
+													>
+														Get All Centers List
+													</CButton>
+
+													<CButton
+														type="button"
+														onClick={handleGetStudentsList.bind(
+															null,
+															_el.form_filling_server_ip
+														)}
+														className={'w-fit'}
+														isLoading={getStudetListMutation.isPending}
+													>
+														Get All Stuents List
+													</CButton>
+
+													<CButton
+														type="button"
+														onClick={handleGetStudentsQuestionPaper.bind(
+															null,
+															_el.exam_panel_server_ip
+														)}
+														className={'w-fit'}
+														isLoading={false}
+													>
+														Get Student Question Paper
+													</CButton>
+												</div>
+											</td>
+										</tr>
+									);
+								})}
+						</tbody>
+					</table>
 
 					<CButton
 						icon={<FaPlus />}
@@ -216,26 +310,10 @@ function AddNewStudent() {
 							dispatch(ModalActions.toggleModal('add-process-url-modal'));
 						}}
 						className={'btn--primary self-end'}
-					/>
+					>
+						Add New IP
+					</CButton>
 				</div>
-
-				<CButton
-					type="button"
-					onClick={handleGetCentersList}
-					className={'w-fit'}
-					isLoading={studentDataLoading}
-				>
-					Get All Centers List
-				</CButton>
-
-				<CButton
-					type="button"
-					onClick={handleGetStudentsList}
-					className={'w-fit'}
-					isLoading={studentDataLoading}
-				>
-					Get All Stuent List
-				</CButton>
 			</div>
 
 			{/* add process url */}
@@ -249,9 +327,28 @@ function AddNewStudent() {
 						type="url"
 						label={'Set Form Filling Server IP'}
 						name={'form_filling_server_ip'}
-						value={formFillingIpInputValue}
+						value={ipDetails.form_filling_server_ip}
 						onChange={(e) => {
-							setFormFillingIpInputValue(e.target.value);
+							setIpDetails((prev) => {
+								return {
+									...prev,
+									[e.target.name]: e.target.value,
+								};
+							});
+						}}
+					></Input>
+					<Input
+						type="url"
+						label={'Set Exam Panel Server IP'}
+						name={'exam_panel_server_ip'}
+						value={ipDetails.exam_panel_server_ip}
+						onChange={(e) => {
+							setIpDetails((prev) => {
+								return {
+									...prev,
+									[e.target.name]: e.target.value,
+								};
+							});
 						}}
 					></Input>
 					<CButton
@@ -275,23 +372,35 @@ function AddNewStudent() {
 						type="hidden"
 						// label={'edit id'}
 						name={'edit_id'}
-						value={selectedFormFillingIP?.id}
+						value={ipDetails?.id}
 					></Input>
 
 					<Input
 						type="url"
 						label={'Set Form Filling Server IP'}
 						name={'form_filling_server_ip'}
-						value={selectedFormFillingIP?.server_ip}
+						value={ipDetails.form_filling_server_ip}
 						onChange={(e) => {
-							dispatch(
-								StudentAreaActions.setSelectedFormFillingIP(
-									JSON.stringify({
-										id: selectedFormFillingIP?.id,
-										server_ip: e.target.value,
-									})
-								)
-							);
+							setIpDetails((prev) => {
+								return {
+									...prev,
+									[e.target.name]: e.target.value,
+								};
+							});
+						}}
+					></Input>
+					<Input
+						type="url"
+						label={'Set Exam Panel Server IP'}
+						name={'exam_panel_server_ip'}
+						value={ipDetails.exam_panel_server_ip}
+						onChange={(e) => {
+							setIpDetails((prev) => {
+								return {
+									...prev,
+									[e.target.name]: e.target.value,
+								};
+							});
 						}}
 					></Input>
 					<CButton

@@ -17,7 +17,7 @@ import aouth from '../application/schemas/aouth.js';
 import tm_student_test_list from '../application/schemas/tm_student_test_list.js';
 import tm_student_question_paper from '../application/schemas/tm_student_question_paper.js';
 import tm_student_final_result_set from '../application/schemas/tm_student_final_result_set.js';
-import tm_form_filling_server_ip_list from '../application/schemas/tm_form_filling_server_ip_list.js';
+import tm_server_ip_list from '../application/schemas/tm_server_ip_list.js';
 
 tm_master_test_list.hasMany(tm_main_topic_list, {
 	foreignKey: 'mtl_master_test_list_id',
@@ -39,7 +39,10 @@ const getSync = () => {
 	sequelize
 		.sync({ alter: true })
 		.then(() => {
-			console.log('"\x1b[47m", \x1b[30m%s\x1b[0m', 'Database has been migrated successfully, you can now start the server.');
+			console.log(
+				'"\x1b[47m", \x1b[30m%s\x1b[0m',
+				'Database has been migrated successfully, you can now start the server.'
+			);
 		})
 		.catch((error) => console.log(error));
 };

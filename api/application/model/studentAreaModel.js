@@ -3,21 +3,27 @@ import aouth from '../schemas/aouth.js';
 import tn_student_list from '../schemas/tn_student_list.js';
 import ApiError from '../utils/ApiError.js';
 import tn_center_list from '../schemas/tn_center_list.js';
-import tm_form_filling_server_ip_list from '../schemas/tm_form_filling_server_ip_list.js';
+import tm_server_ip_list from '../schemas/tm_server_ip_list.js';
+import tm_student_question_paper from '../schemas/tm_student_question_paper.js';
 
 const studentAreaModel = {
 	getServerIP: async () => {
-		return tm_form_filling_server_ip_list.findAll({ raw: true });
+		return tm_server_ip_list.findAll({ raw: true });
 	},
-	addFormFillingIP: (ip) => {
-		return tm_form_filling_server_ip_list.create({
-			server_ip: ip,
+	addFormFillingIP: ({ form_filling_server_ip, exam_panel_server_ip }) => {
+		return tm_server_ip_list.create({
+			form_filling_server_ip,
+			exam_panel_server_ip,
 		});
 	},
-	updateFormFillingIP: (ip, id) => {
-		return tm_form_filling_server_ip_list.update(
+	updateFormFillingIP: (
+		{ form_filling_server_ip, exam_panel_server_ip },
+		id
+	) => {
+		return tm_server_ip_list.update(
 			{
-				server_ip: ip,
+				form_filling_server_ip,
+				exam_panel_server_ip,
 			},
 			{
 				where: {
@@ -28,7 +34,7 @@ const studentAreaModel = {
 	},
 
 	deleteFormFillingIP: (id) => {
-		return tm_form_filling_server_ip_list.destroy({
+		return tm_server_ip_list.destroy({
 			where: {
 				id: id,
 			},
@@ -211,6 +217,16 @@ const studentAreaModel = {
 			return _results;
 		} catch (error) {
 			throw new ApiError(500, error.message);
+		}
+	},
+
+	// save downlaoded students question paper from exam panel
+	saveStudentQuestionPaper: async (questionPapers) => {
+		try {
+			const result = tm_student_question_paper.bulkCreate(questionPapers);
+			return [null, result];
+		} catch (error) {
+			return [error, null];
 		}
 	},
 };

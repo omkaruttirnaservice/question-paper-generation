@@ -2,7 +2,6 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
 	formFillingIP: null,
-	selectedFormFillingIP: null,
 	allList: {
 		studentsList_ALL: [],
 		searchTerm: null,
@@ -24,15 +23,7 @@ const studentAreaSlice = createSlice({
 	name: 'student-area-slice',
 	initialState,
 	reducers: {
-		setSelectedFormFillingIP: (state, action) => {
-			if (typeof action.payload === 'string') {
-				if (action.payload.length !== 0) {
-					state.selectedFormFillingIP = JSON.parse(action.payload);
-				} else {
-					state.selectedFormFillingIP = null;
-				}
-			}
-		},
+	
 		setFormFillingIP: (state, action) => {
 			state.formFillingIP = action.payload;
 		},
