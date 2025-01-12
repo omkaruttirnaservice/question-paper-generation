@@ -26,6 +26,15 @@ const studentAreaModel = {
 			}
 		);
 	},
+
+	deleteFormFillingIP: (id) => {
+		return tm_form_filling_server_ip_list.destroy({
+			where: {
+				id: id,
+			},
+		});
+	},
+
 	saveAllStudentsList: (_data, transact) => {
 		try {
 			return tn_student_list.bulkCreate(_data, { transaction: transact });

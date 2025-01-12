@@ -25,8 +25,13 @@ const studentAreaSlice = createSlice({
 	initialState,
 	reducers: {
 		setSelectedFormFillingIP: (state, action) => {
-			console.log(JSON.parse(action.payload), '==action.payload==')
-			state.selectedFormFillingIP = JSON.parse(action.payload);
+			if (typeof action.payload === 'string') {
+				if (action.payload.length !== 0) {
+					state.selectedFormFillingIP = JSON.parse(action.payload);
+				} else {
+					state.selectedFormFillingIP = null;
+				}
+			}
 		},
 		setFormFillingIP: (state, action) => {
 			state.formFillingIP = action.payload;

@@ -1,16 +1,18 @@
 import axios from 'axios';
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 export const postServerIP = async (ip) => {
-	console.log(ip, '==ip==');
 	const url = SERVER_IP + '/api/students-area/set-server-ip';
 	return await axios.post(url, { ip });
 };
 
-export const updateServerIP = async ({ip, id}) => {
-	console.log(ip, id, '==ip, id==')
-	
+export const updateServerIP = async ({ ip, id }) => {
 	const url = SERVER_IP + '/api/students-area/update-server-ip';
 	return await axios.put(url, { ip, id });
+};
+
+export const deleteServerIP = async (id) => {
+	const url = SERVER_IP + `/api/students-area/delete-server-ip/${id}`;
+	return await axios.delete(url);
 };
 
 export const getServerIP = async () => {

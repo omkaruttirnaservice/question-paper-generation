@@ -1,4 +1,4 @@
-import { FaPencilAlt } from 'react-icons/fa';
+import { FaPencilAlt, FaTrash } from 'react-icons/fa';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useEffect, useRef, useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
@@ -9,6 +9,7 @@ import { StudentAreaActions } from '../../../Store/student-area-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
 import Input, { InputSelect } from '../../UI/Input.jsx';
 import {
+	deleteServerIP,
 	getCentersList,
 	getServerIP,
 	getStudentsList,
@@ -102,6 +103,32 @@ function AddNewStudent() {
 		},
 	});
 
+	// delete server ip
+	function handleDeleteFormFillingIP() {
+		console.log(1, '==1==');
+		const deleteId = selectedFormFillingIP?.id;
+		console.log(deleteId, '==deleteId==');
+		if (!deleteId) {
+			toast.warn('No delete id found.');
+			return false;
+		}
+		deleteFormFillingIPMutation.mutate(deleteId);
+	}
+
+	const deleteFormFillingIPMutation = useMutation({
+		mutationFn: deleteServerIP,
+		onSuccess: (data) => {
+			console.log(data, '==data success delete==');
+
+			refetchServerIPList();
+			toast.success(data?.data?.message || 'Successful.');
+		},
+		onError: (data) => {
+			const er = data?.response?.data?.message || 'Server error.';
+			toast.warn(er);
+		},
+	});
+
 	const { mutate: getStudetList, isPending: studentDataLoading } = useMutation({
 		mutationFn: getStudentsList,
 		onSuccess: (data, variables) => {
@@ -165,13 +192,23 @@ function AddNewStudent() {
 							})}
 					</InputSelect>
 
-					<CButton
-						icon={<FaPencilAlt />}
-						onClick={() => {
-							dispatch(ModalActions.toggleModal('edit-process-url-modal'));
-						}}
-						className={'btn--primary self-end'}
-					/>
+					{selectedFormFillingIP?.id && (
+						<>
+							<CButton
+								icon={<FaTrash />}
+								onClick={handleDeleteFormFillingIP}
+								className={'btn--danger self-end'}
+							/>
+
+							<CButton
+								icon={<FaPencilAlt />}
+								onClick={() => {
+									dispatch(ModalActions.toggleModal('edit-process-url-modal'));
+								}}
+								className={'btn--primary self-end'}
+							/>
+						</>
+					)}
 
 					<CButton
 						icon={<FaPlus />}

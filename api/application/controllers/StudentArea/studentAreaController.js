@@ -37,6 +37,16 @@ const StudentAreaController = {
 			.json(new ApiResponse(201, null, 'Successfully updated new ip.'));
 	}),
 
+	deleteFormFillingIP: asyncHandler(async (req, res) => {
+		let { id } = req.params;
+		if (!id) throw new ApiError(400, 'Invalid delete id.');
+		const _deleteResponse = await studentAreaModel.deleteFormFillingIP(id);
+		console.log(_deleteResponse,'_deleteResponse')
+		return res
+			.status(200)
+			.json(new ApiResponse(200, null, 'Successfully deleted IP.'));
+	}),
+
 	getAllStudentsList_1: async (req, res, next) => {
 		let transact = await sequelize.transaction();
 		try {
