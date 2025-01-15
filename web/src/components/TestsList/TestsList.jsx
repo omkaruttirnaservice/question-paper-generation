@@ -263,7 +263,7 @@ function TestsList() {
 
 	const columns = [
 		{ sortable: true, name: '#', selector: (row, idx) => idx + 1, width: '4rem' },
-		{ sortable: true, name: 'Published Test Id', selector: (row) => row.id, width: '7rem' },
+		{ sortable: true, name: 'Test Id', selector: (row) => row.id, width: '7rem' },
 		{ sortable: true, name: 'Test Name', selector: (row) => row.mt_name, width: '10rem' },
 		{ sortable: true, name: 'Duration', selector: (row) => row.mt_test_time, width: '7rem' },
 		{ sortable: true, name: 'Total Questions', selector: (row) => row.mt_total_test_question, width: '8rem' },
@@ -368,7 +368,7 @@ function TestsList() {
 							<tr className="bg-cyan-300 text-center cursor-pointer">
 								<th className="p-2">#</th>
 
-								<th className="p-2">Published Test Id</th>
+								<th className="p-2">Test Id</th>
 								<th className="p-2">Name</th>
 								<th className="p-2">Duration</th>
 								<th className="p-2">Total Questions</th>

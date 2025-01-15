@@ -2,12 +2,7 @@ import { BIGINT, DATE, DATEONLY, Sequelize } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 
 const tm_test_question_sets = sequelize.define('tm_test_question_sets', {
-	id: {
-		type: BIGINT,
-		allowNull: false,
-		primaryKey: true,
-		autoIncrement: true,
-	},
+	id: { type: BIGINT, allowNull: false, primaryKey: true, autoIncrement: true, },
 	q_id: { type: Sequelize.INTEGER },
 	tqs_test_id: { type: Sequelize.INTEGER },
 	section_id: { type: Sequelize.INTEGER },
@@ -53,17 +48,9 @@ const tm_test_question_sets = sequelize.define('tm_test_question_sets', {
 	page_name: { type: Sequelize.BIGINT },
 	mqs_ask_in_month: { type: Sequelize.STRING(20) },
 	mqs_ask_in_year: { type: Sequelize.STRING(20) },
-	mqs_leval: {
-		type: Sequelize.STRING(255),
-	},
-	createdAt: {
-		type: DATE,
-		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-	},
-	updatedAt: {
-		type: DATE,
-		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-	},
+	mqs_leval: { type: Sequelize.STRING(255), },
+	createdAt: { type: DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'), },
+	updatedAt: { type: DATE, defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'), },
 });
 
 export default tm_test_question_sets;

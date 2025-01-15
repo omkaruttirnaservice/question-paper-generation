@@ -3,7 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ModalActions } from '../../Store/modal-slice.jsx';
 import CButton from './CButton.jsx';
 
-export default function CModal({ id, children, title, showCloseBtn = true, className }) {
+export default function CModal({
+	id,
+	children,
+	title,
+	showCloseBtn = true,
+	className,
+}) {
 	const _modalSlice = useSelector((state) => state.modal);
 
 	function _isModalOpen(key) {
@@ -15,9 +21,12 @@ export default function CModal({ id, children, title, showCloseBtn = true, class
 				<>
 					<ModalBackdrop></ModalBackdrop>
 					<div
-						className={`bg-white  z-50 transition-all duration-300 fixed shadow-xl min-h-[10rem] left-[50%] translate-x-[-50%] translate-y-[-50%] ${
-							_isModalOpen ? `top-[50%] opacity-100 visible` : `top-[55%] opacity-0 invisible`
-						} top-[50%] p-4 min-w-[40vw] w-auto ${className}`}>
+						className={`bg-white z-50 transition-all duration-300 fixed shadow-xl min-h-[10rem] left-[50%] translate-x-[-50%] translate-y-[-50%] ${
+							_isModalOpen
+								? `top-[50%] opacity-100 visible`
+								: `top-[65%] opacity-0 invisible`
+						}  p-4 min-w-[40vw] w-auto ${className}`}
+					>
 						<ModalHeader id={id} showCloseBtn={showCloseBtn}>
 							{title}
 						</ModalHeader>
@@ -31,7 +40,9 @@ export default function CModal({ id, children, title, showCloseBtn = true, class
 }
 
 export function ModalBackdrop() {
-	return <div className="fixed inset-0 z-40 h-[100vh] w-[100vw]  bg-black/50 backdrop-blur-sm"></div>;
+	return (
+		<div className="fixed inset-0 z-40 h-[100vh] w-[100vw]  bg-black/50 backdrop-blur-sm"></div>
+	);
 }
 
 export function ModalTitle({ children }) {

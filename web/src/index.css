@@ -177,6 +177,16 @@
 	.question-option {
 		@apply bg-blue-600 flex items-center justify-center font-medium w-fit p-1 px-2 text-white;
 	}
+
+	/* Table styling */
+	table {
+		@apply !w-[100%];
+	}
+
+	th,
+	td {
+		@apply border p-2;
+	}
 }
 
 .cke_notification {

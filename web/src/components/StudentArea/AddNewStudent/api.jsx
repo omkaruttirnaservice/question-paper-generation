@@ -57,3 +57,27 @@ export const getQuestionPaper = async (exam_panel_server_ip) => {
 	const url = SERVER_IP + '/api/students-area/get-students-question-paper';
 	return await axios.post(url, { exam_panel_server_ip });
 };
+
+export const getPublishedTestList = async () => {
+	// This download students question paper from exam panel
+	const url = SERVER_IP + '/api/test/list-published';
+
+	return await axios.get(url);
+};
+
+export const uploadPublishedTestToFormFilling = async ({
+	_published_test_id,
+	_ip_details,
+}) => {
+	/**
+	 *  This will upload published test to form filling server
+	 * 	The Published test will be selecteed by using id of `tm_published_test_lists` table
+	 *  It will include Question Paper and Published Test details
+	 * */
+	const url =
+		SERVER_IP + '/api/students-area/upload-published-test-to-form-filling';
+	return await axios.post(url, {
+		published_test_id: _published_test_id,
+		ip_details: _ip_details,
+	});
+};

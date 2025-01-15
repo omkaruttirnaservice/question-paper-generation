@@ -5,6 +5,9 @@ import ApiError from '../utils/ApiError.js';
 import tn_center_list from '../schemas/tn_center_list.js';
 import tm_server_ip_list from '../schemas/tm_server_ip_list.js';
 import tm_student_question_paper from '../schemas/tm_student_question_paper.js';
+import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
+import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
+import db from '../config/db.connect.js';
 
 const studentAreaModel = {
 	getServerIP: async () => {
@@ -224,9 +227,41 @@ const studentAreaModel = {
 	saveStudentQuestionPaper: async (questionPapers) => {
 		try {
 			const result = tm_student_question_paper.bulkCreate(questionPapers);
-			return [null, result];
+			return result;
 		} catch (error) {
-			return [error, null];
+			throw new ApiError(500, error?.message || 'Server errror.');
+		}
+	},
+
+	// get individual published test details
+	getPublishedTestById: async (id) => {
+		try {
+			const result = tm_publish_test_list.findAll({
+				where: {
+					id,
+				},
+				raw: true,
+				limit: 1
+			});
+			return result;
+		} catch (error) {
+			throw new ApiError(500, error?.message || 'Server errror.');
+		}
+	},
+
+	// get individual question paper by published test id
+	getQuestionPaperByPublishedTestId: async ( test_id) => {
+		try {
+			const result = tm_test_question_sets.findAll({
+				where: {
+					tqs_test_id: test_id,
+				},
+				raw: true,
+			});
+
+			return result;
+		} catch (error) {
+			throw new ApiError(500, error?.message || 'Server errror.');
 		}
 	},
 };

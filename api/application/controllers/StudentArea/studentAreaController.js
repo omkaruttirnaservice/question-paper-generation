@@ -323,24 +323,16 @@ const StudentAreaController = {
 			await StudentAreaController.getQuestionPaperFromExamServer(
 				exam_panel_server_ip
 			);
+
 		if (error) {
 			throw new ApiError(400, error);
 		}
+
 		if (data.length == 0) {
 			throw new ApiError(400, 'No student question paper found.');
 		}
 
-		const [_saveStudentQuestionPaperError, _saveStudentQuestionPaperResponse] =
-			await studentAreaModel.saveStudentQuestionPaper(data);
-
-		if (_saveStudentQuestionPaperError) {
-			throw new ApiError(400, 'Failed to insert student question paper.');
-		}
-
-		console.log(
-			_saveStudentQuestionPaperError,
-			'==_saveStudentQuestionPaperResponse=='
-		);
+		await studentAreaModel.saveStudentQuestionPaper(data);
 
 		return res
 			.status(200)
@@ -360,6 +352,11 @@ const StudentAreaController = {
 				`${exam_panel_server_ip}/api/student/question-paper`
 			);
 
+			if (!_studentQuestionPaperResponse.ok) {
+				// Handle HTTP errors (e.g., 4xx, 5xx responses)
+				throw new Error(`HTTP Error: ${_studentQuestionPaperResponse.status}`);
+			}
+
 			const _studentQuestionPaperResponseJson =
 				await _studentQuestionPaperResponse.json();
 			return [null, _studentQuestionPaperResponseJson?.data || []];
@@ -371,6 +368,107 @@ const StudentAreaController = {
 					error?.message ||
 						'Form filling server error while downloading centers list.',
 				];
+			}
+		}
+	},
+
+	// uploading published test list to form filling server and question paper
+	uploadPublishedTestListToFormFilling: asyncHandler(async function (req, res) {
+		/**
+		 *  This will upload published test to form filling server
+		 *  The Published test will be selecteed by using id of `tm_published_test_lists` table
+		 *  It will include Question Paper and Published Test details
+		 *  Sample req.body
+		 *  {
+				ptl_test_id: 2,
+				ip_details: {
+					id: 2,
+					form_filling_server_ip: 'http://localhost:3001',
+					exam_panel_server_ip: 'http://localhost:3050'
+				}
+			}
+		 * */
+		const data = req.body;
+
+		if (!data?.published_test_id) {
+			throw new ApiError(400, 'Invalid published test id.');
+		}
+		if (!data?.ip_details?.form_filling_server_ip) {
+			throw new ApiError(400, 'Invalid form filling ip.');
+		}
+
+		// 1. Get individual published test detils
+		const _publishedTestDetails = await studentAreaModel.getPublishedTestById(
+			data.published_test_id
+		);
+
+		console.log(_publishedTestDetails, '==_publishedTestDetails==');
+		if (_publishedTestDetails.length === 0) {
+			throw new ApiError(
+				400,
+				`Published test not found with id : ${data.published_test_id}`
+			);
+		}
+
+		// 2. Get Question Paper as per published test id.
+		const _questionPaper =
+			await studentAreaModel.getQuestionPaperByPublishedTestId(
+				_publishedTestDetails[0].ptl_test_id
+			);
+
+		console.log(_publishedTestDetails.length, '==_publishedTestDetails==');
+		console.log(_questionPaper.length, '==_questionPaper==');
+
+		const testDetails = {
+			_publishedTestDetails,
+			_questionPaper,
+		};
+
+		// 3. Send data to form filling server
+		const [error, result] =
+			await StudentAreaController.uploadPublishedTestAndQuestionPaper(
+				data,
+				testDetails
+			);
+
+		if (error) {
+			throw new ApiError(error?.statusCode, error?.message || 'Server error');
+		}
+		return res
+			.status(200)
+			.json(
+				new ApiResponse(
+					200,
+					null,
+					'Successfully uploaded published test and question paper to form filling panel.'
+				)
+			);
+	}),
+
+	async uploadPublishedTestAndQuestionPaper(data, testDetails) {
+		try {
+			const url = `${data?.ip_details?.form_filling_server_ip}/api/save-published-test-details`;
+			const _response = await fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ testDetails }),
+			});
+			console.log(_response, '==_response==');
+			const _jsonResp = await _response.json();
+			console.log(_jsonResp.statusCode, '==_jsonResp==');
+			if (!_response.ok) {
+				const error = new Error(_jsonResp?.message || 'Server error.');
+				error.statusCode = _jsonResp?.statusCode || 500;
+				throw error;
+			}
+			return [null, _jsonResp];
+		} catch (error) {
+			if (error.type == 'fetch failed') {
+				return ['fetch failed', null];
+			} else {
+				return [error, null];
 			}
 		}
 	},

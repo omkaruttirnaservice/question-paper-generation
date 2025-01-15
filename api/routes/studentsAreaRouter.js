@@ -20,5 +20,8 @@ studentsAreaRouter.get('/get-center-and-batch-list', StudentAreaController.getCe
 // downlaod student question paper from exam server
 studentsAreaRouter.post('/get-students-question-paper', StudentAreaController.downloadStudentQuestionPaper)
 
+// Upload published test and question paper to form fililng panel
+studentsAreaRouter.post('/upload-published-test-to-form-filling', StudentAreaController.uploadPublishedTestListToFormFilling)
+
 
 export default studentsAreaRouter;

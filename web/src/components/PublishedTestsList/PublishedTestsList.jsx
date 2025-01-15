@@ -92,7 +92,7 @@ function PublishedTestsList() {
 		{
 			sortable: true,
 			name: 'Published test id',
-			selector: (row) => row.ptl_test_id,
+			selector: (row) => row.id,
 		},
 		{
 			sortable: true,
