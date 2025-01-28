@@ -8,7 +8,11 @@ import './QuestionsListAutoTest.css';
 
 import { FaAngleRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { EditQuestionFormActions, getPostListThunk, getSubjectsListThunk } from '../../Store/edit-question-form-slice.jsx';
+import {
+	EditQuestionFormActions,
+	getPostListThunk,
+	getSubjectsListThunk,
+} from '../../Store/edit-question-form-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import PostListDropdown from '../QuestionForm/PostListDropdown/PostListDropdown.jsx';
 import SubjectListDropdown from '../QuestionForm/SubjectListDropdown/SubjectListDropdown.jsx';
@@ -31,9 +35,15 @@ function QuestionsListAutoTest() {
 	const navigate = useNavigate();
 	const { sendRequest } = useHttp();
 
-	const { test, topicList, selectedTopicList, isTestDetailsFilled } = useSelector((state) => state.tests);
+	const { test, topicList, selectedTopicList, isTestDetailsFilled } =
+		useSelector((state) => state.tests);
 
-	const { data: _formData, postsList, subjectsList, topicsList } = useSelector((state) => state.questionForm);
+	const {
+		data: _formData,
+		postsList,
+		subjectsList,
+		topicsList,
+	} = useSelector((state) => state.questionForm);
 	const { isLoading } = useSelector((state) => state.loader);
 
 	useEffect(() => {
@@ -51,9 +61,13 @@ function QuestionsListAutoTest() {
 		dispatch(testsSliceActions.setTopicList([]));
 
 		getTopicAndQuestionCount(_formData.subject_id);
-		let selectedSubject = subjectsList.filter((el) => el.id == _formData.subject_id);
+		let selectedSubject = subjectsList.filter(
+			(el) => el.id == _formData.subject_id
+		);
 		if (selectedSubject.length !== 0) {
-			dispatch(EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
+			dispatch(
+				EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name)
+			);
 		}
 	}, [_formData.subject_id]);
 
@@ -131,7 +145,9 @@ function QuestionsListAutoTest() {
 		let isValid = validateQuestionsSelection();
 		if (!isValid) return false;
 
-		let _editSubjectName = subjectsList.filter((el) => el.id == topicList[0].subject_id);
+		let _editSubjectName = subjectsList.filter(
+			(el) => el.id == topicList[0].subject_id
+		);
 		_editSubjectName = _editSubjectName[0].mtl_name;
 
 		let testChartAddData = {
@@ -140,10 +156,16 @@ function QuestionsListAutoTest() {
 			_topicsList: topicList.filter((el) => el?.selectedCount >= 1),
 		};
 
-		testChartAddData['_totalQuestionsCount'] = testChartAddData._topicsList.reduce((sum, el) => sum + el.selectedCount, 0);
+		testChartAddData['_totalQuestionsCount'] =
+			testChartAddData._topicsList.reduce(
+				(sum, el) => sum + el.selectedCount,
+				0
+			);
 
 		let updatedList = [...selectedTopicList];
-		let isExsistsIndex = updatedList.findIndex((el) => el._subjectName == testChartAddData._subjectName);
+		let isExsistsIndex = updatedList.findIndex(
+			(el) => el._subjectName == testChartAddData._subjectName
+		);
 
 		if (isExsistsIndex != -1) {
 			updatedList.splice(isExsistsIndex, 1);
@@ -289,7 +311,9 @@ function QuestionsListAutoTest() {
 			if (success == 1) {
 				Swal.fire('Success', 'Test has been generated!');
 
-				dispatch(testsSliceActions.setPreviewTestDetailsId(data.testDetails.id));
+				dispatch(
+					testsSliceActions.setPreviewTestDetailsId(data.testDetails.id)
+				);
 				dispatch(testsSliceActions.setPreviewTestDetails(data.testDetails));
 
 				setTimeout(() => {
@@ -305,6 +329,7 @@ function QuestionsListAutoTest() {
 			dispatch(EditQuestionFormActions.reset());
 
 			dispatch(testsSliceActions.setTestDetailsFilled(false));
+			alert('Resetting');
 		};
 	}, []);
 
@@ -313,15 +338,23 @@ function QuestionsListAutoTest() {
 		dispatch(testsSliceActions.setTestCreationType(AUTO_TEST));
 	};
 
+	console.log(selectedTopicList, '==selectedTopicList==')
+	// console.log(selectedQuestionsList, '==selectedQuestionsList==')
+
 	return (
 		<>
 			<div className="mt-6">
 				<AddTestFormAuto />
 			</div>
 
-			<CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
+			<CreatePreSubmitView
+				test={test}
+				finalTestSubmitHandler={finalTestSubmitHandler}
+			/>
 
-			{!isTestDetailsFilled && <CButton onClick={handleCreateTest}>Create Test</CButton>}
+			{!isTestDetailsFilled && (
+				<CButton onClick={handleCreateTest}>Create Test</CButton>
+			)}
 
 			{isTestDetailsFilled && (
 				<>
@@ -388,14 +421,23 @@ function QuestionsListAutoTest() {
 					<InfoContainer>
 						<div className="grid grid-cols-2 mb-4">
 							<div className="flex gap-2">
-								<SubjectListDropdown isShowAddNewBtn={false} className={'w-fit'} />
+								<SubjectListDropdown
+									isShowAddNewBtn={false}
+									className={'w-fit'}
+								/>
 								<CButton className={'h-fit mt-auto'} onClick={searchTopics}>
 									Search
 								</CButton>
 							</div>
 
 							{_formData.subject_id && (
-								<CButton icon={<BiReset />} className={'btn--danger w-fit justify-self-end h-fit self-end mb-1'} onClick={handleResetExam}>
+								<CButton
+									icon={<BiReset />}
+									className={
+										'btn--danger w-fit justify-self-end h-fit self-end mb-1'
+									}
+									onClick={handleResetExam}
+								>
 									Reset Exam
 								</CButton>
 							)}
@@ -421,7 +463,13 @@ function QuestionsListAutoTest() {
 														<tr className="border hover:bg-gray-50">
 															<td className="p-2 text-center ">{idx + 1}</td>
 															<td className="p-2 text-center" width={'5%'}>
-																<input type="checkbox" name={el.id} value="" data-id={el.id} onChange={topicListCheckboxHandler} />
+																<input
+																	type="checkbox"
+																	name={el.id}
+																	value=""
+																	data-id={el.id}
+																	onChange={topicListCheckboxHandler}
+																/>
 															</td>
 															<td className="p-2">{el.topic_name}</td>
 															<td className="p-2">{el.question_count}</td>
@@ -430,7 +478,9 @@ function QuestionsListAutoTest() {
 																	type=""
 																	className="border w-16 p-1"
 																	name={el.id}
-																	value={el.selectedCount ? el.selectedCount : 0}
+																	value={
+																		el.selectedCount ? el.selectedCount : 0
+																	}
 																	onChange={questionCountChangeHandler}
 																	disabled={!el.isChecked}
 																/>
@@ -446,21 +496,32 @@ function QuestionsListAutoTest() {
 									icon={<CiViewList />}
 									className={'btn--danger h-fit w-fit justify-self-end'}
 									onClick={handleAddToTestChart}
-									isLoading={isLoading}>
+									isLoading={isLoading}
+								>
 									Add to test chart
 								</CButton>
 							</div>
 						)}
 
 						{isLoading && <Spinner />}
-						{!isLoading && topicList.length === 0 && <p className="text-center text-[#555]">Woops! no questions found!</p>}
+						{!isLoading && topicList.length === 0 && (
+							<p className="text-center text-[#555]">
+								Woops! no questions found!
+							</p>
+						)}
 					</InfoContainer>
 					{selectedTopicList.length >= 1 && (
 						<InfoContainer>
 							<div className="grid grid-cols-2 mb-4">
 								<H3>Exam Chart</H3>
 								{_formData.subject_id && (
-									<CButton icon={<FaPlus />} className={'btn--success w-fit justify-self-end h-fit self-end mb-1'} onClick={finalTestSubmitHandler}>
+									<CButton
+										icon={<FaPlus />}
+										className={
+											'btn--success w-fit justify-self-end h-fit self-end mb-1'
+										}
+										onClick={finalTestSubmitHandler}
+									>
 										Create Exam
 									</CButton>
 								)}
@@ -471,9 +532,8 @@ function QuestionsListAutoTest() {
 										<thead>
 											<tr className="bg-cyan-500 text-white text-center">
 												<td className="p-2 text-center">#</td>
-												<td className="p-2">Test Class</td>
-												<td className="p-2">Topic Name</td>
-												<td className="p-2">Section For Test</td>
+												<td className="p-2">Subject Name</td>
+												<td className="p-2">Topics For Test</td>
 												<td className="p-2">Questions</td>
 												<td className="p-2">Edit|Remove</td>
 											</tr>
@@ -483,7 +543,6 @@ function QuestionsListAutoTest() {
 												return (
 													<tr className="border hover:bg-gray-50 text-center">
 														<td className="p-2 text-center ">{idx + 1}</td>
-														<td className="p-2 text-center">-</td>
 														<td className="p-2">{el._subjectName}</td>
 														<td className="p-2">{el._topicsList.length}</td>
 														<td>{el._totalQuestionsCount}</td>
@@ -491,12 +550,24 @@ function QuestionsListAutoTest() {
 															<div className="flex justify-center gap-2">
 																<CButton
 																	icon={<FaEdit />}
-																	className={'btn--success h-fit w-fit justify-self-end'}
-																	onClick={handleEditFromExamChart.bind(null, { idx, el })}></CButton>
+																	className={
+																		'btn--success h-fit w-fit justify-self-end'
+																	}
+																	onClick={handleEditFromExamChart.bind(null, {
+																		idx,
+																		el,
+																	})}
+																></CButton>
 																<CButton
 																	icon={<FaTrash />}
-																	className={'btn--danger h-fit w-fit justify-self-end'}
-																	onClick={handleRemoveFromEamChart.bind(null, { idx, el })}></CButton>
+																	className={
+																		'btn--danger h-fit w-fit justify-self-end'
+																	}
+																	onClick={handleRemoveFromEamChart.bind(null, {
+																		idx,
+																		el,
+																	})}
+																></CButton>
 															</div>
 														</td>
 													</tr>
@@ -507,7 +578,10 @@ function QuestionsListAutoTest() {
 												<td></td>
 												<td></td>
 												<td></td>
-												<td>Total Questions&nbsp;&mdash;&nbsp;{test.total_questions}</td>
+												<td>
+													Total Questions&nbsp;&mdash;&nbsp;
+													{test.total_questions}
+												</td>
 												<td></td>
 											</tr>
 										</tbody>
