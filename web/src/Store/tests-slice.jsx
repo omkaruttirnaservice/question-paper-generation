@@ -1,6 +1,5 @@
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
 import { createSlice } from '@reduxjs/toolkit';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 const TEST_INITIAL_STATE = {
@@ -154,7 +153,8 @@ const testsSlice = createSlice({
 			state.previewTestDetails.test_id = payload.id;
 			state.previewTestDetails.test_name = payload.mt_name;
 			state.previewTestDetails.test_duration = payload.mt_test_time;
-			state.previewTestDetails.marks_per_question = payload.mt_mark_per_question;
+			state.previewTestDetails.marks_per_question =
+				payload.mt_mark_per_question;
 			state.previewTestDetails.total_questions = payload.mt_total_test_question;
 			state.previewTestDetails.is_negative_marking = payload.mt_negativ_mark;
 			state.previewTestDetails.negative_mark = payload.mt_negativ_mark;
@@ -163,7 +163,12 @@ const testsSlice = createSlice({
 			state.previewTestDetails.test_created_on = payload.mt_added_date;
 
 			let todaysDate = new Date();
-			state.previewTestDetails.todays_date = todaysDate.getDate() + '-' + (todaysDate.getMonth() + 1) + '-' + todaysDate.getFullYear();
+			state.previewTestDetails.todays_date =
+				todaysDate.getDate() +
+				'-' +
+				(todaysDate.getMonth() + 1) +
+				'-' +
+				todaysDate.getFullYear();
 		},
 		cleanupPreviewTestDetails: (state, payload) => {
 			state.testQuestionsList = [];
@@ -193,16 +198,25 @@ const testsSlice = createSlice({
 			state.previewPublishedTestDetails.test_id = payload.ptl_test_id;
 			state.previewPublishedTestDetails.test_name = payload.mt_name;
 			state.previewPublishedTestDetails.test_duration = payload.mt_test_time;
-			state.previewPublishedTestDetails.marks_per_question = payload.mt_mark_per_question;
-			state.previewPublishedTestDetails.total_questions = payload.mt_total_test_question;
-			state.previewPublishedTestDetails.is_negative_marking = payload.mt_negativ_mark;
+			state.previewPublishedTestDetails.marks_per_question =
+				payload.mt_mark_per_question;
+			state.previewPublishedTestDetails.total_questions =
+				payload.mt_total_test_question;
+			state.previewPublishedTestDetails.is_negative_marking =
+				payload.mt_negativ_mark;
 			state.previewPublishedTestDetails.negative_mark = payload.mt_negativ_mark;
-			state.previewPublishedTestDetails.test_passing_mark = payload.mt_passing_out_of;
+			state.previewPublishedTestDetails.test_passing_mark =
+				payload.mt_passing_out_of;
 
 			state.previewPublishedTestDetails.test_created_on = payload.mt_added_date;
 
 			let todaysDate = new Date();
-			state.previewPublishedTestDetails.todays_date = todaysDate.getDate() + '-' + (todaysDate.getMonth() + 1) + '-' + todaysDate.getFullYear();
+			state.previewPublishedTestDetails.todays_date =
+				todaysDate.getDate() +
+				'-' +
+				(todaysDate.getMonth() + 1) +
+				'-' +
+				todaysDate.getFullYear();
 		},
 		cleanupPublishedTestDetails: (state, payload) => {
 			state.publishedTestQuestionsList = [];
@@ -224,16 +238,20 @@ const testsSlice = createSlice({
 
 		// RESET
 		reset(state, action) {
+			console.log(TEST_INITIAL_STATE, '==TEST_INITIAL_STATE==');
 			state.test = TEST_INITIAL_STATE.test;
 			state.topicList = TEST_INITIAL_STATE.topicList;
-			state.selectedTopicList = TEST_INITIAL_STATE.selectedTopicList;
+			state.selectedTopicList = [];
 			state.errors = TEST_INITIAL_STATE.errors;
 			state.selectedQuestionsList = TEST_INITIAL_STATE.selectedQuestionsList;
-			state.sortedSelectedQuestionsList = TEST_INITIAL_STATE.sortedSelectedQuestionsList;
+			state.sortedSelectedQuestionsList =
+				TEST_INITIAL_STATE.sortedSelectedQuestionsList;
 			state.previewTestDetails = TEST_INITIAL_STATE.previewTestDetails;
 			state.testQuestionsList = TEST_INITIAL_STATE.testQuestionsList;
-			state.previewPublishedTestDetails = TEST_INITIAL_STATE.previewPublishedTestDetails;
-			state.publishedTestQuestionsList = TEST_INITIAL_STATE.publishedTestQuestionsList;
+			state.previewPublishedTestDetails =
+				TEST_INITIAL_STATE.previewPublishedTestDetails;
+			state.publishedTestQuestionsList =
+				TEST_INITIAL_STATE.publishedTestQuestionsList;
 		},
 
 		resetTest(state, action) {
@@ -266,7 +284,11 @@ export const getTestQuestionsListThunk = (testId, sendRequest, navigate) => {
 	};
 };
 
-export const getPublishedTestQuestionsListThunk = (testId, sendRequest, navigate) => {
+export const getPublishedTestQuestionsListThunk = (
+	testId,
+	sendRequest,
+	navigate
+) => {
 	console.log(2, '==going type 2==');
 	return async (dispatch) => {
 		let reqData = {
