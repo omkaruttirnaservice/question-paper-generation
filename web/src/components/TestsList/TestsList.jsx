@@ -1,9 +1,9 @@
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { FaEye, FaPlus, FaTrash } from 'react-icons/fa6';
+import { FaCross, FaEye, FaPlus, FaTrash, FaXmark } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -29,7 +29,11 @@ function TestsList() {
 		test_details: null,
 	};
 	const [batchCount, setBatchCount] = useState([]);
-	const [publishExamForm, setPublishExamForm] = useState(initialStatePublishForm);
+	const [postList, setPostList] = useState(['Jr. Clerk', 'Peon', 'IT Manager']);
+
+	const [publishExamForm, setPublishExamForm] = useState(
+		initialStatePublishForm
+	);
 
 	const [errors, setErrors] = useState({});
 
@@ -244,8 +248,14 @@ function TestsList() {
 					});
 
 					dispatch(ModalActions.toggleModal('publish-exam-modal'));
-					dispatch(testsSliceActions.setPreviewPublishedTestDetailsId(data.testDetails.id));
-					dispatch(testsSliceActions.setPreviewPublishedTestDetails(data.testDetails));
+					dispatch(
+						testsSliceActions.setPreviewPublishedTestDetailsId(
+							data.testDetails.id
+						)
+					);
+					dispatch(
+						testsSliceActions.setPreviewPublishedTestDetails(data.testDetails)
+					);
 					setTimeout(() => {
 						navigate('/view-published-test-questions');
 					}, 10);
@@ -262,19 +272,62 @@ function TestsList() {
 	};
 
 	const columns = [
-		{ sortable: true, name: '#', selector: (row, idx) => idx + 1, width: '4rem' },
-		{ sortable: true, name: 'Test Id', selector: (row) => row.id, width: '7rem' },
-		{ sortable: true, name: 'Test Name', selector: (row) => row.mt_name, width: '10rem' },
-		{ sortable: true, name: 'Duration', selector: (row) => row.mt_test_time, width: '7rem' },
-		{ sortable: true, name: 'Total Questions', selector: (row) => row.mt_total_test_question, width: '8rem' },
-		{ sortable: true, name: 'Marks Per Q.', selector: (row) => row.mt_mark_per_question, width: '6rem' },
-		{ sortable: true, name: 'Is -ve marking', selector: (row) => (row.mt_is_negative == 1 ? 'Yes' : 'No'), width: '8rem' },
-		{ sortable: true, name: 'Passing Marks', selector: (row) => row.mt_passing_out_of, width: '6rem' },
+		{
+			sortable: true,
+			name: '#',
+			selector: (row, idx) => idx + 1,
+			width: '4rem',
+		},
+		{
+			sortable: true,
+			name: 'Test Id',
+			selector: (row) => row.id,
+			width: '7rem',
+		},
+		{
+			sortable: true,
+			name: 'Test Name',
+			selector: (row) => row.mt_name,
+			width: '10rem',
+		},
+		{
+			sortable: true,
+			name: 'Duration',
+			selector: (row) => row.mt_test_time,
+			width: '7rem',
+		},
+		{
+			sortable: true,
+			name: 'Total Questions',
+			selector: (row) => row.mt_total_test_question,
+			width: '8rem',
+		},
+		{
+			sortable: true,
+			name: 'Marks Per Q.',
+			selector: (row) => row.mt_mark_per_question,
+			width: '6rem',
+		},
+		{
+			sortable: true,
+			name: 'Is -ve marking',
+			selector: (row) => (row.mt_is_negative == 1 ? 'Yes' : 'No'),
+			width: '8rem',
+		},
+		{
+			sortable: true,
+			name: 'Passing Marks',
+			selector: (row) => row.mt_passing_out_of,
+			width: '6rem',
+		},
 		{
 			name: 'Publish Exam',
 			cell: (row) => (
 				<div className="flex justify-center">
-					<CButton className="btn--primary text-xs" onClick={handlePublishExam.bind(null, row)}>
+					<CButton
+						className="btn--primary text-xs"
+						onClick={handlePublishExam.bind(null, row)}
+					>
 						Publish
 					</CButton>
 				</div>
@@ -286,8 +339,16 @@ function TestsList() {
 			name: 'Action',
 			cell: (row) => (
 				<div className="flex gap-2 items-center justify-center">
-					<CButton className="btn--danger m-0" onClick={handleDeleteTest.bind(null, row.id)} icon={<FaTrash />}></CButton>
-					<CButton className="btn--info m-0" onClick={handleViewQuestions.bind(null, row)} icon={<FaEye />}></CButton>
+					<CButton
+						className="btn--danger m-0"
+						onClick={handleDeleteTest.bind(null, row.id)}
+						icon={<FaTrash />}
+					></CButton>
+					<CButton
+						className="btn--info m-0"
+						onClick={handleViewQuestions.bind(null, row)}
+						icon={<FaEye />}
+					></CButton>
 				</div>
 			),
 			selector: (row) => row.sl_roll_number,
@@ -300,7 +361,10 @@ function TestsList() {
 			<CModal id="publish-exam-modal" title={'Publish Exam'} className={''}>
 				<div className="grid grid-cols-2 gap-6">
 					<div className="relative">
-						<label htmlFor="" className="transition-all duration-300 text-gray-700 !mb-1  block">
+						<label
+							htmlFor=""
+							className="transition-all duration-300 text-gray-700 !mb-1  block"
+						>
 							Select Publish Date
 						</label>
 						<DatePicker
@@ -309,7 +373,9 @@ function TestsList() {
 								setPublishExamForm((prev) => {
 									return {
 										...prev,
-										publish_date: `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`,
+										publish_date: `${date.getDate()}-${
+											date.getMonth() + 1
+										}-${date.getFullYear()}`,
 									};
 								});
 							}}
@@ -319,11 +385,16 @@ function TestsList() {
 							value={publishExamForm.publish_date}
 							className="block !w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
 						/>
-						{errors.publish_date && <span className="error">{errors.publish_date}</span>}
+						{errors.publish_date && (
+							<span className="error">{errors.publish_date}</span>
+						)}
 					</div>
 
 					<div className="relative">
-						<label htmlFor="" className="transition-all duration-300 text-gray-700 !mb-1  block">
+						<label
+							htmlFor=""
+							className="transition-all duration-300 text-gray-700 !mb-1  block"
+						>
 							Batch No
 						</label>
 						<select
@@ -331,7 +402,8 @@ function TestsList() {
 							id=""
 							onChange={handleChange}
 							value={publishExamForm.batch}
-							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40">
+							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
+						>
 							<option value="">-- Select -- </option>
 
 							{batchCount.map((el, idx) => {
@@ -342,9 +414,44 @@ function TestsList() {
 						{errors.batch && <span className="error">{errors.batch}</span>}
 					</div>
 
+					<div className="relative col-span-2">
+						<CustomDropDown />
+
+						{/* <select
+							name="batch"
+							id=""
+							onChange={handleChange}
+							value={publishExamForm.batch}
+							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
+						>
+							<option value="">-- Select -- </option>
+
+							{postList.map((el, idx) => {
+								return (
+									<option value={el}>
+										<input type="checkbox" />
+
+										{el}
+									</option>
+								);
+							})}
+						</select> */}
+
+						{errors.publish_date && (
+							<span className="error">{errors.publish_date}</span>
+						)}
+					</div>
+
 					<div className="relative">
-						<Input label={'Test key'} name={'test_key'} value={publishExamForm.test_key} disabled></Input>
-						{errors.test_key && <span className="error">{errors.test_key}</span>}
+						<Input
+							label={'Test key'}
+							name={'test_key'}
+							value={publishExamForm.test_key}
+							disabled
+						></Input>
+						{errors.test_key && (
+							<span className="error">{errors.test_key}</span>
+						)}
 					</div>
 					<div className="flex items-center mt-3">
 						<CButton className={'btn--success'} onClick={handleGenerateTestKey}>
@@ -360,7 +467,13 @@ function TestsList() {
 			<div className="mt-6">
 				<H1 className="text-center">Tests List</H1>
 
-				<DataTable columns={columns} data={testsList} pagination highlightOnHover width="5rem"></DataTable>
+				<DataTable
+					columns={columns}
+					data={testsList}
+					pagination
+					highlightOnHover
+					width="5rem"
+				></DataTable>
 
 				{/* {testsList.length == -1 && (
 					<table className="w-[100%]">
@@ -429,6 +542,105 @@ function TestsList() {
 						<AiOutlineLoading3Quarters className="animate-spin text-2xl font-semibold" />{' '}
 					</div>
 				)} */}
+			</div>
+		</>
+	);
+}
+
+function CustomDropDown() {
+	const [showDropdown, setShowDropdown] = useState(false);
+	const dropdownRef = useRef(null); // Ref for the dropdown menu container
+	const buttonRef = useRef(null); // Ref for the button that opens the dropdown
+	const [postToPublishTest, setPostToPublishTest] = useState([]);
+
+	const openDropdownHandler = () => setShowDropdown(!showDropdown);
+
+	// Close dropdown if the click is outside of the dropdown or button
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			// Check if the click was outside the dropdown (button or menu)
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target) && // Click outside the dropdown container
+				!buttonRef.current.contains(event.target) // Click outside the button
+			) {
+				setShowDropdown(false); // Close the dropdown
+			}
+		};
+
+		// Add event listener to the document
+		document.addEventListener('click', handleClickOutside);
+
+		// Cleanup the event listener when the component is unmounted
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
+		};
+	}, []);
+
+	const addPostToPublishHandler = (post) => {
+		setPostToPublishTest((prev) => {
+			return [...prev, post];
+		});
+	};
+
+	const removePostFromPublishList = (post)=>{}
+
+	return (
+		<>
+			<label
+				htmlFor=""
+				className="transition-all duration-300 text-gray-700 !mb-1 block"
+			>
+				Select Post
+			</label>
+
+			<div ref={dropdownRef}>
+				<button
+					ref={buttonRef}
+					className="cursor-pointer relative !w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
+					onClick={openDropdownHandler}
+				>
+					-- Select --
+				</button>
+
+				<div className="flex gap-2">
+					{postToPublishTest &&
+						postToPublishTest.map((postToPublish) => {
+							return (
+								<p className="bg-lime-200 p-2 flex gap-2 items-center">
+									<span>{postToPublish}</span>
+
+									<span className='' onClick={removePostFromPublishList}>
+										<FaXmark />
+									</span>
+								</p>
+							);
+						})}
+				</div>
+
+				<ul
+					className={`absolute transition-all duration-300 ${
+						!showDropdown
+							? 'h-0 p-0 overflow-hidden'
+							: 'h-full p-2 overflow-y-auto'
+					} left-0 z-50  bg-slate-300 w-full max-h-32 `}
+				>
+					{['Jr. Clerk', 'Peon'].map((post) => {
+						return (
+							<li
+								className="list-item"
+								onClick={(e) => {
+									addPostToPublishHandler(post);
+								}}
+							>
+								<label htmlFor={post} className="cursor-pointer">
+									{post}
+								</label>
+								<input id={post} type="checkbox" className="cursor-pointer" />
+							</li>
+						);
+					})}
+				</ul>
 			</div>
 		</>
 	);
