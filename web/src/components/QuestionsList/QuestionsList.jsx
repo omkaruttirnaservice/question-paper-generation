@@ -185,6 +185,13 @@ function QuestionsList() {
 		getQuestions();
 	};
 
+	console.log(1, '==1==')
+	console.log(test, '==test==')
+	console.log(selectedQuestionsList, '==selectedQuestionsList==')
+	console.log(1, '==1==')
+
+
+
 	return (
 		<>
 			<div className="mt-6">
