@@ -77,7 +77,9 @@ function PublishedTestsList() {
 					text: 'Unpublished the exam',
 					icon: 'success',
 				});
-				setPublishedTestsList(publishedTestsList.filter((_el) => _el.id != el.id));
+				setPublishedTestsList(
+					publishedTestsList.filter((_el) => _el.id != el.id)
+				);
 			}
 		});
 	};
@@ -85,9 +87,9 @@ function PublishedTestsList() {
 	const columns = [
 		{
 			sortable: true,
-			name: '#',
+			name: 'Paper',
 			selector: (row, idx) => idx + 1,
-			width: '4rem',
+			width: '5rem',
 		},
 		{
 			sortable: true,
@@ -120,13 +122,33 @@ function PublishedTestsList() {
 			name: 'Test Date',
 			selector: (row) => row.ptl_active_date,
 		},
+
+		{
+			sortable: true,
+			name: 'Posts',
+			width: '190px',
+			cell: (row) => {
+				return (
+					<>
+						{row.post_details.map((_post) => (
+							<mark className="me-1 p-1">{_post.post_name}</mark>
+						))}
+					</>
+				);
+			},
+		},
+
 		{
 			sortable: true,
 			name: 'Scheduled',
 			cell: (row) => (
 				<>
-					{isExamToday(row.ptl_active_date) == 1 && <span className="bg-blue-300 p-1">Today</span>}
-					{isExamToday(row.ptl_active_date) == 2 && <span className="bg-green-300 p-1">Upcomming</span>}
+					{isExamToday(row.ptl_active_date) == 1 && (
+						<span className="bg-blue-300 p-1">Today</span>
+					)}
+					{isExamToday(row.ptl_active_date) == 2 && (
+						<span className="bg-green-300 p-1">Upcomming</span>
+					)}
 				</>
 			),
 		},
@@ -134,7 +156,14 @@ function PublishedTestsList() {
 			sortable: true,
 			name: 'Unpublish',
 			cell: (row) => (
-				<>{isExamToday(row.ptl_active_date) == 2 && <CButton icon={<FaXmark />} onClick={handleUnpublishExam.bind(null, row)}></CButton>}</>
+				<>
+					{isExamToday(row.ptl_active_date) == 2 && (
+						<CButton
+							icon={<FaXmark />}
+							onClick={handleUnpublishExam.bind(null, row)}
+						></CButton>
+					)}
+				</>
 			),
 		},
 
@@ -143,7 +172,11 @@ function PublishedTestsList() {
 			name: 'View Questions',
 			cell: (row) => (
 				<>
-					<CButton className="btn--info m-0" onClick={handlePublishedTestQuePreview.bind(null, row)} icon={<FaEye />}></CButton>
+					<CButton
+						className="btn--info m-0"
+						onClick={handlePublishedTestQuePreview.bind(null, row)}
+						icon={<FaEye />}
+					></CButton>
 				</>
 			),
 		},
@@ -154,7 +187,12 @@ function PublishedTestsList() {
 			<div className="mt-6">
 				<H3 className="text-center">Published Tests List</H3>
 
-				<DataTable columns={columns} data={publishedTestsList} pagination highlightOnHover />
+				<DataTable
+					columns={columns}
+					data={publishedTestsList}
+					pagination
+					highlightOnHover
+				/>
 
 				{/* {publishedTestsList.length == false && (
 					<table className="w-[100%]">

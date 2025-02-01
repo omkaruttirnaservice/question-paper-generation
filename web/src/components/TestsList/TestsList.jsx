@@ -1,5 +1,13 @@
+import { IoIosArrowDropdown } from 'react-icons/io';
+
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import React, {
+	useEffect,
+	useLayoutEffect,
+	useReducer,
+	useRef,
+	useState,
+} from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
@@ -18,6 +26,9 @@ import { H1 } from '../UI/Headings.jsx';
 import Input from '../UI/Input.jsx';
 import './TestsList.css';
 import DataTable from 'react-data-table-component';
+import { useQuery } from '@tanstack/react-query';
+import { getPostList, getServerIP } from '../StudentArea/AddNewStudent/api.jsx';
+import { toast } from 'react-toastify';
 
 function TestsList() {
 	const navigate = useNavigate();
@@ -27,7 +38,26 @@ function TestsList() {
 		publish_date: null,
 		test_key: null,
 		test_details: null,
+		server_ip_address: null,
+		selected_posts: null,
 	};
+
+	const getServerIPQuery = useQuery({
+		queryKey: ['get server ip list'],
+		queryFn: getServerIP,
+		refetchOnMount: false,
+		retry: false,
+	});
+
+	const [serverIPAddresses, setServerIPAddresses] = useState([]);
+
+	useEffect(() => {
+		if (getServerIPQuery?.data) {
+			console.log(getServerIPQuery.data, '==getServerIPQuery.data==');
+			setServerIPAddresses(getServerIPQuery?.data?.data || []);
+		}
+	}, [getServerIPQuery.data]);
+
 	const [batchCount, setBatchCount] = useState([]);
 	const [postList, setPostList] = useState(['Jr. Clerk', 'Peon', 'IT Manager']);
 
@@ -76,6 +106,9 @@ function TestsList() {
 			};
 		});
 		dispatch(ModalActions.toggleModal('publish-exam-modal'));
+		// after opening publish exam modal fetch the url/ip of form filling sites
+		//  cause it will require to fetch post list of that particular process
+		getServerIPQuery.refetch();
 	};
 
 	const handleDeleteTest = async (id) => {
@@ -120,13 +153,13 @@ function TestsList() {
 	const handleChange = (e) => {
 		let { name, value } = e.target;
 
-		TestListSchemaYUP.validateAt(name, { [name]: value })
-			.then(() => {
-				setErrors(name, { [name]: null });
-			})
-			.catch((error) => {
-				setErrors({ ...errors, [name]: error.message });
-			});
+		// TestListSchemaYUP.validateAt(name, { [name]: value })
+		// 	.then(() => {
+		// 		setErrors(name, { [name]: null });
+		// 	})
+		// 	.catch((error) => {
+		// 		setErrors({ ...errors, [name]: error.message });
+		// 	});
 
 		setPublishExamForm((prev) => {
 			return {
@@ -233,6 +266,24 @@ function TestsList() {
 
 			console.log(publishExamForm, '==publishExamForm==');
 
+			// Sample body
+			// {
+			// 	"test_id_for_publish": null,
+			// 	"batch": "1",
+			// 	"publish_date": "29-1-2025",
+			// 	"test_key": "null123",
+			// 	"test_details": null,
+			// 	"server_ip_address": "6",
+			// 	"selected_posts": [
+			// 		[
+			// 			{
+			// 				"ca_post_name": "peun",
+			// 				"ca_post_id": 1
+			// 			}
+			// 		]
+			// 	]
+			// }
+
 			let _req = {
 				url: SERVER_IP + '/api/test/publish',
 				method: 'POST',
@@ -268,6 +319,7 @@ function TestsList() {
 				_err[err.path] = err.message;
 			});
 			setErrors(_err);
+			console.log(_err, '==_err==');
 		}
 	};
 
@@ -415,31 +467,42 @@ function TestsList() {
 					</div>
 
 					<div className="relative col-span-2">
-						<CustomDropDown />
-
-						{/* <select
-							name="batch"
+						<label
+							htmlFor=""
+							className="transition-all duration-300 text-gray-700 !mb-1  block"
+						>
+							Select IP/URL
+						</label>
+						<select
+							name="server_ip_address"
 							id=""
 							onChange={handleChange}
-							value={publishExamForm.batch}
+							value={publishExamForm.server_ip_address}
 							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
 						>
 							<option value="">-- Select -- </option>
+							{getServerIPQuery.isLoading && <option>Loading...</option>}
 
-							{postList.map((el, idx) => {
-								return (
-									<option value={el}>
-										<input type="checkbox" />
+							{serverIPAddresses?.length > 0 &&
+								serverIPAddresses.map((el, idx) => {
+									return (
+										<option value={el.id}>{el.form_filling_server_ip}</option>
+									);
+								})}
+						</select>
 
-										{el}
-									</option>
-								);
-							})}
-						</select> */}
-
-						{errors.publish_date && (
-							<span className="error">{errors.publish_date}</span>
+						{errors.server_ip_address && (
+							<span className="error">{errors.server_ip_address}</span>
 						)}
+					</div>
+
+					<div className="relative col-span-2">
+						<SelectPostDropdown
+							publishExamForm={publishExamForm}
+							serverIPAddresses={serverIPAddresses}
+							setPublishExamForm={setPublishExamForm}
+							errors={errors}
+						/>
 					</div>
 
 					<div className="relative">
@@ -547,43 +610,107 @@ function TestsList() {
 	);
 }
 
-function CustomDropDown() {
+function SelectPostDropdown({
+	publishExamForm,
+	serverIPAddresses,
+	setPublishExamForm,
+	errors,
+}) {
+	const serverIPAddress = serverIPAddresses.find(
+		(el) => el.id == publishExamForm.server_ip_address
+	);
+
+	console.log(serverIPAddress, '==serverIPAddress==');
+
 	const [showDropdown, setShowDropdown] = useState(false);
 	const dropdownRef = useRef(null); // Ref for the dropdown menu container
 	const buttonRef = useRef(null); // Ref for the button that opens the dropdown
 	const [postToPublishTest, setPostToPublishTest] = useState([]);
+	const [postList, setPostList] = useState([]);
+
+	const postsListQuery = useQuery({
+		queryKey: [
+			'GET POST LIST FROM SERVER(FORM FILLING PANEL)',
+			serverIPAddress,
+		],
+		queryFn: () => getPostList(serverIPAddress),
+		refetchOnMount: false,
+		retry: false,
+		enabled: !!serverIPAddress,
+	});
+
+	useEffect(() => {
+		if (postsListQuery.error) {
+			console.log(postsListQuery.error, '==postsListQuery.error==');
+			const error = postsListQuery.error;
+			toast(error?.message || 'Unable to get posts list.');
+		}
+	}, [postsListQuery.error]);
+
+	useLayoutEffect(() => {
+		console.log(3, '==3==');
+		if (serverIPAddress?.length > 0) {
+			console.log(4, '==4==');
+			setPostList([]);
+			postsListQuery.refetch();
+		}
+	}, []);
+
+	useEffect(() => {
+		if (postsListQuery?.data) {
+			console.log(postsListQuery.data, '==postsListQuery.data==');
+			setPostList(JSON.parse(postsListQuery?.data?.data?.data) || []);
+		}
+	}, [postsListQuery.data]);
 
 	const openDropdownHandler = () => setShowDropdown(!showDropdown);
 
 	// Close dropdown if the click is outside of the dropdown or button
-	useEffect(() => {
-		const handleClickOutside = (event) => {
-			// Check if the click was outside the dropdown (button or menu)
-			if (
-				dropdownRef.current &&
-				!dropdownRef.current.contains(event.target) && // Click outside the dropdown container
-				!buttonRef.current.contains(event.target) // Click outside the button
-			) {
-				setShowDropdown(false); // Close the dropdown
-			}
-		};
+	// useEffect(() => {
+	// 	const handleClickOutside = (event) => {
+	// 		// Check if the click was outside the dropdown (button or menu)
+	// 		if (
+	// 			dropdownRef.current &&
+	// 			!dropdownRef.current.contains(event.target) && // Click outside the dropdown container
+	// 			!buttonRef.current.contains(event.target) // Click outside the button
+	// 		) {
+	// 			// setShowDropdown(false); // Close the dropdown
+	// 		}
+	// 	};
 
-		// Add event listener to the document
-		document.addEventListener('click', handleClickOutside);
+	// 	// Add event listener to the document
+	// 	document.addEventListener('click', handleClickOutside);
 
-		// Cleanup the event listener when the component is unmounted
-		return () => {
-			document.removeEventListener('click', handleClickOutside);
-		};
-	}, []);
+	// 	// Cleanup the event listener when the component is unmounted
+	// 	return () => {
+	// 		document.removeEventListener('click', handleClickOutside);
+	// 	};
+	// }, []);
 
-	const addPostToPublishHandler = (post) => {
+	const addPostToPublishHandler = (newPost) => {
+		setPostList((prev) => {
+			const filteredList = prev.filter(
+				(_post) => _post.ca_post_id != newPost.ca_post_id
+			);
+			return filteredList;
+		});
+
 		setPostToPublishTest((prev) => {
-			return [...prev, post];
+			return [...prev, newPost];
 		});
 	};
 
-	const removePostFromPublishList = (post)=>{}
+	useEffect(() => {
+		if (postToPublishTest?.length == 0) return;
+		setPublishExamForm((prev) => {
+			return {
+				...prev,
+				selected_posts: postToPublishTest,
+			};
+		});
+	}, [postToPublishTest]);
+
+	const removePostFromPublishList = (post) => {};
 
 	return (
 		<>
@@ -598,25 +725,40 @@ function CustomDropDown() {
 				<button
 					ref={buttonRef}
 					className="cursor-pointer relative !w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
-					onClick={openDropdownHandler}
 				>
-					-- Select --
-				</button>
+					{postToPublishTest.length === 0 && <span>-- Select -- </span>}
 
-				<div className="flex gap-2">
-					{postToPublishTest &&
+					<IoIosArrowDropdown
+						className="text-xl justify-self-end absolute right-2 top-[50%] translate-y-[-50%]"
+						onClick={() => setShowDropdown(!showDropdown)}
+					/>
+
+					{postToPublishTest.length > 0 &&
 						postToPublishTest.map((postToPublish) => {
 							return (
-								<p className="bg-lime-200 p-2 flex gap-2 items-center">
-									<span>{postToPublish}</span>
+								<p className="bg-lime-200 p-1 w-fit mx-1 inline-block">
+									<div className="flex items-center gap-1">
+										<span>{postToPublish.ca_post_name}</span>
 
-									<span className='' onClick={removePostFromPublishList}>
-										<FaXmark />
-									</span>
+										<span className="" onClick={removePostFromPublishList}>
+											<FaXmark
+												onClick={() => {
+													const filteredList = postToPublishTest.filter(
+														(post) =>
+															post.ca_post_id != postToPublish.ca_post_id
+													);
+													setPostToPublishTest(filteredList);
+													setPostList((prev) => {
+														return [...prev, postToPublish];
+													});
+												}}
+											/>
+										</span>
+									</div>
 								</p>
 							);
 						})}
-				</div>
+				</button>
 
 				<ul
 					className={`absolute transition-all duration-300 ${
@@ -625,22 +767,33 @@ function CustomDropDown() {
 							: 'h-full p-2 overflow-y-auto'
 					} left-0 z-50  bg-slate-300 w-full max-h-32 `}
 				>
-					{['Jr. Clerk', 'Peon'].map((post) => {
+					{postList.map((post) => {
 						return (
 							<li
-								className="list-item"
+								className="list-item relative"
 								onClick={(e) => {
 									addPostToPublishHandler(post);
 								}}
 							>
-								<label htmlFor={post} className="cursor-pointer">
-									{post}
+								<label htmlFor={post.ca_post_id} className="cursor-pointer">
+									{post.ca_post_name}
 								</label>
-								<input id={post} type="checkbox" className="cursor-pointer" />
+
+								{/* <input
+										id={post.ca_post_id}
+										type="checkbox"
+										className="cursor-pointer"
+									/> */}
 							</li>
 						);
 					})}
+
+					{postList.length === 0 && <li>No items available.</li>}
 				</ul>
+
+				{errors.selected_posts && (
+					<span className="error">{errors.selected_posts}</span>
+				)}
 			</div>
 		</>
 	);

@@ -239,6 +239,7 @@ const testsController = {
 	publishTest: async (req, res) => {
 		try {
 			let _publishTestInsert = await testsModel.publishTest(req.body);
+			console.log(_publishTestInsert, '==_publishTestInsert==')
 			if (_publishTestInsert.toJSON().id) {
 				return sendSuccess(res, {
 					testDetails: _publishTestInsert.toJSON(),

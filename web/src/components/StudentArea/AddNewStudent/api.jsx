@@ -81,3 +81,11 @@ export const uploadPublishedTestToFormFilling = async ({
 		ip_details: _ip_details,
 	});
 };
+
+export const getPostList = async (selectedIP) => {
+	console.log(2, '==2==')
+	const url = selectedIP.form_filling_server_ip + '/api/posts-list';
+	console.log(selectedIP, '==selectedIP==');
+
+	return await axios.get(url);
+};

@@ -1,5 +1,6 @@
 import { BIGINT, DATE, DATEONLY, Sequelize } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
+import tm_publish_test_by_post from './tm_publish_test_by_post.js';
 
 const tm_publish_test_list = sequelize.define('tm_publish_test_list', {
 	id: {
@@ -57,5 +58,6 @@ const tm_publish_test_list = sequelize.define('tm_publish_test_list', {
 		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
 	},
 });
+
 
 export default tm_publish_test_list;

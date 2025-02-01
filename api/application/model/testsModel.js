@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 import db from '../config/db.connect.js';
 import { myDate } from '../config/utils.js';
@@ -7,6 +7,7 @@ import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
 import tm_test_user_master_list from '../schemas/tm_test_user_master_list.js';
 import tm_master_test_list from '../schemas/tm_master_test_list.js';
 import tm_mega_question_set from '../schemas/tm_mega_question_set.js';
+import tm_publish_test_by_post from '../schemas/tm_publish_test_by_post.js';
 
 const testsModel = {
 	getList: async () => {
@@ -39,62 +40,132 @@ const testsModel = {
 	},
 
 	getPublishedList: async () => {
-		let today = new Date();
-		today.setHours(0, 0, 0, 0);
+		return await sequelize.query(
+			`SELECT 
+				JSON_ARRAYAGG(
+					JSON_OBJECT(
+						'post_id', post_id,
+						'post_name', post_name,
+						'published_test_id', published_test_id
+					)
+				) AS post_details,
+				tm_publish_test_list.id,
+				DATE_FORMAT('ptl_active_date', '%d-%m-%Y'), ptl_active_date,
+				ptl_time,
+				ptl_link,
+				ptl_test_id,
+				ptl_added_date,
+				ptl_added_time,
+				ptl_time_tramp,
+				ptl_test_description,
+				ptl_is_live,
+				ptl_aouth_id,
+				ptl_is_test_done,
+				ptl_test_info,
+				mt_name,
+				mt_added_date,
+				mt_descp,
+				mt_is_live,
+				mt_time_stamp,
+				mt_type,
+				tm_aouth_id,
+				mt_test_time,
+				mt_total_test_takan,
+				mt_is_negative,
+				mt_negativ_mark,
+				mt_mark_per_question,
+				mt_passing_out_of,
+				mt_total_marks,
+				mt_pattern_type,
+				mt_total_test_question,
+				mt_added_time,
+				ptl_link_1,
+				tm_allow_to,
+				ptl_test_mode,
+				is_test_loaded,
+				is_student_added,
+				ptl_master_exam_id,
+				ptl_master_exam_name,
+				is_test_generated,
+				is_push_done,
+				post_id, post_name, published_test_id
+			FROM tm_publish_test_list
 
-		return tm_publish_test_list.findAll(
+			INNER JOIN
+				tm_publish_test_by_post
+			ON tm_publish_test_list.id = tm_publish_test_by_post.published_test_id
+			
+			WHERE 
+				ptl_active_date >= CURDATE()
+			GROUP BY tm_publish_test_list.id`,
 			{
-				attributes: [
-					'id',
-					[sequelize.fn('DATE_FORMAT', sequelize.col('ptl_active_date'), '%d-%m-%Y'), 'ptl_active_date'],
-					'ptl_time',
-					'ptl_link',
-					'ptl_test_id',
-					'ptl_added_date',
-					'ptl_added_time',
-					'ptl_time_tramp',
-					'ptl_test_description',
-					'ptl_is_live',
-					'ptl_aouth_id',
-					'ptl_is_test_done',
-					'ptl_test_info',
-					'mt_name',
-					'mt_added_date',
-					'mt_descp',
-					'mt_is_live',
-					'mt_time_stamp',
-					'mt_type',
-					'tm_aouth_id',
-					'mt_test_time',
-					'mt_total_test_takan',
-					'mt_is_negative',
-					'mt_negativ_mark',
-					'mt_mark_per_question',
-					'mt_passing_out_of',
-					'mt_total_marks',
-					'mt_pattern_type',
-					'mt_total_test_question',
-					'mt_added_time',
-					'ptl_link_1',
-					'tm_allow_to',
-					'ptl_test_mode',
-					'is_test_loaded',
-					'is_student_added',
-					'ptl_master_exam_id',
-					'ptl_master_exam_name',
-					'is_test_generated',
-					'is_push_done',
-				],
-
-				where: {
-					ptl_active_date: {
-						[Op.gte]: today,
-					},
-				},
-				order: [['ptl_active_date', 'ASC']],
-			},
-			{ raw: true }
+				type: Sequelize.QueryTypes.SELECT,
+			}
 		);
+
+		// let today = new Date();
+		// today.setHours(0, 0, 0, 0);
+
+		// return tm_publish_test_list.findAll(
+		// 	{
+		// 		attributes: [
+		// 			'id',
+		// 			[
+		// 				sequelize.fn(
+		// 					'DATE_FORMAT',
+		// 					sequelize.col('ptl_active_date'),
+		// 					'%d-%m-%Y'
+		// 				),
+		// 				'ptl_active_date',
+		// 			],
+		// 			'ptl_time',
+		// 			'ptl_link',
+		// 			'ptl_test_id',
+		// 			'ptl_added_date',
+		// 			'ptl_added_time',
+		// 			'ptl_time_tramp',
+		// 			'ptl_test_description',
+		// 			'ptl_is_live',
+		// 			'ptl_aouth_id',
+		// 			'ptl_is_test_done',
+		// 			'ptl_test_info',
+		// 			'mt_name',
+		// 			'mt_added_date',
+		// 			'mt_descp',
+		// 			'mt_is_live',
+		// 			'mt_time_stamp',
+		// 			'mt_type',
+		// 			'tm_aouth_id',
+		// 			'mt_test_time',
+		// 			'mt_total_test_takan',
+		// 			'mt_is_negative',
+		// 			'mt_negativ_mark',
+		// 			'mt_mark_per_question',
+		// 			'mt_passing_out_of',
+		// 			'mt_total_marks',
+		// 			'mt_pattern_type',
+		// 			'mt_total_test_question',
+		// 			'mt_added_time',
+		// 			'ptl_link_1',
+		// 			'tm_allow_to',
+		// 			'ptl_test_mode',
+		// 			'is_test_loaded',
+		// 			'is_student_added',
+		// 			'ptl_master_exam_id',
+		// 			'ptl_master_exam_name',
+		// 			'is_test_generated',
+		// 			'is_push_done',
+		// 		],
+
+		// 		where: {
+		// 			ptl_active_date: {
+		// 				[Op.gte]: today,
+		// 			},
+		// 		},
+		// 		order: [['ptl_active_date', 'ASC']],
+		// 	},
+		// 	{ raw: true }
+		// );
 	},
 
 	deleteTest: async (deleteId) => {
@@ -429,7 +500,14 @@ const testsModel = {
 		});
 	},
 
-	publishTest: async ({ test_id_for_publish, batch, publish_date, test_key, test_details: mt }) => {
+	publishTest: async ({
+		test_id_for_publish,
+		batch,
+		publish_date,
+		test_key,
+		test_details: mt,
+		selected_posts,
+	}) => {
 		// changing publish date format from dd-mm-yyyy to yyy-mm-dd
 		let _tmpPubDate = publish_date.split('-');
 		publish_date = `${_tmpPubDate[2]}-${_tmpPubDate[1]}-${_tmpPubDate[0]}`;
@@ -519,6 +597,19 @@ const testsModel = {
 			let _publishTestInsert = await tm_publish_test_list.create(insertData, {
 				transaction: trans,
 			});
+
+			const postTestMappingList = selected_posts.map((_post) => {
+				return {
+					post_id: _post.ca_post_id,
+					post_name: _post.ca_post_name,
+					published_test_id: _publishTestInsert.id,
+				};
+			});
+
+			console.log(postTestMappingList, '==postTestMappingList==');
+
+			// map published test id with post in new table
+			await tm_publish_test_by_post.bulkCreate(postTestMappingList);
 
 			await trans.commit();
 
