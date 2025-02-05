@@ -28,8 +28,8 @@ const saveExamsModel = {
             sqp.sqp_question_id = tqs.q_id
         
         WHERE
-            sqp.sqp_student_id = ${+stud_roll} AND
-            sqp.sqp_test_id = ${+pub_test_id}
+            sqp.sqp_student_id = ${Number(stud_roll)} AND
+            sqp.sqp_publish_id = ${+pub_test_id}
         
         `;
 		return sequelize.query(q);
