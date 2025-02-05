@@ -112,6 +112,10 @@ function MenuBar({ isSidebarOpen }) {
 							<MdOutlineMenuBook className="text-xl" />
 							{isSidebarOpen && <span>Gen Reports</span>}
 						</NavLink>
+						<NavLink to={'/view-reports'} className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}>
+							<MdOutlineMenuBook className="text-xl" />
+							{isSidebarOpen && <span>View Result</span>}
+						</NavLink>
 					</div>
 				</div>
 			</div>
