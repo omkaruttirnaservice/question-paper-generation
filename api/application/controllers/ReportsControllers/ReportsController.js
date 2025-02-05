@@ -286,7 +286,7 @@ const reportsController = {
 		let workSheet = workbook.addWorksheet('Sheet_1');
 
 		// prettier-ignore
-		const headerColumns = [ '#', 'Roll No', 'Post', 'First Name', 'Middle Name', 'Last Name', 'Date Of Birth', 'Mobile', 'Photo', 'Attempted', 'Uttempted', 'Correct', 'Total Marks Gain']
+		const headerColumns = [ '#', 'Roll No', 'Post', 'First Name', 'Middle Name', 'Last Name', 'Date Of Birth', 'Mobile', 'Attempted', 'Uttempted', 'Correct', 'Total Marks Gain']
 
 		workSheet.addRow(headerColumns);
 
@@ -300,7 +300,6 @@ const reportsController = {
 				el.sl_l_name,
 				el.dob,
 				el.sl_contact_number,
-				el.sl_image,
 				parseInt(el.sfrs_wrong) + parseInt(el.sfrs_wrong),
 				el?.sfrs_unattempted || 0,
 				el?.correct || 0,
