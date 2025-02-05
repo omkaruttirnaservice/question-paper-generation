@@ -178,14 +178,14 @@ function QuestionsListAutoTest() {
 		updateTotalQuestionsCount(updatedList);
 	};
 	function updateTotalQuestionsCount(list) {
-		console.log(list, '==list==');
+		// console.log(list, '==list==');
 		let count = 0;
 		list.forEach((item1) => {
 			item1._topicsList.forEach((el) => {
 				count += el.selectedCount;
 			});
 		});
-		console.log(count, '==count==');
+		// console.log(count, '==count==');
 		dispatch(testsSliceActions.updateTotalQuestionsCount_AUTO_TEST(count));
 	}
 
@@ -284,14 +284,14 @@ function QuestionsListAutoTest() {
 	};
 
 	const finalTestSubmitHandler = async () => {
-		console.log(selectedTopicList, '==selectedTopicList==');
+		// console.log(selectedTopicList, '==selectedTopicList==');
 		const __allTopicListToCreateExam = [];
 
 		selectedTopicList.forEach((item1) => {
 			__allTopicListToCreateExam.push(...item1._topicsList);
 		});
 
-		console.log(__allTopicListToCreateExam, '==__allTopicListToCreateExam==');
+		// console.log(__allTopicListToCreateExam, '==__allTopicListToCreateExam==');
 
 		const isConfirm = await confirmDialouge({
 			title: 'Are you sure?',
@@ -307,7 +307,7 @@ function QuestionsListAutoTest() {
 			}),
 		};
 		sendRequest(rD, ({ success, data }) => {
-			console.log(data, '==data after auto test==');
+			// console.log(data, '==data after auto test==');
 			if (success == 1) {
 				Swal.fire('Success', 'Test has been generated!');
 
@@ -329,7 +329,7 @@ function QuestionsListAutoTest() {
 			dispatch(EditQuestionFormActions.reset());
 
 			dispatch(testsSliceActions.setTestDetailsFilled(false));
-			alert('Resetting');
+			// alert('Resetting');
 		};
 	}, []);
 
@@ -338,7 +338,7 @@ function QuestionsListAutoTest() {
 		dispatch(testsSliceActions.setTestCreationType(AUTO_TEST));
 	};
 
-	console.log(selectedTopicList, '==selectedTopicList==')
+	// console.log(selectedTopicList, '==selectedTopicList==')
 	// console.log(selectedQuestionsList, '==selectedQuestionsList==')
 
 	return (

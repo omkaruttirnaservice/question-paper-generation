@@ -287,7 +287,7 @@ function AddNewStudent() {
 														Get All Stuents List
 													</CButton>
 
-													<CButton
+													{/* <CButton
 														type="button"
 														onClick={handleGetStudentsQuestionPaper.bind(
 															null,
@@ -297,7 +297,7 @@ function AddNewStudent() {
 														isLoading={false}
 													>
 														Get Student Question Paper
-													</CButton>
+													</CButton> */}
 
 													<UploadQuestionPaperToFormFilling _el={_el} />
 												</div>
@@ -449,8 +449,8 @@ function UploadQuestionPaperToFormFilling({ _el }) {
 	const uploadPublishedTestToFormFillingMutation = useMutation({
 		mutationFn: uploadPublishedTestToFormFilling,
 		onSuccess: (data) => {
-			console.log(data?.data?.message || 'Successful.', '==data==')
-			toast.success(data?.data?.message || 'Successful.')
+			console.log(data?.data?.message || 'Successful.', '==data==');
+			toast.success(data?.data?.message || 'Successful.');
 		},
 		onError: (error) => {
 			const er = error?.response?.data?.message || 'Server error.';
@@ -469,7 +469,7 @@ function UploadQuestionPaperToFormFilling({ _el }) {
 		}
 		uploadPublishedTestToFormFillingMutation.mutate({
 			_published_test_id: published_test_id,
-			_ip_details: ip_details
+			_ip_details: ip_details,
 		});
 	};
 
@@ -520,7 +520,9 @@ function UploadQuestionPaperToFormFilling({ _el }) {
 											<td>
 												<CButton
 													icon={<FaUpload />}
-													isLoading={uploadPublishedTestToFormFillingMutation.isPending}
+													isLoading={
+														uploadPublishedTestToFormFillingMutation.isPending
+													}
 													onClick={handleUploadToFormFilling.bind(null, {
 														published_test_id: _publishedTest.id,
 														ip_details: _el,

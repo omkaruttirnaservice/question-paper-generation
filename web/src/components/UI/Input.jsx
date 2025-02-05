@@ -1,7 +1,19 @@
-export default function Input({ label, name, value = '', onChange, className, disabled = false, type = 'text', error = false }) {
+export default function Input({
+	label,
+	name,
+	value = '',
+	onChange,
+	className,
+	disabled = false,
+	type = 'text',
+	error = false,
+}) {
 	return (
 		<div className={`relative ${className}`}>
-			<label htmlFor={name} className="transition-all duration-300 text-gray-700 !mb-1  block text-sm">
+			<label
+				htmlFor={name}
+				className="transition-all duration-300 text-gray-700 !mb-1  block text-sm"
+			>
 				{label}
 			</label>
 			<input
@@ -20,10 +32,23 @@ export default function Input({ label, name, value = '', onChange, className, di
 	);
 }
 
-export function InputSelect({ label, name, value = '', onChange, className, disabled = false, type = 'text', error = false, children }) {
+export function InputSelect({
+	label,
+	name,
+	value = '',
+	onChange,
+	className,
+	disabled = false,
+	type = 'text',
+	error = false,
+	children,
+}) {
 	return (
 		<div className={`relative ${className}`}>
-			<label htmlFor={name} className="transition-all duration-300 text-gray-700 !mb-1  block text-sm">
+			<label
+				htmlFor={name}
+				className="transition-all duration-300 text-gray-700 !mb-1  block text-sm"
+			>
 				{label}
 			</label>
 			<select
@@ -36,9 +61,31 @@ export function InputSelect({ label, name, value = '', onChange, className, disa
 				name={name}
 				value={value}
 				onChange={onChange}
-				disabled={disabled}>
+				disabled={disabled}
+			>
 				{children}
 			</select>
 		</div>
+	);
+}
+
+export function InputLabel({ name = '', icon, className = '', onClick }) {
+	return (
+		<>
+			<label
+				htmlFor=""
+				className={`transition-all duration-300 text-gray-700 !mb-1 flex items-center cursor-pointer gap-2 ${className}`}
+			>
+				<span>{name}</span>
+				{icon && (
+					<span
+						className="hover:bg-slate-200 p-1 transition-all duration-300 "
+						onClick={onClick}
+					>
+						{icon}
+					</span>
+				)}
+			</label>
+		</>
 	);
 }

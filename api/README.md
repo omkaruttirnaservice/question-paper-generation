@@ -65,6 +65,7 @@
 ================================================================================
 
 - tm_test_user_master_list = `stores the created tests`
+- When we create a new test it stores its details here
 
   mt_name = `actual test name`
   mt_added_date = `date`
@@ -87,6 +88,8 @@
 ============================================================================================
 
 - tm_test_question_sets = `question list of the created test this is linked with tqs_test_id`
+
+- When we create test the questions of that test is stored here and is liked with tqs_test_id (it is test id which is created)
 
   q_id = `question id`
   tqs_test_id = `id of table=tm_test_user_master_list`

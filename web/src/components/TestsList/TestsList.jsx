@@ -23,12 +23,13 @@ import TestListSchemaYUP from '../PublishedTestsList/TestsListSchemaYUP.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
-import Input from '../UI/Input.jsx';
+import Input, { InputLabel } from '../UI/Input.jsx';
 import './TestsList.css';
 import DataTable from 'react-data-table-component';
 import { useQuery } from '@tanstack/react-query';
 import { getPostList, getServerIP } from '../StudentArea/AddNewStudent/api.jsx';
 import { toast } from 'react-toastify';
+import { IoRefresh } from 'react-icons/io5';
 
 function TestsList() {
 	const navigate = useNavigate();
@@ -714,12 +715,21 @@ function SelectPostDropdown({
 
 	return (
 		<>
-			<label
+			{/* <label
 				htmlFor=""
 				className="transition-all duration-300 text-gray-700 !mb-1 block"
 			>
 				Select Post
 			</label>
+			<IoRefresh /> */}
+
+			<InputLabel
+				name="Select Post"
+				icon={<IoRefresh />}
+				onClick={() => {
+					postsListQuery.refetch();
+				}}
+			/>
 
 			<div ref={dropdownRef}>
 				<button
