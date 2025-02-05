@@ -1,7 +1,10 @@
 import excel from 'exceljs';
 import { Sequelize } from 'sequelize';
 import sequelize from '../../config/db-connect-migration.js';
-import reportsModel from '../../model/reportsModel.js';
+import reportsModel, {
+	DATES_LIST,
+	POST_LIST,
+} from '../../model/reportsModel.js';
 import tm_publish_test_list from '../../schemas/tm_publish_test_list.js';
 import tm_student_final_result_set from '../../schemas/tm_student_final_result_set.js';
 import tn_student_list from '../../schemas/tn_student_list.js';
@@ -12,7 +15,8 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 const reportsController = {
 	getExamServerIP: asyncHandler(async (req, res) => {
 		let _serverIP = await reportsModel.getExamServerIP();
-		if (!_serverIP?.exam_server_ip) throw new ApiError(409, 'Exam server IP not found');
+		if (!_serverIP?.exam_server_ip)
+			throw new ApiError(409, 'Exam server IP not found');
 		return res.status(200).json(new ApiResponse(201, _serverIP.exam_server_ip));
 	}),
 	setExamServerIP: asyncHandler(async (req, res) => {
@@ -27,7 +31,6 @@ const reportsController = {
 	getPublishedTests: asyncHandler(async (req, res) => {
 		let _tests = await reportsModel.getPublishedTests();
 		return res.status(200).json(new ApiResponse(200, _tests));
-		console.log(_tests, '==_tests==');
 	}),
 
 	generateResult: async (req, res, next) => {
@@ -37,9 +40,16 @@ const reportsController = {
 			let publishedTestId = atob(testIdInBase64);
 
 			// generate student result
-			let [_resultGeneratedRes] = await reportsModel.generateResult(publishedTestId, transact);
+			let [_resultGeneratedRes] = await reportsModel.generateResult(
+				publishedTestId,
+				transact
+			);
 			console.log(_resultGeneratedRes, '==_resultGeneratedRes==');
-			if (_resultGeneratedRes.length == 0) throw new ApiError(404, 'Could not find the students to generate result');
+			if (_resultGeneratedRes.length == 0)
+				throw new ApiError(
+					404,
+					'Could not find the students to generate result'
+				);
 
 			// update that result has been declared
 			let _updateResultDeclaredRes = await tm_publish_test_list.update(
@@ -55,43 +65,93 @@ const reportsController = {
 			);
 
 			// save result to tm_student_final_result_set
-			let _saveResultRes = await tm_student_final_result_set.bulkCreate(_resultGeneratedRes, { transaction: transact });
+			let _saveResultRes = await tm_student_final_result_set.bulkCreate(
+				_resultGeneratedRes,
+				{ transaction: transact }
+			);
 
 			// delete result data
 			let deleteResultRes = await reportsModel.deleteResultsData(transact);
 			console.log(deleteResultRes, '==deleteResultRes==');
 
 			await transact.commit();
-			return res.status(201).json(new ApiResponse(201, {}, 'Successfully generated result'));
+			return res
+				.status(201)
+				.json(new ApiResponse(201, {}, 'Successfully generated result'));
 		} catch (error) {
 			await transact.rollback();
 			next(error);
 		}
 	},
 
+	getExamDatesList: asyncHandler(async (_, res) => {
+		const [_examDates] = await reportsModel.getReportForType(DATES_LIST);
+		console.log(_examDates, '==_examDates==');
+
+		if (_examDates.length === 0) {
+			throw new ApiError(400, 'Batches list not found.');
+		}
+		return res
+			.status(200)
+			.json(
+				new ApiResponse(200, _examDates, 'Successfully fetched batches list')
+			);
+	}),
+
+	getResultBatchesList: asyncHandler(async (_, res) => {
+		const [_batchesList] = await reportsModel.getReportForType(POST_LIST);
+		console.log(_batchesList, '==_batchesList==');
+		if (_batchesList.length === 0) {
+			throw new ApiError(400, 'Batches list not found.');
+		}
+		return res
+			.status(200)
+			.json(
+				new ApiResponse(200, _batchesList, 'Successfully fetched batches list')
+			);
+	}),
+
 	getResultViewData: asyncHandler(async (req, res) => {
-		let { testId } = req.body;
-		if (!testId) throw new ApiError(400, 'Invalid test ID');
+		const data = req.body;
+		console.log(data, '==data==');
 
-		let _resultDetilsRes = await tm_student_final_result_set.findAll({
-			include: [
-				{
-					model: tn_student_list,
-					as: 'tn_student_list',
-					attributes: [
-						[Sequelize.fn('CONCAT', Sequelize.col('sl_f_name'), ' ', Sequelize.col('sl_m_name'), ' ', Sequelize.col('sl_l_name')), 'full_name'],
-					],
-					required: true,
-				},
-			],
-			where: {
-				sfrs_publish_id: testId,
-			},
-			raw: true,
-		});
-		console.log(_resultDetilsRes, '====');
+		const [_resultDetailsRes] = await reportsModel.getResultData(data);
 
-		return res.status(200).json(new ApiResponse(200, _resultDetilsRes, 'Result details list'));
+		// let _resultDetilsRes = await tm_student_final_result_set.findAll({
+		// 	include: [
+		// 		{
+		// 			model: tn_student_list,
+		// 			as: 'tn_student_list',
+		// 			attributes: [
+		// 				[
+		// 					Sequelize.fn(
+		// 						'CONCAT',
+		// 						Sequelize.col('sl_f_name'),
+		// 						' ',
+		// 						Sequelize.col('sl_m_name'),
+		// 						' ',
+		// 						Sequelize.col('sl_l_name')
+		// 					),
+		// 					'full_name',
+		// 				],
+		// 			],
+		// 			required: true,
+		// 		},
+		// 	],
+		// 	where: {
+		// 		sl_post: data.postName,
+		// 	},
+		// 	raw: true,
+		// });
+		// console.log(_resultDetilsRes, '====1');
+
+		if (_resultDetailsRes.length === 0) {
+			throw new ApiError(400, 'No students found.');
+		}
+
+		return res
+			.status(200)
+			.json(new ApiResponse(200, _resultDetailsRes, 'Result details list'));
 	}),
 
 	getResultExcel: asyncHandler(async (req, res) => {
@@ -100,11 +160,15 @@ const reportsController = {
 
 		let [_testDetails] = await reportsModel.getTestDetails(atob(testId));
 
-		if (!_testDetails || _testDetails.length == 0) throw new ApiError(404, 'No test details found');
+		if (!_testDetails || _testDetails.length == 0)
+			throw new ApiError(404, 'No test details found');
 
-		let [_testReportsForExcel] = await reportsModel.getTestReportsForExcel(atob(testId));
+		let [_testReportsForExcel] = await reportsModel.getTestReportsForExcel(
+			atob(testId)
+		);
 
-		if (!_testReportsForExcel || _testReportsForExcel.length == 0) throw new ApiError(404, 'No student found for this test');
+		if (!_testReportsForExcel || _testReportsForExcel.length == 0)
+			throw new ApiError(404, 'No student found for this test');
 
 		console.log(_testReportsForExcel, '==_testReportsForExcel==');
 
@@ -188,13 +252,72 @@ const reportsController = {
 		const insertedRow = workSheet.insertRows(8, _excelData);
 
 		// workSheet.addRows(res_data);
-		res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-		res.setHeader('Content-Disposition', 'attachment; filename=' + 'valid-candidate-list.xlsx');
+		res.setHeader(
+			'Content-Type',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		);
+		res.setHeader(
+			'Content-Disposition',
+			'attachment; filename=' + 'valid-candidate-list.xlsx'
+		);
 		return workbook.xlsx.write(res);
 
 		// // return res.status(200).json({ _testReportsForExcel });
 
 		// console.log(_testDetails, _testReportsForExcel, '==_testDetails, _testReportsForExcel==');
+	}),
+
+	getCustomResultExcel: asyncHandler(async (req, res) => {
+		const data = req.body;
+
+		const [_resultDetailsRes] = await reportsModel.getResultData(data);
+
+		console.log(_resultDetailsRes, '==_testReportsForExcel111==');
+		if (_resultDetailsRes.length === 0) {
+			throw new ApiError(400, 'No students list found.');
+		}
+
+		// prettier-ignore
+		let file_name = `${data.viewResultBy}-${data.postName}-${data?.examDate || '-'}_result`
+
+		file_name = file_name.replace(/[ _-\s]/, '_');
+
+		let workbook = new excel.Workbook();
+		let workSheet = workbook.addWorksheet('Sheet_1');
+
+		// prettier-ignore
+		const headerColumns = [ '#', 'Roll No', 'Post', 'First Name', 'Middle Name', 'Last Name', 'Date Of Birth', 'Mobile', 'Photo', 'Attempted', 'Uttempted', 'Correct', 'Total Marks Gain']
+
+		workSheet.addRow(headerColumns);
+
+		_resultDetailsRes.forEach((el, idx) => {
+			workSheet.addRow([
+				idx + 1,
+				el.id,
+				el.sl_post,
+				el.sl_f_name,
+				el.sl_m_name,
+				el.sl_l_name,
+				el.dob,
+				el.sl_contact_number,
+				el.sl_image,
+				parseInt(el.sfrs_wrong) + parseInt(el.sfrs_wrong),
+				el?.sfrs_unattempted || 0,
+				el?.correct || 0,
+				el?.sfrc_total_marks || 0,
+			]);
+		});
+
+		res.setHeader(
+			'Content-Type',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		);
+
+		res.setHeader(
+			'Content-Disposition',
+			'attachment; filename=' + 'valid-candidate-list.xlsx'
+		);
+		return workbook.xlsx.write(res);
 	}),
 };
 

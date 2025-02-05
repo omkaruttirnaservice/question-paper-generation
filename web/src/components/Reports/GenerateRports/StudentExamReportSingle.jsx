@@ -15,15 +15,22 @@ function StudentExamReportSingle() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const [params, setParams] = useSearchParams();
-	const { singleStudentViewReport, studTestDetails: testDetails } = useSelector((state) => state.reports);
+	const { singleStudentViewReport, studTestDetails: testDetails } = useSelector(
+		(state) => state.reports
+	);
 	const { studExam, quePaper } = singleStudentViewReport;
+	console.log(quePaper, '==quePaper==')
 
 	useLayoutEffect(() => {
 		setParams({ tab: SCORE_TAB });
 	}, []);
 
 	useEffect(() => {
-		if (!singleStudentViewReport?.quePaper?.length >= 1 || !singleStudentViewReport?.studExam || !studExam) {
+		if (
+			!singleStudentViewReport?.quePaper?.length >= 1 ||
+			!singleStudentViewReport?.studExam ||
+			!studExam
+		) {
 			navigate('/view-reports');
 		}
 	}, [singleStudentViewReport, studExam]);
@@ -47,14 +54,23 @@ function StudentExamReportSingle() {
 					onClick={() => {
 						navigate('/view-reports');
 					}}
-					className="btn--danger"></CButton>
+					className="btn--danger"
+				></CButton>
 				<div className="flex gap-3">
-					<CButton onClick={handleChangeTab.bind(null, SCORE_TAB)} className={`${params.get('tab') == SCORE_TAB ? 'btn--success px-9' : ''}`}>
+					<CButton
+						onClick={handleChangeTab.bind(null, SCORE_TAB)}
+						className={`${
+							params.get('tab') == SCORE_TAB ? 'btn--success px-9' : ''
+						}`}
+					>
 						Score Card
 					</CButton>
 					<CButton
 						onClick={handleChangeTab.bind(null, QUESTION_PAPER_TAB)}
-						className={`${params.get('tab') == QUESTION_PAPER_TAB ? 'btn--success px-9' : ''}`}>
+						className={`${
+							params.get('tab') == QUESTION_PAPER_TAB ? 'btn--success px-9' : ''
+						}`}
+					>
 						Question Paper
 					</CButton>
 				</div>
@@ -70,7 +86,7 @@ function StudentExamReportSingle() {
 				<>
 					<H3>Question paper</H3>
 
-					{quePaper?.length >= 1 &&
+					{quePaper?.length > 0 &&
 						quePaper.map((el, idx) => {
 							return <StudQuestionPaper el={el} idx={idx} />;
 						})}

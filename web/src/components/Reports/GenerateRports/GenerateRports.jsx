@@ -83,28 +83,7 @@ function TestDetails({ el: details, idx, refetch }) {
 	};
 	// END: excel generate result===============
 
-	// START: View result ======================
-	const handleViewResult = (publishedTestId) => {
-		_getResultViewData(publishedTestId);
-	};
-	const { mutate: _getResultViewData, isPending: gettingTestViewDataLoading } = useMutation({
-		mutationFn: getResultViewData,
-		onSuccess: ({ data }) => {
-			console.log(data, '==data==');
-			if (data.length == 0) {
-				Swal.fire('Warning', 'No results found!');
-				return;
-			}
-			dispatch(reportsAction.setViewTestReportDetails(details));
-			dispatch(reportsAction.setResultsList(data));
-			navigate('/view-reports');
-		},
-		onError: (err) => {
-			console.log(err, '==err==');
-			alert(err.message || 'Something went wrong');
-		},
-	});
-	// END: View result ======================
+	
 
 	return (
 		<div className="border flex gap-6 ">
@@ -136,9 +115,9 @@ function TestDetails({ el: details, idx, refetch }) {
 						<span>Result Generated</span>
 					)}
 
-					<CButton onClick={handleViewResult.bind(null, details.id)} isLoading={gettingTestViewDataLoading}>
+					{/* <CButton onClick={handleViewResult.bind(null, details.id)} isLoading={gettingTestViewDataLoading}>
 						View Result
-					</CButton>
+					</CButton> */}
 					<CButton onClick={handleExelResult.bind(null, details.id)} isLoading={_getResultExcelPending}>
 						Excel
 					</CButton>

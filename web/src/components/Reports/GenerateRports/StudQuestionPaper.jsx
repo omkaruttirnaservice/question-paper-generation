@@ -71,12 +71,12 @@ function StudQuestionPaper({ el, idx }) {
 
 			<div className="py-3">
 				<span className="font-bold text-[#555] mb-4 me-3">Correct Option</span>
-				<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.q_ans.toUpperCase()}</span>
+				<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el?.q_ans?.toUpperCase() || '-'}</span>
 			</div>
 
 			<div className="py-3">
 				<span className="font-bold text-[#555] mb-4 me-3">Student Option</span>
-				<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el.sqp_ans.toUpperCase()}</span>
+				<span className="mb-6 bg-blue-200 px-2 py-1 w-fit">{el?.sqp_ans?.toUpperCase() || '-'}</span>
 			</div>
 
 			{isAnsCorrect ? <FaRegThumbsUp className='absolute top-2 right-2 !text-4xl'/> : <FaRegThumbsDown className='absolute top-2 right-2 !text-4xl'/>}

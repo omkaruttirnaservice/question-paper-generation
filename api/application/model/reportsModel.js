@@ -2,7 +2,59 @@ import sequelize from '../config/db-connect-migration.js';
 import aouth from '../schemas/aouth.js';
 import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
 
+export const DATES_LIST = 'dates';
+export const BATCH_LIST = 'batchs';
+export const POST_LIST = 'posts';
+
 const reportsModel = {
+	getReportForType: async (type) => {
+		let q;
+		if (type === DATES_LIST) {
+			q = `SELECT 
+					DATE_FORMAT(sl_exam_date,'%d-%m-%Y') as sl_exam_date  
+				FROM tn_student_list 
+				GROUP BY sl_exam_date`;
+			return await sequelize.query(q);
+		}
+
+		if (type === BATCH_LIST) {
+			q = `SELECT 
+					sl_batch_no 
+				FROM tn_student_list 
+				GROUP BY sl_batch_no`;
+			return await sequelize.query(q);
+		}
+
+		if (type === POST_LIST) {
+			q = `SELECT 
+					sl_post
+				FROM tn_student_list 
+				GROUP BY sl_post`;
+			return await sequelize.query(q);
+		}
+	},
+
+	getResultData: async (data) => {
+		const RESULT_BY_BATCH = 'Batch';
+		const RESULT_BY_POST = 'Post';
+		let q = `SELECT *,
+					CONCAT(sl_f_name,' ',sl_m_name,' ',sl_l_name) AS full_name,
+					DATE_FORMAT(sl_date_of_birth,'%d-%m-%Y') AS dob
+					FROM tm_student_final_result_set AS sfrs
+					INNER JOIN tn_student_list sl
+					ON sfrs.sfrs_student_id = sl.id
+					`;
+		if (data.viewResultBy === RESULT_BY_POST) {
+			q += ` WHERE sl_post = '${data.postName}' `;
+			return await sequelize.query(q);
+		}
+		
+		if (data.viewResultBy === RESULT_BY_BATCH) {
+			q += ` WHERE sl_post = '${data.postName}' AND DATE_FORMAT(sl_exam_date,'%d-%m-%Y') = '${data.examDate}' `;
+			return await sequelize.query(q);
+		}
+	},
+
 	getExamServerIP: async () => {
 		return await aouth.findOne({
 			attributes: ['exam_server_ip'],
@@ -12,6 +64,7 @@ const reportsModel = {
 			raw: true,
 		});
 	},
+
 	saveExamServerIP: async (ip) => {
 		return await aouth.update({ exam_server_ip: ip }, { where: { id: 1 } });
 	},
@@ -102,7 +155,6 @@ const reportsModel = {
 	},
 
 	getTestDetails: async (testId) => {
-		
 		let q = ` SELECT  
 					post_list.mtl_test_name as post_name,
 					test.mt_name as test_name,
