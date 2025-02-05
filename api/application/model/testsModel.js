@@ -50,7 +50,7 @@ const testsModel = {
 					)
 				) AS post_details,
 				tm_publish_test_list.id,
-				DATE_FORMAT('ptl_active_date', '%d-%m-%Y'), ptl_active_date,
+				DATE_FORMAT(ptl_active_date, '%d-%m-%Y') ptl_active_date,
 				ptl_time,
 				ptl_link,
 				ptl_test_id,
