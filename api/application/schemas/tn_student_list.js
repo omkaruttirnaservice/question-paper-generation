@@ -15,7 +15,7 @@ const tn_student_list = sequelize.define(
 	'tn_student_list',
 	{
 		id: {
-			type: DataTypes.BIGINT,
+			type: DataTypes.INTEGER,
 			allowNull: false,
 			primaryKey: true,
 			autoIncrement: true,
