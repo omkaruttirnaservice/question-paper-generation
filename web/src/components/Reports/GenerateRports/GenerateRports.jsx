@@ -6,7 +6,12 @@ import Swal from 'sweetalert2';
 import { reportsAction } from '../../../Store/reports-slice.jsx';
 import CButton from '../../UI/CButton.jsx';
 import { H3 } from '../../UI/Headings.jsx';
-import { generateResult, getPublishedTestLists, getResultExcel, getResultViewData } from './gen-reports-api.jsx';
+import {
+	generateResult,
+	getPublishedTestLists,
+	getResultExcel,
+	getResultViewData,
+} from './gen-reports-api.jsx';
 
 function GenerateRports() {
 	const { testsList } = useSelector((state) => state.reports);
@@ -83,11 +88,11 @@ function TestDetails({ el: details, idx, refetch }) {
 	};
 	// END: excel generate result===============
 
-	
-
 	return (
 		<div className="border flex gap-6 ">
-			<div className="border-r p-2 text-2xl font-bold min-w-[3rem] flex justify-center items-center">{idx + 1}</div>
+			<div className="border-r p-2 text-2xl font-bold min-w-[3rem] flex justify-center items-center">
+				{idx + 1}
+			</div>
 			<div className="flex flex-col justify-center gap-3 py-3">
 				<p className="text-xl">{details.mt_name}</p>
 				<div className="grid grid-cols-1 lg:grid-cols-4 gap-1">
@@ -98,27 +103,44 @@ function TestDetails({ el: details, idx, refetch }) {
 						Total questions: <span className="font-semibold"> 90 </span>
 					</p>
 					<p>
-						Duration: <span className="font-semibold">{details.mt_test_time} Min </span>
+						Duration:{' '}
+						<span className="font-semibold">{details.mt_test_time} Min </span>
 					</p>
 					<p>
-						Marks per question: <span className="font-semibold"> {details.mt_mark_per_question}</span>
+						Marks per question:{' '}
+						<span className="font-semibold">
+							{' '}
+							{details.mt_mark_per_question}
+						</span>
 					</p>
 				</div>
 			</div>
 			<div className="flex-1">
 				<div className="flex flex-col justify-center gap-1 items-end h-full">
 					{details.is_test_generated != 1 ? (
-						<CButton onClick={handleGenerateResult.bind(null, details.id)} isLoading={_generateResultLoading}>
+						<CButton
+							onClick={handleGenerateResult.bind(null, details.id)}
+							isLoading={_generateResultLoading}
+						>
 							Generate Result
 						</CButton>
 					) : (
-						<span>Result Generated</span>
+						<CButton
+							varient="btn--warning"
+							onClick={handleGenerateResult.bind(null, details.id)}
+							isLoading={_generateResultLoading}
+						>
+							Regenerate Result
+						</CButton>
 					)}
 
 					{/* <CButton onClick={handleViewResult.bind(null, details.id)} isLoading={gettingTestViewDataLoading}>
 						View Result
 					</CButton> */}
-					<CButton onClick={handleExelResult.bind(null, details.id)} isLoading={_getResultExcelPending}>
+					<CButton
+						onClick={handleExelResult.bind(null, details.id)}
+						isLoading={_getResultExcelPending}
+					>
 						Excel
 					</CButton>
 				</div>
