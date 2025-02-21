@@ -5,14 +5,38 @@ import App from './App.jsx';
 import './index.css';
 import { store } from './Store/redux-store.jsx';
 
-import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+	MutationCache,
+	QueryCache,
+	QueryClient,
+	QueryClientProvider,
+} from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+
+import axios from axios;
+
+const axiosInstance = axios.create({
+	baseUrl :'http://129.23.4.1:3403/api/',
+	headers: {
+		Authorization: "Bearer sdfjasldfjaklsghlksdhf"
+	}
+})
+
+// request
+// axiosInstance.interceptors.request.use(function(){}, function(){})
+// response
+
 const queryClient = new QueryClient({
-	// queryCache: new QueryCache({
-	// 	onError: (error)=>{
-	// 		toast.error(`Something went wrong: ${error.message}`)
-	// 	}
-	// })
+	queryCache: new QueryCache({
+		onError: (err) => {
+			// do something with error
+		},
+	}),
+	mutationCache: new MutationCache({
+		onError: (err) => {
+			// do something with error
+		},
+	}),
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
