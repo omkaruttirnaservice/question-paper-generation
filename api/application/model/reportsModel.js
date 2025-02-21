@@ -48,7 +48,7 @@ const reportsModel = {
 			q += ` WHERE sl_post = '${data.postName}' `;
 			return await sequelize.query(q);
 		}
-		
+
 		if (data.viewResultBy === RESULT_BY_BATCH) {
 			q += ` WHERE sl_post = '${data.postName}' AND DATE_FORMAT(sl_exam_date,'%d-%m-%Y') = '${data.examDate}' `;
 			return await sequelize.query(q);
@@ -200,6 +200,23 @@ const reportsModel = {
                           GROUP BY student_paper.sfrs_student_id
                         ORDER BY roll_number`;
 		return await sequelize.query(q);
+	},
+
+	updatePercentileResult: async (data, transact) => {
+		let q = `UPDATE tm_student_final_result_set
+					SET
+						srfs_percentile = CASE	
+					`;
+		let ids = [];
+		data.forEach((_el) => {
+			ids.push(_el.sfrs_student_id);
+			q += ` WHEN sfrs_student_id = ${_el.sfrs_student_id} THEN '${_el.srfs_percentile}'`;
+		});
+
+		q += ` END `;
+		q += ` WHERE sfrs_student_id IN (${[...ids]})`;
+
+		return await sequelize.query(q, { transaction: transact });
 	},
 };
 

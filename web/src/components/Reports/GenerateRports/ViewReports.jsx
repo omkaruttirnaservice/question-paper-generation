@@ -30,6 +30,8 @@ function ViewReports() {
 	const [postsList, setPostList] = useState([]);
 	const [selectedPost, setSelectedPost] = useState('');
 
+	const [showPercentileResult, setShowPercentileResult] = useState(false);
+
 	const [examDates, setExamDates] = useState([]);
 	const [selectedExamDate, setSelectedExamDate] = useState('');
 
@@ -98,35 +100,42 @@ function ViewReports() {
 		{
 			sortable: true,
 			name: 'Attempt',
-			selector: (row) => testDetails?.mt_passing_out_of || '-',
+			selector: (row) =>
+				Number(row.sfrc_total_marks) - Number(row.sfrs_unattempted) || '-',
 		},
 		{ sortable: true, name: 'Wrong', selector: (row) => row.sfrs_wrong },
 		{ sortable: true, name: 'Correct', selector: (row) => row.sfrs_correct },
 		{
 			sortable: true,
-			name: 'Marks Score',
-			selector: (row) => row.sfrs_marks_gain + '/' + row.sfrc_total_marks,
-		},
-		{
-			sortable: true,
-			name: '% Got',
-			selector: (row) =>
-				((row.sfrs_marks_gain / row.sfrc_total_marks) * 100).toFixed(2) + '%',
-		},
-		{
-			sortable: true,
-			name: 'Result',
-			cell: (row) =>
-				+row.sfrs_marks_gain >= +testDetails.mt_passing_out_of ? (
-					<span className="bg-green-400 px-2 py-1  text-white font-semibold tracking-widest">
-						PASS
-					</span>
+			name: 'Score',
+			cell: (row) => {
+				return showPercentileResult ? (
+					<span>{row.srfs_percentile}</span>
 				) : (
-					<span className="bg-red-400 px-2 py-1 text-white font-semibold tracking-widest">
-						FAIL
-					</span>
-				),
+					<span>{row.sfrs_marks_gain + ' / ' + row.sfrc_total_marks}</span>
+				);
+			},
 		},
+		// {
+		// 	sortable: true,
+		// 	name: '% Got',
+		// 	selector: (row) =>
+		// 		((row.sfrs_marks_gain / row.sfrc_total_marks) * 100).toFixed(2) + '%',
+		// },
+		// {
+		// 	sortable: true,
+		// 	name: 'Result',
+		// 	cell: (row) =>
+		// 		+row.sfrs_marks_gain >= +testDetails.mt_passing_out_of ? (
+		// 			<span className="bg-green-400 px-2 py-1  text-white font-semibold tracking-widest">
+		// 				PASS
+		// 			</span>
+		// 		) : (
+		// 			<span className="bg-red-400 px-2 py-1 text-white font-semibold tracking-widest">
+		// 				FAIL
+		// 			</span>
+		// 		),
+		// },
 		{
 			sortable: true,
 			name: 'Action',
@@ -231,19 +240,21 @@ function ViewReports() {
 		if (viewResultBy === RESULT_BY_POST) {
 			_data.viewResultBy = RESULT_BY_POST;
 			_data.postName = selectedPost;
+			_data.resultType = showPercentileResult ? 'PERCENTILE' : 'MARKS';
 		}
 
 		if (viewResultBy === RESULT_BY_BATCH) {
 			_data.viewResultBy = RESULT_BY_BATCH;
 			_data.postName = selectedPost;
 			_data.examDate = selectedExamDate;
+			_data.resultType = showPercentileResult ? 'PERCENTILE' : 'MARKS';
 		}
 		_getResultExel.mutate(_data);
 	};
 
 	return (
 		<>
-			<section className="grid grid-cols-4 mt-6 mb-2 gap-2">
+			<section className="grid grid-cols-6 mt-6 mb-2 gap-2">
 				<div>
 					<InputSelect
 						label="View Result By"
@@ -292,7 +303,7 @@ function ViewReports() {
 					</InputSelect>
 				</div>
 
-				<div className="self-end">
+				<div className="self-end col-span-3">
 					<div className="flex gap-2">
 						<CButton
 							onClick={handleGetResultData}
@@ -308,6 +319,20 @@ function ViewReports() {
 						>
 							Excel
 						</CButton>
+
+						<div className="flex items-center gap-2">
+							<label htmlFor="" for="percentile-result">
+								Percentile
+							</label>
+							<input
+								type="checkbox"
+								id="percentile-result"
+								onClick={() => {
+									setShowPercentileResult(!showPercentileResult);
+									console.log(showPercentileResult, '==showPercentileResult==');
+								}}
+							/>
+						</div>
 					</div>
 				</div>
 			</section>

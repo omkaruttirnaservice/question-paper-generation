@@ -4,13 +4,14 @@ export const getPublishedTestLists = async (ip) => {
 	return _res.json();
 };
 
-export const generateResult = async (testId) => {
+export const generateResult = async (props) => {
+	console.log(props, '==props==');
 	let _res = await fetch(SERVER_IP + '/api/reports/generate-result', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ testIdInBase64: testId }),
+		body: JSON.stringify(props),
 	});
 
 	return await _res.json();

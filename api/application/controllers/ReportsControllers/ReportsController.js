@@ -36,8 +36,9 @@ const reportsController = {
 	generateResult: async (req, res, next) => {
 		const transact = await sequelize.transaction();
 		try {
-			let { testIdInBase64 } = req.body;
-			let publishedTestId = atob(testIdInBase64);
+			console.log(req.body, '==req.body==');
+			let { b64PublishedTestId, isPercentileResult } = req.body;
+			let publishedTestId = atob(b64PublishedTestId);
 
 			// generate student result
 			let [_resultGeneratedRes] = await reportsModel.generateResult(
@@ -68,6 +69,34 @@ const reportsController = {
 			let _saveResultRes = await tm_student_final_result_set.bulkCreate(
 				_resultGeneratedRes,
 				{ transaction: transact }
+			);
+
+			const _studentsList = await tm_student_final_result_set.findAll({
+				attributes: ['sfrs_student_id', 'srfs_percentile'],
+				where: {
+					sfrs_publish_id: publishedTestId,
+				},
+				order: [['sfrs_marks_gain', 'DESC']],
+				raw: true,
+			});
+			console.log(_studentsList, '==_studentsList==');
+
+			// calculate percentile result
+			const totalStudents = _studentsList.length;
+
+			_studentsList.forEach((_student, idx) => {
+				const rank = idx + 1;
+
+				let percentile = ((totalStudents - rank) / (totalStudents - 1)) * 100;
+				console.log(_student, '==_student==');
+				console.log(percentile, '==percentile==');
+				_student['srfs_percentile'] = percentile.toFixed(2);
+			});
+
+			// update percentile result
+			const _updateResponse = await reportsModel.updatePercentileResult(
+				_studentsList,
+				transact
 			);
 
 			// delete result data
@@ -269,6 +298,7 @@ const reportsController = {
 
 	getCustomResultExcel: asyncHandler(async (req, res) => {
 		const data = req.body;
+		console.log(data, '==data==');
 
 		const [_resultDetailsRes] = await reportsModel.getResultData(data);
 
@@ -286,7 +316,7 @@ const reportsController = {
 		let workSheet = workbook.addWorksheet('Sheet_1');
 
 		// prettier-ignore
-		const headerColumns = [ '#', 'Roll No', 'Post', 'First Name', 'Middle Name', 'Last Name', 'Date Of Birth', 'Mobile', 'Attempted', 'Uttempted', 'Correct', 'Total Marks Gain']
+		const headerColumns = [ '#', 'Roll No', 'Post', 'First Name', 'Middle Name', 'Last Name', 'Date Of Birth', 'Mobile', 'Attempted', 'Uttempted', 'Correct', 'Score']
 
 		workSheet.addRow(headerColumns);
 
@@ -300,10 +330,12 @@ const reportsController = {
 				el.sl_l_name,
 				el.dob,
 				el.sl_contact_number,
-				parseInt(el.sfrs_wrong) + parseInt(el.sfrs_wrong),
+				parseInt(el.sfrs_correct) + parseInt(el.sfrs_wrong),
 				el?.sfrs_unattempted || 0,
 				el?.correct || 0,
-				el?.sfrc_total_marks || 0,
+				data.resultType === 'PERCENTILE'
+					? el?.srfs_percentile
+					: `${el?.sfrs_marks_gain} / ${el?.sfrc_total_marks}`,
 			]);
 		});
 

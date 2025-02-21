@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -12,6 +12,7 @@ import {
 	getResultExcel,
 	getResultViewData,
 } from './gen-reports-api.jsx';
+import ContextMenu from '../../UI/ContextMenu.jsx';
 
 function GenerateRports() {
 	const { testsList } = useSelector((state) => state.reports);
@@ -21,6 +22,7 @@ function GenerateRports() {
 		queryKey: ['get-published-test-list'],
 		queryFn: getPublishedTestLists,
 	});
+
 
 	useEffect(() => {
 		if (publishedTestsList?.data?.length >= 1) {
@@ -59,9 +61,12 @@ function TestDetails({ el: details, idx, refetch }) {
 			console.log(err, '==err==');
 		},
 	});
+
 	const handleGenerateResult = (publishedTestId) => {
 		// Converting the published test id to base 64 string
-		_generateResult(btoa(publishedTestId));
+		_generateResult({
+			b64PublishedTestId: btoa(publishedTestId),
+		});
 	};
 
 	// END: generate result===============
@@ -116,27 +121,41 @@ function TestDetails({ el: details, idx, refetch }) {
 				</div>
 			</div>
 			<div className="flex-1">
-				<div className="flex flex-col justify-center gap-1 items-end h-full">
+				<div className=" flex flex-col justify-center gap-1 items-end h-full">
 					{details.is_test_generated != 1 ? (
-						<CButton
-							onClick={handleGenerateResult.bind(null, details.id)}
-							isLoading={_generateResultLoading}
-						>
-							Generate Result
-						</CButton>
+						<>
+							<CButton
+								onClick={handleGenerateResult.bind(null, details.id)}
+								isLoading={_generateResultLoading}
+							>
+								Generate Result
+							</CButton>
+							<CButton
+								onClick={handleGenerateResult.bind(null, details.id)}
+								isLoading={_generateResultLoading}
+							>
+								Percentile Result
+							</CButton>
+						</>
 					) : (
-						<CButton
-							varient="btn--warning"
-							onClick={handleGenerateResult.bind(null, details.id)}
-							isLoading={_generateResultLoading}
-						>
-							Regenerate Result
-						</CButton>
+						<>
+							<CButton
+								varient="btn--warning"
+								onClick={handleGenerateResult.bind(null, details.id)}
+								isLoading={_generateResultLoading}
+							>
+								Regenerate Result
+							</CButton>
+							<CButton
+								varient={'btn--warning'}
+								onClick={handleGenerateResult.bind(null, details.id)}
+								isLoading={_generateResultLoading}
+							>
+								Percentile Result
+							</CButton>
+						</>
 					)}
 
-					{/* <CButton onClick={handleViewResult.bind(null, details.id)} isLoading={gettingTestViewDataLoading}>
-						View Result
-					</CButton> */}
 					<CButton
 						onClick={handleExelResult.bind(null, details.id)}
 						isLoading={_getResultExcelPending}
