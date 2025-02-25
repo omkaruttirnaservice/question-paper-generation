@@ -30,7 +30,7 @@ function StudentsList() {
 		refetchOnWindowFocus: false,
 	});
 
-	console.log(_studList, '==_studList==');
+	// console.log(_studList, '==_studList==');
 	useEffect(() => {
 		if (_studList?.data) {
 			dispatch(StudentAreaActions.setStudentsList_All(_studList.data.data));
@@ -164,7 +164,7 @@ function StudentsList() {
 					}}
 				></CButton>
 			</div>
-			{filterStudentsList_All.length >= 1 && (
+			{filterStudentsList_All?.length >= 1 && (
 				<DataTable
 					columns={columns}
 					data={filterStudentsList_All}
@@ -174,10 +174,11 @@ function StudentsList() {
 				></DataTable>
 			)}
 
-			{filterStudentsList_All.length == 0 && !getStudentsListPending && (
+			{filterStudentsList_All?.length == 0 && !getStudentsListPending && (
 				<p>Students not found...</p>
 			)}
 			{getStudentsListPending && <p>Getting students list...</p>}
+			{getStudentListErr && <p>Error fetching students list...</p>}
 		</div>
 	);
 }

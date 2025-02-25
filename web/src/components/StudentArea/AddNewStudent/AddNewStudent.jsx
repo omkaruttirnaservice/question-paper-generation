@@ -200,7 +200,7 @@ function AddNewStudent() {
 							</tr>
 						</thead>
 						<tbody>
-							{formFillingIP &&
+							{formFillingIP?.length > 0 &&
 								formFillingIP.map((_el, idx) => {
 									return (
 										<tr>
