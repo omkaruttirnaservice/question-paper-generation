@@ -16,6 +16,7 @@ export default function Input({
 			>
 				{label}
 			</label>
+			{/* <InputLabel name={name} label={label} /> */}
 			<input
 				type={type}
 				id={name}
@@ -45,12 +46,13 @@ export function InputSelect({
 }) {
 	return (
 		<div className={`relative ${className}`}>
-			<label
+			{/* <label
 				htmlFor={name}
 				className="transition-all duration-300 text-gray-700 !mb-1  block text-sm"
 			>
 				{label}
-			</label>
+			</label> */}
+			<InputLabel name={name} />
 			<select
 				type={type}
 				id={name}
@@ -69,11 +71,17 @@ export function InputSelect({
 	);
 }
 
-export function InputLabel({ name = '', icon, className = '', onClick }) {
+export function InputLabel({
+	name = '',
+	icon,
+	className = '',
+	onClick,
+	htmlFor = '',
+}) {
 	return (
 		<>
 			<label
-				htmlFor=""
+				htmlFor={htmlFor}
 				className={`transition-all duration-300 text-gray-700 !mb-1 flex items-center cursor-pointer gap-2 ${className}`}
 			>
 				<span>{name}</span>

@@ -49,7 +49,7 @@
 	}
 
 	.error {
-		@apply text-red-400 font-bold left-0 bottom-[-1.2rem] absolute text-[12px] tracking-wider;
+		@apply text-red-400 font-bold left-0 bottom-[-1.2rem] absolute text-[12px] tracking-tight;
 	}
 
 	.cd-btn {

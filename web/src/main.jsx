@@ -13,14 +13,14 @@ import {
 } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
-import axios from axios;
+import axios from 'axios';
 
 const axiosInstance = axios.create({
-	baseUrl :'http://129.23.4.1:3403/api/',
+	baseUrl: 'http://129.23.4.1:3403/api/',
 	headers: {
-		Authorization: "Bearer sdfjasldfjaklsghlksdhf"
-	}
-})
+		Authorization: 'Bearer sdfjasldfjaklsghlksdhf',
+	},
+});
 
 // request
 // axiosInstance.interceptors.request.use(function(){}, function(){})

@@ -507,6 +507,7 @@ const testsModel = {
 		test_key,
 		test_details: mt,
 		selected_posts,
+		is_show_exam_sections,
 	}) => {
 		// changing publish date format from dd-mm-yyyy to yyy-mm-dd
 		let _tmpPubDate = publish_date.split('-');
@@ -587,6 +588,7 @@ const testsModel = {
 			ptl_master_exam_name: '-',
 			is_test_generated: 0,
 			is_push_done: 0,
+			is_show_exam_sections: is_show_exam_sections == 'yes' ? 1 : 0,
 		};
 
 		console.log(insertData, 'insertData for publish exam');

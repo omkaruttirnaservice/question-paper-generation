@@ -141,7 +141,7 @@ const reportsModel = {
 		return await sequelize.query(query, { transaction: transact });
 	},
 
-	deleteResultsData: async (transact) => {
+	deleteResultsData: async () => {
 		let query = `DELETE
 							set_1
 						FROM 
@@ -151,7 +151,7 @@ const reportsModel = {
 							set_1.id < set_2.id AND (
 							set_1.sfrs_publish_id = set_2.sfrs_publish_id
 							AND set_1.sfrs_student_id = set_2.sfrs_student_id )`;
-		return await sequelize.query(query, { transaction: transact });
+		return await sequelize.query(query);
 	},
 
 	getTestDetails: async (testId) => {
@@ -202,7 +202,7 @@ const reportsModel = {
 		return await sequelize.query(q);
 	},
 
-	updatePercentileResult: async (data, transact) => {
+	updatePercentileResult: async (data) => {
 		let q = `UPDATE tm_student_final_result_set
 					SET
 						srfs_percentile = CASE	
@@ -216,7 +216,7 @@ const reportsModel = {
 		q += ` END `;
 		q += ` WHERE sfrs_student_id IN (${[...ids]})`;
 
-		return await sequelize.query(q, { transaction: transact });
+		return await sequelize.query(q);
 	},
 };
 

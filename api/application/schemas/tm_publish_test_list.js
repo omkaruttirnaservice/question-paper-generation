@@ -48,6 +48,7 @@ const tm_publish_test_list = sequelize.define('tm_publish_test_list', {
 	ptl_master_exam_name: { type: Sequelize.TEXT('long') },
 	is_test_generated: { type: Sequelize.INTEGER },
 	is_push_done: { type: Sequelize.INTEGER },
+	is_show_exam_sections: { type: Sequelize.INTEGER, defaultValue: 0 },
 
 	createdAt: {
 		type: DATE,
@@ -58,6 +59,5 @@ const tm_publish_test_list = sequelize.define('tm_publish_test_list', {
 		defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
 	},
 });
-
 
 export default tm_publish_test_list;

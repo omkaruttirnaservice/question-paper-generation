@@ -1,47 +1,52 @@
-import { IoIosArrowDropdown } from 'react-icons/io';
-
-let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
-import React, {
-	useEffect,
-	useLayoutEffect,
-	useReducer,
-	useRef,
-	useState,
-} from 'react';
+import { useQuery } from '@tanstack/react-query';
+import React, { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { FaCross, FaEye, FaPlus, FaTrash, FaXmark } from 'react-icons/fa6';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { FaEye, FaTrash } from 'react-icons/fa6';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
 import { ModalActions } from '../../Store/modal-slice.jsx';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import TestListSchemaYUP from '../PublishedTestsList/TestsListSchemaYUP.jsx';
+import {
+	getExamsList,
+	getServerIP,
+} from '../StudentArea/AddNewStudent/api.jsx';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
 import Input, { InputLabel } from '../UI/Input.jsx';
+import InputError from '../UI/InputError.jsx';
+import SelectPostDropdown from './SelectPostDropdown.jsx';
 import './TestsList.css';
-import DataTable from 'react-data-table-component';
-import { useQuery } from '@tanstack/react-query';
-import { getPostList, getServerIP } from '../StudentArea/AddNewStudent/api.jsx';
-import { toast } from 'react-toastify';
-import { IoRefresh } from 'react-icons/io5';
+import { generateTestKey } from './utils.js';
+
+let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
+
+let initialStatePublishForm = {
+	test_id_for_publish: null,
+	batch: null,
+	publish_date: null,
+	test_key: null,
+	test_details: null,
+	server_ip_address: null,
+	selected_posts: null,
+};
 
 function TestsList() {
 	const navigate = useNavigate();
-	let initialStatePublishForm = {
-		test_id_for_publish: null,
-		batch: null,
-		publish_date: null,
-		test_key: null,
-		test_details: null,
-		server_ip_address: null,
-		selected_posts: null,
-	};
+	const [serverIPAddresses, setServerIPAddresses] = useState([]);
+	const [batchCount, setBatchCount] = useState([]);
+	// prettier-ignore
+	const [publishExamForm, setPublishExamForm] = useState(initialStatePublishForm);
+	const [errors, setErrors] = useState({});
+	const { sendRequest } = useHttp();
+	const dispatch = useDispatch();
+	const [testsList, setTestsList] = useState([]);
 
 	const getServerIPQuery = useQuery({
 		queryKey: ['get server ip list'],
@@ -50,52 +55,29 @@ function TestsList() {
 		retry: false,
 	});
 
-	const [serverIPAddresses, setServerIPAddresses] = useState([]);
-
 	useEffect(() => {
 		if (getServerIPQuery?.data) {
-			console.log(getServerIPQuery.data, '==getServerIPQuery.data==');
 			setServerIPAddresses(getServerIPQuery?.data?.data || []);
 		}
 	}, [getServerIPQuery.data]);
 
-	const [batchCount, setBatchCount] = useState([]);
-	const [postList, setPostList] = useState(['Jr. Clerk', 'Peon', 'IT Manager']);
-
-	const [publishExamForm, setPublishExamForm] = useState(
-		initialStatePublishForm
-	);
-
-	const [errors, setErrors] = useState({});
-
-	const { testQuestionsList } = useSelector((state) => state.tests);
-	const { isLoading } = useSelector((state) => state.loader);
-
 	useEffect(() => {
 		let _bList = [];
-		for (let i = 1; i <= 50; i++) {
+		for (let i = 1; i <= 10; i++) {
 			_bList.push(i);
 		}
 		setBatchCount(_bList);
 	}, []);
 
-	const { sendRequest } = useHttp();
-	const dispatch = useDispatch();
-	const [testsList, setTestsList] = useState([]);
-	useEffect(() => {
-		getExamsList();
-	}, []);
+	const getExamListQuery = useQuery({
+		queryFn: getExamsList,
+	});
 
-	function getExamsList() {
-		const reqData = {
-			url: SERVER_IP + '/api/test/list',
-		};
-		sendRequest(reqData, ({ data }) => {
-			if (data.length >= 1) {
-				setTestsList(data);
-			}
-		});
-	}
+	useEffect(() => {
+		if (getExamListQuery?.data) {
+			setTestsList(getExamListQuery?.data?.data?.data || []);
+		}
+	}, [getExamListQuery?.data]);
 
 	const handlePublishExam = (el) => {
 		if (!el.id) return;
@@ -144,7 +126,6 @@ function TestsList() {
 
 	const handleViewQuestions = (el) => {
 		if (!el.id) return false;
-		console.log(el, '==el==');
 
 		dispatch(testsSliceActions.setPreviewTestDetails(el));
 
@@ -152,7 +133,11 @@ function TestsList() {
 	};
 
 	const handleChange = (e) => {
-		let { name, value } = e.target;
+		let { name, value, type } = e.target;
+
+		if (type === 'radio') {
+			value = e.target.value;
+		}
 
 		// TestListSchemaYUP.validateAt(name, { [name]: value })
 		// 	.then(() => {
@@ -189,7 +174,10 @@ function TestsList() {
 	};
 
 	const generateAndSetKey = async () => {
-		let testKey = await generateTestKey(publishExamForm.test_id_for_publish);
+		const testId = publishExamForm.test_id_for_publish;
+		if (testId == null) return false;
+
+		let testKey = await generateTestKey(testId);
 
 		if (!testKey) {
 			await generateAndSetKey();
@@ -201,89 +189,30 @@ function TestsList() {
 		}
 	};
 
-	const validateTestKey = async (testKey) => {
-		let _req = {
-			url: SERVER_IP + '/api/test/check-for-duplicate-test-key',
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ testKey }),
-		};
-
-		try {
-			let _res = await fetch(_req.url, {
-				method: _req.method,
-				headers: _req.headers,
-				body: _req.body,
-			});
-			let _data = await _res.json();
-			return _data._success !== 2;
-		} catch (error) {
-			if (error.message == 'Failed to fetch') {
-				alert('Error in fetch validating test key', error.message);
-			} else {
-				alert(error.message);
-			}
-			return false;
-		}
-	};
-
-	const generateTestKey = async (id) => {
-		let _key = `${id}`;
-
-		if (+id <= 9) {
-			_key += getRamdomNumber(3);
-		} else if (+id <= 99) {
-			_key += getRamdomNumber(2);
-		} else if (+id <= 999) {
-			_key += getRamdomNumber(1);
-		}
-
-		let isValid = await validateTestKey(_key);
-
-		console.log(isValid, 'isValid');
-
-		if (isValid) {
-			return _key;
-		} else {
-			return false;
-		}
-	};
-
-	const getRamdomNumber = (digits) => {
-		if (!digits) return false;
-		const min = Math.pow(10, digits - 1);
-		const max = Math.pow(10, digits) - 1;
-
-		const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-		return randomNumber;
-	};
-
 	const handleFinalPublishExam = async () => {
+		console.log(publishExamForm, '==publishExamForm==')
 		try {
 			await TestListSchemaYUP.validate(publishExamForm, { abortEarly: false });
 			setErrors({});
 
-			console.log(publishExamForm, '==publishExamForm==');
-
-			// Sample body
-			// {
-			// 	"test_id_for_publish": null,
-			// 	"batch": "1",
-			// 	"publish_date": "29-1-2025",
-			// 	"test_key": "null123",
-			// 	"test_details": null,
-			// 	"server_ip_address": "6",
-			// 	"selected_posts": [
-			// 		[
-			// 			{
-			// 				"ca_post_name": "peun",
-			// 				"ca_post_id": 1
-			// 			}
-			// 		]
-			// 	]
-			// }
+			/** Sample body
+			 * {
+			 * 	"test_id_for_publish": null,
+			 * 	"batch": "1",
+			 * 	"publish_date": "29-1-2025",
+			 * 	"test_key": "null123",
+			 * 	"test_details": null,
+			 * 	"server_ip_address": "6",
+			 * 	"selected_posts": [
+			 * 		[
+			 * 			{
+			 * 				"ca_post_name": "peun",
+			 * 				"ca_post_id": 1
+			 * 			}
+			 * 		]
+			 * 	]
+			 *  }
+			 */
 
 			let _req = {
 				url: SERVER_IP + '/api/test/publish',
@@ -315,12 +244,12 @@ function TestsList() {
 				}
 			});
 		} catch (error) {
+			console.log(error, '==error==')
 			let _err = {};
 			error.inner.forEach((err) => {
 				_err[err.path] = err.message;
 			});
 			setErrors(_err);
-			console.log(_err, '==_err==');
 		}
 	};
 
@@ -411,15 +340,10 @@ function TestsList() {
 
 	return (
 		<>
-			<CModal id="publish-exam-modal" title={'Publish Exam'} className={''}>
+			<CModal id="publish-exam-modal" title={'Publish Exam'}>
 				<div className="grid grid-cols-2 gap-6">
 					<div className="relative">
-						<label
-							htmlFor=""
-							className="transition-all duration-300 text-gray-700 !mb-1  block"
-						>
-							Select Publish Date
-						</label>
+						<InputLabel name="Select Publish Date" htmlFor={'publish_date'} />
 						<DatePicker
 							autoComplete="off"
 							onChange={(date) => {
@@ -435,24 +359,19 @@ function TestsList() {
 							placeholderText="select date"
 							defaultValue
 							name="publish_date"
+							id="publish_date"
 							value={publishExamForm.publish_date}
 							className="block !w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
 						/>
-						{errors.publish_date && (
-							<span className="error">{errors.publish_date}</span>
-						)}
+						<InputError error={errors.publish_date} />
 					</div>
 
 					<div className="relative">
-						<label
-							htmlFor=""
-							className="transition-all duration-300 text-gray-700 !mb-1  block"
-						>
-							Batch No
-						</label>
+						<InputLabel name="Batch No" htmlFor="batch" />
+
 						<select
 							name="batch"
-							id=""
+							id="batch"
 							onChange={handleChange}
 							value={publishExamForm.batch}
 							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
@@ -464,19 +383,14 @@ function TestsList() {
 							})}
 						</select>
 
-						{errors.batch && <span className="error">{errors.batch}</span>}
+						<InputError error={errors.batch} />
 					</div>
 
 					<div className="relative col-span-2">
-						<label
-							htmlFor=""
-							className="transition-all duration-300 text-gray-700 !mb-1  block"
-						>
-							Select IP/URL
-						</label>
+						<InputLabel name="Select IP/URL" htmlFor="server_ip_address" />
 						<select
 							name="server_ip_address"
-							id=""
+							id="server_ip_address"
 							onChange={handleChange}
 							value={publishExamForm.server_ip_address}
 							className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
@@ -487,14 +401,12 @@ function TestsList() {
 							{serverIPAddresses?.length > 0 &&
 								serverIPAddresses.map((el, idx) => {
 									return (
-										<option value={el.id}>{el.form_filling_server_ip}</option>
+										<option value={el.id}>{el?.form_filling_server_ip}</option>
 									);
 								})}
 						</select>
 
-						{errors.server_ip_address && (
-							<span className="error">{errors.server_ip_address}</span>
-						)}
+						<InputError error={errors.server_ip_address} />
 					</div>
 
 					<div className="relative col-span-2">
@@ -506,16 +418,35 @@ function TestsList() {
 						/>
 					</div>
 
+					<div className="relative col-span-2">
+						<InputLabel name="Show Sections" />
+						<div className="flex gap-3">
+							<Input
+								value="yes"
+								name="is_show_exam_sections"
+								type="radio"
+								label={'Yes'}
+								onChange={handleChange}
+							></Input>
+							<Input
+								value="no"
+								name="is_show_exam_sections"
+								type="radio"
+								label={'No'}
+								onChange={handleChange}
+							></Input>
+						</div>
+						<InputError error={errors.is_show_exam_sections} />
+					</div>
+
 					<div className="relative">
 						<Input
 							label={'Test key'}
 							name={'test_key'}
 							value={publishExamForm.test_key}
 							disabled
-						></Input>
-						{errors.test_key && (
-							<span className="error">{errors.test_key}</span>
-						)}
+						/>
+						<InputError error={errors.test_key} />
 					</div>
 					<div className="flex items-center mt-3">
 						<CButton className={'btn--success'} onClick={handleGenerateTestKey}>
@@ -606,204 +537,6 @@ function TestsList() {
 						<AiOutlineLoading3Quarters className="animate-spin text-2xl font-semibold" />{' '}
 					</div>
 				)} */}
-			</div>
-		</>
-	);
-}
-
-function SelectPostDropdown({
-	publishExamForm,
-	serverIPAddresses,
-	setPublishExamForm,
-	errors,
-}) {
-	const serverIPAddress = serverIPAddresses.find(
-		(el) => el.id == publishExamForm.server_ip_address
-	);
-
-	console.log(serverIPAddress, '==serverIPAddress==');
-
-	const [showDropdown, setShowDropdown] = useState(false);
-	const dropdownRef = useRef(null); // Ref for the dropdown menu container
-	const buttonRef = useRef(null); // Ref for the button that opens the dropdown
-	const [postToPublishTest, setPostToPublishTest] = useState([]);
-	const [postList, setPostList] = useState([]);
-
-	const postsListQuery = useQuery({
-		queryKey: [
-			'GET POST LIST FROM SERVER(FORM FILLING PANEL)',
-			serverIPAddress,
-		],
-		queryFn: () => getPostList(serverIPAddress),
-		refetchOnMount: false,
-		retry: false,
-		enabled: !!serverIPAddress,
-	});
-
-	useEffect(() => {
-		if (postsListQuery.error) {
-			console.log(postsListQuery.error, '==postsListQuery.error==');
-			const error = postsListQuery.error;
-			toast(error?.message || 'Unable to get posts list.');
-		}
-	}, [postsListQuery.error]);
-
-	useLayoutEffect(() => {
-		console.log(3, '==3==');
-		if (serverIPAddress?.length > 0) {
-			console.log(4, '==4==');
-			setPostList([]);
-			postsListQuery.refetch();
-		}
-	}, []);
-
-	useEffect(() => {
-		if (postsListQuery?.data) {
-			console.log(postsListQuery.data, '==postsListQuery.data==');
-			setPostList(JSON.parse(postsListQuery?.data?.data?.data) || []);
-		}
-	}, [postsListQuery.data]);
-
-	const openDropdownHandler = () => setShowDropdown(!showDropdown);
-
-	// Close dropdown if the click is outside of the dropdown or button
-	// useEffect(() => {
-	// 	const handleClickOutside = (event) => {
-	// 		// Check if the click was outside the dropdown (button or menu)
-	// 		if (
-	// 			dropdownRef.current &&
-	// 			!dropdownRef.current.contains(event.target) && // Click outside the dropdown container
-	// 			!buttonRef.current.contains(event.target) // Click outside the button
-	// 		) {
-	// 			// setShowDropdown(false); // Close the dropdown
-	// 		}
-	// 	};
-
-	// 	// Add event listener to the document
-	// 	document.addEventListener('click', handleClickOutside);
-
-	// 	// Cleanup the event listener when the component is unmounted
-	// 	return () => {
-	// 		document.removeEventListener('click', handleClickOutside);
-	// 	};
-	// }, []);
-
-	const addPostToPublishHandler = (newPost) => {
-		setPostList((prev) => {
-			const filteredList = prev.filter(
-				(_post) => _post.ca_post_id != newPost.ca_post_id
-			);
-			return filteredList;
-		});
-
-		setPostToPublishTest((prev) => {
-			return [...prev, newPost];
-		});
-	};
-
-	useEffect(() => {
-		if (postToPublishTest?.length == 0) return;
-		setPublishExamForm((prev) => {
-			return {
-				...prev,
-				selected_posts: postToPublishTest,
-			};
-		});
-	}, [postToPublishTest]);
-
-	const removePostFromPublishList = (post) => {};
-
-	return (
-		<>
-			{/* <label
-				htmlFor=""
-				className="transition-all duration-300 text-gray-700 !mb-1 block"
-			>
-				Select Post
-			</label>
-			<IoRefresh /> */}
-
-			<InputLabel
-				name="Select Post"
-				icon={<IoRefresh />}
-				onClick={() => {
-					postsListQuery.refetch();
-				}}
-			/>
-
-			<div ref={dropdownRef}>
-				<button
-					ref={buttonRef}
-					className="cursor-pointer relative !w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
-				>
-					{postToPublishTest.length === 0 && <span>-- Select -- </span>}
-
-					<IoIosArrowDropdown
-						className="text-xl justify-self-end absolute right-2 top-[50%] translate-y-[-50%]"
-						onClick={() => setShowDropdown(!showDropdown)}
-					/>
-
-					{postToPublishTest.length > 0 &&
-						postToPublishTest.map((postToPublish) => {
-							return (
-								<p className="bg-lime-200 p-1 w-fit mx-1 inline-block">
-									<div className="flex items-center gap-1">
-										<span>{postToPublish.ca_post_name}</span>
-
-										<span className="" onClick={removePostFromPublishList}>
-											<FaXmark
-												onClick={() => {
-													const filteredList = postToPublishTest.filter(
-														(post) =>
-															post.ca_post_id != postToPublish.ca_post_id
-													);
-													setPostToPublishTest(filteredList);
-													setPostList((prev) => {
-														return [...prev, postToPublish];
-													});
-												}}
-											/>
-										</span>
-									</div>
-								</p>
-							);
-						})}
-				</button>
-
-				<ul
-					className={`absolute transition-all duration-300 ${
-						!showDropdown
-							? 'h-0 p-0 overflow-hidden'
-							: 'h-full p-2 overflow-y-auto'
-					} left-0 z-50  bg-slate-300 w-full max-h-32 `}
-				>
-					{postList.map((post) => {
-						return (
-							<li
-								className="list-item relative"
-								onClick={(e) => {
-									addPostToPublishHandler(post);
-								}}
-							>
-								<label htmlFor={post.ca_post_id} className="cursor-pointer">
-									{post.ca_post_name}
-								</label>
-
-								{/* <input
-										id={post.ca_post_id}
-										type="checkbox"
-										className="cursor-pointer"
-									/> */}
-							</li>
-						);
-					})}
-
-					{postList.length === 0 && <li>No items available.</li>}
-				</ul>
-
-				{errors.selected_posts && (
-					<span className="error">{errors.selected_posts}</span>
-				)}
 			</div>
 		</>
 	);

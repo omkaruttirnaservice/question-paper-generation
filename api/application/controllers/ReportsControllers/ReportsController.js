@@ -37,7 +37,7 @@ const reportsController = {
 		const transact = await sequelize.transaction();
 		try {
 			console.log(req.body, '==req.body==');
-			let { b64PublishedTestId, isPercentileResult } = req.body;
+			let { b64PublishedTestId } = req.body;
 			let publishedTestId = atob(b64PublishedTestId);
 
 			// generate student result
@@ -65,11 +65,16 @@ const reportsController = {
 				}
 			);
 
+			console.log(_resultGeneratedRes, '==_resultGeneratedRes==');
 			// save result to tm_student_final_result_set
-			let _saveResultRes = await tm_student_final_result_set.bulkCreate(
+			let [_saveResultRes] = await tm_student_final_result_set.bulkCreate(
 				_resultGeneratedRes,
 				{ transaction: transact }
 			);
+
+			console.log(_saveResultRes, '==_saveResultRes==');
+
+			await transact.commit();
 
 			const _studentsList = await tm_student_final_result_set.findAll({
 				attributes: ['sfrs_student_id', 'srfs_percentile'],
@@ -79,7 +84,11 @@ const reportsController = {
 				order: [['sfrs_marks_gain', 'DESC']],
 				raw: true,
 			});
+
 			console.log(_studentsList, '==_studentsList==');
+			if (_studentsList.length === 0) {
+				throw new ApiError(404, 'No students found for this test');
+			}
 
 			// calculate percentile result
 			const totalStudents = _studentsList.length;
@@ -95,15 +104,13 @@ const reportsController = {
 
 			// update percentile result
 			const _updateResponse = await reportsModel.updatePercentileResult(
-				_studentsList,
-				transact
+				_studentsList
 			);
 
 			// delete result data
-			let deleteResultRes = await reportsModel.deleteResultsData(transact);
+			let deleteResultRes = await reportsModel.deleteResultsData();
 			console.log(deleteResultRes, '==deleteResultRes==');
 
-			await transact.commit();
 			return res
 				.status(201)
 				.json(new ApiResponse(201, {}, 'Successfully generated result'));
