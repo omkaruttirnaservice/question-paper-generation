@@ -13,10 +13,12 @@ class ApiError extends Error {
 	 * @param {string} [message="Something went wrong"] - The error message describing what went wrong.
 	 * @param {Array} [errors=[]] - Optional array of detailed error messages or validation errors.
 	 * @param {Object} [stack={}] - Optional stack trace for debugging purposes.
+	 * @param {string} errMsg - Additional error message to provide more context. Useful for debugging purposes.
 	 */
 	constructor(
 		statusCode,
 		message = 'Something went wrong',
+		errMsg = '',
 		errors = [],
 		stack = {}
 	) {
@@ -26,6 +28,7 @@ class ApiError extends Error {
 		this.errors = errors;
 		this.success = false;
 		this.message = message;
+		this.errMsg = errMsg;
 
 		if (stack) this.stack = stack;
 		else Error.captureStackTrace(this, this.constructor);
