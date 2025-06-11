@@ -19,33 +19,17 @@ import tm_student_question_paper from '../application/schemas/tm_student_questio
 import tm_student_final_result_set from '../application/schemas/tm_student_final_result_set.js';
 import tm_server_ip_list from '../application/schemas/tm_server_ip_list.js';
 import tm_publish_test_by_post from '../application/schemas/tm_publish_test_by_post.js';
-
-tm_master_test_list.hasMany(tm_main_topic_list, {
-	foreignKey: 'mtl_master_test_list_id',
-});
-
-tm_main_topic_list.belongsTo(tm_master_test_list, {
-	foreignKey: 'mtl_master_test_list_id',
-});
-
-tm_main_topic_list.hasMany(tm_sub_topic_list, {
-	foreignKey: 'stl_main_topic_list_id',
-});
-
-tm_sub_topic_list.belongsTo(tm_main_topic_list, {
-	foreignKey: 'stl_main_topic_list_id',
-});
-
+import mock_exam_report from '../application/schemas/mock_exam_report.js';
 const getSync = () => {
-	sequelize
-		.sync({ alter: true })
-		.then(() => {
-			console.log(
-				'"\x1b[47m", \x1b[30m%s\x1b[0m',
-				'Database has been migrated successfully, you can now start the server.'
-			);
-		})
-		.catch((error) => console.log(error));
+    sequelize
+        .sync({ alter: true })
+        .then(() => {
+            console.log(
+                '"\x1b[47m", \x1b[30m%s\x1b[0m',
+                'Database has been migrated successfully, you can now start the server.'
+            );
+        })
+        .catch((error) => console.log(error));
 };
 
 export default getSync;

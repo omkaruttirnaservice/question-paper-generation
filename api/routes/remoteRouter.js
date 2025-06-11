@@ -3,6 +3,6 @@ import remoteController from '../application/controllers/remoteController/remote
 const remoteRouter = Router();
 
 remoteRouter.post('/getNewExamList', remoteController.getTodaysExamList);
-remoteRouter.get('/DownloadExam/:id', remoteController.downloadExam);
+remoteRouter.post('/DownloadExam', remoteController.downloadExam);
 
 export default remoteRouter;

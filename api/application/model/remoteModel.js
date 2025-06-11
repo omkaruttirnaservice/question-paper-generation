@@ -2,10 +2,10 @@ import { Sequelize } from 'sequelize';
 import sequelize from '../config/db-connect-migration.js';
 
 const remoteModel = {
-	getTodaysExamList: async (downloadedExamsId) => {
-		console.log(downloadedExamsId[0].id, '==${downloadedExamsId[0].id==');
-		const results = await sequelize.query(
-			`
+    getTodaysExamList: async (data) => {
+        console.log(data.downloadedExamsId, '=data.downloadedExamsId');
+        const results = await sequelize.query(
+            `
 			SELECT 
 				JSON_ARRAYAGG(
 					JSON_OBJECT(
@@ -21,7 +21,7 @@ const remoteModel = {
 				ptl_test_id,
 				ptl_added_date,
 				ptl_added_time,
-				ptl_time_tramp,
+				ptl_time_stamp,
 				ptl_test_description,
 				ptl_is_live,
 				ptl_aouth_id,
@@ -52,7 +52,6 @@ const remoteModel = {
 				ptl_master_exam_id,
 				ptl_master_exam_name,
 				is_test_generated,
-				is_push_done,
 				post_id, post_name, published_test_id
 			FROM tm_publish_test_list
 
@@ -62,20 +61,39 @@ const remoteModel = {
 			
 			WHERE 
 				ptl_active_date >= CURDATE()
+				AND center_code = '${data.center_code}' AND ptl_test_mode = '${data.exam_mode}'
 				${
-					downloadedExamsId[0]?.id
-						? `AND tm_publish_test_list.id NOT IN (${downloadedExamsId[0].id})`
-						: ''
-				}	
+                    data.downloadedExamsId.length > 0
+                        ? ` AND tm_publish_test_list.id NOT IN (${data.downloadedExamsId}) `
+                        : ''
+                }	
 			GROUP BY tm_publish_test_list.id
+			ORDER BY tm_allow_to
 			`,
-			{
-				type: Sequelize.QueryTypes.SELECT,
-			}
-		);
+            {
+                type: Sequelize.QueryTypes.SELECT,
+            }
+        );
 
-		return results;
-	},
+        return results;
+    },
+
+    getMockStudensList: async (center_code, published_test_id) => {
+        let query = `SELECT * FROM tn_student_list AS sl
+					INNER JOIN tm_publish_test_list AS ptl
+					ON sl.sl_batch_no = ptl.tm_allow_to 
+						AND
+						sl.sl_exam_date = ptl.ptl_active_date
+						AND
+						sl.sl_center_code = ptl.center_code
+					WHERE sl.sl_center_code = ${center_code}
+							AND
+						ptl.id = ${published_test_id}
+					`;
+        return await sequelize.query(query, {
+            type: Sequelize.QueryTypes.SELECT,
+        });
+    },
 };
 
 export default remoteModel;
@@ -95,7 +113,7 @@ export default remoteModel;
 // 				'ptl_test_id',
 // 				'ptl_added_date',
 // 				'ptl_added_time',
-// 				'ptl_time_tramp',
+// 				'ptl_time_stamp',
 // 				'ptl_test_description',
 // 				'ptl_is_live',
 // 				'ptl_aouth_id',

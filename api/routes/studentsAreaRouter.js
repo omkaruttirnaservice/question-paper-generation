@@ -14,14 +14,18 @@ studentsAreaRouter.post('/all-list-filtered', StudentAreaController.getStudentsL
 // get centers list
 studentsAreaRouter.post('/download-centers-list', StudentAreaController.downloadCentersList);
 
-studentsAreaRouter.get('/get-center-and-batch-list', StudentAreaController.getCenterAndBatchList);
-
+studentsAreaRouter.get('/centers-list', StudentAreaController.getCenterAndBatchList);
 
 // downlaod student question paper from exam server
-studentsAreaRouter.post('/get-students-question-paper', StudentAreaController.downloadStudentQuestionPaper)
+studentsAreaRouter.post(
+    '/get-students-question-paper',
+    StudentAreaController.downloadStudentQuestionPaper
+);
 
 // Upload published test and question paper to form fililng panel
-studentsAreaRouter.post('/upload-published-test-to-form-filling', StudentAreaController.uploadPublishedTestListToFormFilling)
-
+studentsAreaRouter.post(
+    '/upload-published-test-to-form-filling',
+    StudentAreaController.uploadPublishedTestListToFormFilling
+);
 
 export default studentsAreaRouter;
