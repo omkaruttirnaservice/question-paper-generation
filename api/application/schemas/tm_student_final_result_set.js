@@ -63,8 +63,4 @@ const tm_student_final_result_set = sequelize.define('tm_student_final_result_se
     },
 });
 
-// tm_student_final_result_set.belongsTo(tn_student_list, {
-// 	foreignKey: 'sfrs_student_id',
-// 	as: 'tn_student_list',
-// });
 export default tm_student_final_result_set;
