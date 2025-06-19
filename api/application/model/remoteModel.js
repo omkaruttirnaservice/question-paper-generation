@@ -60,8 +60,7 @@ const remoteModel = {
 			ON tm_publish_test_list.id = tm_publish_test_by_post.published_test_id
 			
 			WHERE 
-				ptl_active_date >= CURDATE()
-				AND center_code = '${data.center_code}' AND ptl_test_mode = '${data.exam_mode}'
+				ptl_active_date >= CURDATE() AND ptl_test_mode = '${data.exam_mode}'
 				${
                     data.downloadedExamsId.length > 0
                         ? ` AND tm_publish_test_list.id NOT IN (${data.downloadedExamsId}) `
@@ -75,6 +74,8 @@ const remoteModel = {
             }
         );
 
+        // this is temp removed
+        // AND center_code = '${data.center_code}'
         return results;
     },
 

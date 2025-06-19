@@ -212,10 +212,6 @@ const tm_publish_test_list = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: true,
         },
-        exam_mode: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-        },
         is_attendance_started: {
             type: DataTypes.INTEGER,
             allowNull: true,
