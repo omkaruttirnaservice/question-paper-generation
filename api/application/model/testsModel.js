@@ -9,6 +9,7 @@ import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
 import tm_test_question_sets from '../schemas/tm_test_question_sets.js';
 import tm_test_user_master_list from '../schemas/tm_test_user_master_list.js';
 import tn_student_list from '../schemas/tn_student_list.js';
+import { toYYYYMMDD } from '../utils/help.js';
 
 const testsModel = {
     getList: async () => {
@@ -508,16 +509,15 @@ const testsModel = {
         test_details: mt,
         selected_posts,
         is_show_exam_sections,
+        is_show_mark_for_review,
+        is_show_clear_response,
+        end_button_time,
     }) => {
         // changing publish date format from dd-mm-yyyy to yyy-mm-dd
-        let _tmpPubDate = publish_date.split('-');
-        publish_date = `${_tmpPubDate[2]}-${_tmpPubDate[1]}-${_tmpPubDate[0]}`;
-
-        let [mt_date, mt_month, mt_year] = mt.mt_added_date.split('-');
 
         // preparing insert data to save into database
         let insertData = {
-            ptl_active_date: publish_date,
+            ptl_active_date: toYYYYMMDD(publish_date),
             ptl_time: 0,
             ptl_link: btoa(test_key),
             ptl_link_1: test_key,
@@ -532,7 +532,7 @@ const testsModel = {
             ptl_test_info: JSON.stringify({}),
 
             mt_name: mt.mt_name,
-            mt_added_date: `${mt_year}-${mt_month}-${mt_date}`,
+            mt_added_date: toYYYYMMDD(mt.mt_added_date),
             mt_descp: mt.mt_descp,
             mt_is_live: mt.mt_is_live,
             mt_time_stamp: mt.mt_time_stamp,
@@ -571,6 +571,9 @@ const testsModel = {
             ptl_master_exam_id: 0,
             ptl_master_exam_name: '-',
             is_show_exam_sections: is_show_exam_sections == 'yes' ? 1 : 0,
+            is_show_mark_for_review: is_show_mark_for_review === 'yes' ? 1 : 0,
+            is_show_clear_response : is_show_clear_response === 'yes' ? 1 : 0,
+            end_button_time,
         };
 
         console.log(insertData, 'insertData for publish exam');

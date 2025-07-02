@@ -258,6 +258,42 @@ const testsController = {
 
     publishTest: async (req, res) => {
         try {
+            /**
+             * 
+             * {
+                    test_id_for_publish: 1,
+                    batch: '1',
+                    publish_date: '2-7-2025',
+                    test_key: '1998',
+                    test_details: {
+                        id: 1,
+                        mt_name: 'Exam One',
+                        mt_added_date: '13-06-2025',
+                        mt_descp: 'TEST',
+                        mt_added_time: '13:04:21',
+                        mt_is_live: 1,
+                        mt_time_stamp: '2025-06-13T07:34:21.000Z',
+                        mt_type: 1,
+                        tm_aouth_id: 1,
+                        mt_test_time: '120',
+                        mt_total_test_takan: 0,
+                        mt_is_negative: '0',
+                        mt_negativ_mark: '0',
+                        mt_mark_per_question: '1',
+                        mt_passing_out_of: '20',
+                        mt_total_marks: 100,
+                        mt_pattern_type: 1,
+                        mt_total_test_question: 100
+                    },
+                    server_ip_address: '2',
+                    selected_posts: [ { ca_post_name: 'वाहन चालक', ca_post_id: 18 } ],
+                    is_show_exam_sections: 'yes',
+                    is_show_mark_for_review: 'no',
+                    is_show_clear_response: 'yes',
+                    end_button_time: 15
+                    }
+             * */
+            console.log(req.body);
             let _publishTestInsert = await testsModel.publishTest(req.body);
             console.log(_publishTestInsert, '==_publishTestInsert==');
             if (_publishTestInsert.toJSON().id) {

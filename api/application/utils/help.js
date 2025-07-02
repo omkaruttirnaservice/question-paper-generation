@@ -9,3 +9,13 @@ export const removeTrailingSlash = (url) => {
     }
     return url;
 };
+
+export const toDDMMYYYY = (date, seperator = '-') => {
+    const [_year, _month, _date] = date.split(seperator);
+    return `${_date}${seperator}${_month}${seperator}${_year}`;
+};
+
+export const toYYYYMMDD = (date, seperator = '-') => {
+    const [_date, _month, _year] = date.split(seperator);
+    return `${_year}${seperator}${_month}${seperator}${_date}`;
+};

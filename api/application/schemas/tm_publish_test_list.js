@@ -231,6 +231,29 @@ const tm_publish_test_list = sequelize.define(
             comment:
                 'When value 1=> show sections in the examination, 0=> dont show sections in exam',
         },
+
+        is_show_mark_for_review: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment:
+                'When value 1=> show mark for review button in the examination, 0=> dont show mark for review button in exam',
+        },
+
+        is_show_clear_response: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment:
+                'When value 1=> show clear response button in the examination, 0=> dont show clear response button in exam',
+        },
+
+        end_button_time: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 15,
+            comment: 'Minutes before exam end button will enabled.',
+        },
     },
     {
         tableName: 'tm_publish_test_list',
