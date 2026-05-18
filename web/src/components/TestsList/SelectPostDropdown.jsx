@@ -6,6 +6,7 @@ import { InputLabel } from '../UI/Input.jsx';
 import { IoRefresh } from 'react-icons/io5';
 import { IoIosArrowDropdown } from 'react-icons/io';
 import { FaXmark } from 'react-icons/fa6';
+import { MdWork } from 'react-icons/md';
 
 function SelectPostDropdown({ publishExamForm, serverIPAddresses, setPublishExamForm, errors }) {
     console.log(errors, '==errors==');
@@ -71,7 +72,7 @@ function SelectPostDropdown({ publishExamForm, serverIPAddresses, setPublishExam
         });
     }, [postToPublishTest]);
 
-    const removePostFromPublishList = (post) => {};
+    const removePostFromPublishList = (post) => { };
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -88,83 +89,86 @@ function SelectPostDropdown({ publishExamForm, serverIPAddresses, setPublishExam
 
     return (
         <>
-            <InputLabel
-                name="Select Post"
-                icon={
-                    <IoRefresh
-                        className={`${
-                            postsListQuery.isPending || postsListQuery.isRefetching
-                                ? 'animate-spin'
-                                : ''
+            <div className="flex items-center justify-between mb-1.5">
+                <InputLabel
+                    name="Select Post"
+                    className="!mb-0 !text-[0.725rem] font-black text-slate-500 uppercase tracking-widest"
+                />
+                <IoRefresh
+                    className={`cursor-pointer text-cyan-600 text-lg hover:text-cyan-800 transition-colors ${postsListQuery.isPending || postsListQuery.isRefetching
+                        ? 'animate-spin'
+                        : ''
                         }`}
-                    />
-                }
-                onClick={() => {
-                    postsListQuery.refetch();
-                }}
-            />
+                    onClick={() => {
+                        postsListQuery.refetch();
+                    }}
+                />
+            </div>
 
-            <div ref={buttonDropdownRef}>
-                <button className="cursor-pointer relative !w-full px-1 py-1 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40">
-                    {postToPublishTest.length === 0 && <span>-- Select -- </span>}
+            <div ref={buttonDropdownRef} className="relative">
+                <MdWork className="absolute left-4 top-4 text-cyan-500 text-xl pointer-events-none z-10" />
+                <button 
+                    type="button"
+                    className="cursor-pointer relative !w-full min-h-[3rem] rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-8 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800 disabled:opacity-50 text-left flex flex-wrap items-center gap-1 pb-1 pt-1"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setShowDropdown(!showDropdown);
+                    }}
+                >
+                    {postToPublishTest.length === 0 && <span className="py-1">-- Select -- </span>}
 
                     <IoIosArrowDropdown
-                        className={`text-xl justify-self-end absolute right-2 top-[50%] translate-y-[-50%] transition-all duration-300 ${
-                            showDropdown ? 'rotate-180' : ''
-                        }`}
-                        onClick={() => setShowDropdown(!showDropdown)}
+                        className={`text-xl absolute right-3 top-[50%] translate-y-[-50%] transition-all duration-300 text-slate-400 ${showDropdown ? 'rotate-180' : ''
+                            }`}
                     />
 
                     {postToPublishTest.length > 0 &&
                         postToPublishTest.map((postToPublish) => {
                             return (
-                                <p className="bg-lime-200 p-1 w-fit mx-1 inline-block">
-                                    <div className="flex items-center gap-1">
-                                        <span>{postToPublish.ca_post_name}</span>
-
-                                        <span className="" onClick={removePostFromPublishList}>
-                                            <FaXmark
-                                                onClick={() => {
-                                                    const filteredList = postToPublishTest.filter(
-                                                        (post) =>
-                                                            post.ca_post_id !=
-                                                            postToPublish.ca_post_id
-                                                    );
-                                                    setPostToPublishTest(filteredList);
-                                                    setPostList((prev) => {
-                                                        return [...prev, postToPublish];
-                                                    });
-                                                }}
-                                            />
-                                        </span>
-                                    </div>
-                                </p>
+                                <span key={postToPublish.ca_post_id} className="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-2 mt-1 mr-1 shadow-sm">
+                                    <span>{postToPublish.ca_post_name}</span>
+                                    <FaXmark
+                                        className="cursor-pointer hover:text-rose-500 transition-colors"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            const filteredList = postToPublishTest.filter(
+                                                (post) =>
+                                                    post.ca_post_id !=
+                                                    postToPublish.ca_post_id
+                                            );
+                                            setPostToPublishTest(filteredList);
+                                            setPostList((prev) => {
+                                                return [...prev, postToPublish];
+                                            });
+                                        }}
+                                    />
+                                </span>
                             );
                         })}
                 </button>
 
                 <ul
-                    className={`absolute transition-all duration-300 ${
-                        !showDropdown ? 'h-0 overflow-hidden' : 'h-full  overflow-y-auto'
-                    } left-0 z-50  bg-slate-300 w-full max-h-32 `}>
+                    className={`absolute transition-all duration-300 ${!showDropdown ? 'opacity-0 invisible translate-y-2' : 'opacity-100 visible translate-y-0'
+                        } left-0 top-[105%] z-50 bg-white shadow-xl shadow-slate-200/50 border border-slate-100 w-full max-h-48 overflow-y-auto rounded-xl py-2`}>
                     {postList.map((post) => {
                         return (
                             <li
-                                className="list-item relative p-2"
+                                key={post.ca_post_id}
+                                className="list-item relative px-4 py-2 hover:bg-cyan-50 cursor-pointer transition-colors font-medium text-[0.9rem] text-slate-700"
                                 onClick={(e) => {
                                     addPostToPublishHandler(post);
                                 }}>
-                                <label htmlFor={post.ca_post_id} className="cursor-pointer">
+                                <label htmlFor={post.ca_post_id} className="cursor-pointer block w-full pointer-events-none">
                                     {post.ca_post_name}
                                 </label>
                             </li>
                         );
                     })}
 
-                    {postList.length === 0 && <li className="p-2">No items available.</li>}
+                    {postList.length === 0 && <li className="px-4 py-3 text-slate-400 text-sm italic text-center">No posts available.</li>}
                 </ul>
 
-                {errors.selected_posts && <span className="error">{errors.selected_posts}</span>}
+                {errors.selected_posts && <span className="text-rose-500 text-xs font-semibold mt-1 block">{errors.selected_posts}</span>}
             </div>
         </>
     );

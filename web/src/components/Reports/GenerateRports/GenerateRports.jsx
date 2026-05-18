@@ -106,7 +106,7 @@ function TestDetails({ el: details, idx, refetch }) {
                 </div>
             </div>
             <div className="flex-1">
-                <div className=" flex flex-col justify-center gap-1 items-end h-full">
+                <div className=" flex flex-col justify-center gap-1 items-end h-full px-4">
                     {details.is_test_generated != 1 ? (
                         <>
                             <CButton
@@ -114,11 +114,6 @@ function TestDetails({ el: details, idx, refetch }) {
                                 isLoading={_generateResultLoading}>
                                 Generate Result
                             </CButton>
-                            {/* <CButton
-                                onClick={handleGenerateResult.bind(null, details.id)}
-                                isLoading={_generateResultLoading}>
-                                Percentile Result
-                            </CButton> */}
                         </>
                     ) : (
                         <>
@@ -128,21 +123,12 @@ function TestDetails({ el: details, idx, refetch }) {
                                 isLoading={_generateResultLoading}>
                                 Regenerate Result
                             </CButton>
-                            {/* <CButton
-                                varient={'btn--warning'}
-                                onClick={handleGenerateResult.bind(null, details.id)}
-                                isLoading={_generateResultLoading}>
-                                Percentile Result
-                            </CButton> */}
                         </>
                     )}
-
-                    {/* <CButton
-						onClick={handleExelResult.bind(null, details.id)}
-						isLoading={_getResultExcelPending}
-					>
-						Excel
-					</CButton> */}
+                    
+                    <CButton varient="btn--primary" onClick={() => alert('Activity Log details coming soon')}>
+                        Activity Log
+                    </CButton>
                 </div>
             </div>
         </div>

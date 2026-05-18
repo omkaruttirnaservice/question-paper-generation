@@ -13,6 +13,7 @@ import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import TestListSchemaYUP from '../PublishedTestsList/TestsListSchemaYUP.jsx';
 import { getExamsList, getServerIP } from '../StudentArea/AddNewStudent/api.jsx';
+import { MdList, MdDateRange, MdNumbers, MdDns, MdTimer, MdVpnKey } from 'react-icons/md';
 import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
 import { H1 } from '../UI/Headings.jsx';
@@ -72,6 +73,7 @@ function TestsList() {
     }, []);
 
     const getExamListQuery = useQuery({
+        queryKey: ['get-exams-list'],
         queryFn: getExamsList,
     });
 
@@ -126,24 +128,12 @@ function TestsList() {
         });
     };
 
-    const handleEditTestDetails = async (id) => {
-        if (!id) return false;
-
-        let reqData = {
-            url: SERVER_IP + `/api/test/details/${id}/${TEST_LIST_MODE.TEST_LIST}`,
-        };
-
-        sendRequest(reqData, (data) => {
-            console.log(data, 'data');
-            // if (success == 1) {
-            //     Swal.fire({
-            //         title: 'Success!',
-            //         text: 'Deleted successfully',
-            //         icon: 'success',
-            //     });
-
-            // }
-        });
+    const handleEditTestDetails = (el) => {
+        if (!el.id) return false;
+        const _testData = { ...el };
+        _testData.mode = TEST_LIST_MODE.TEST_LIST;
+        dispatch(testsSliceActions.setTestDetails(_testData));
+        navigate('/tests/create/form');
     };
 
     const handleViewQuestions = (el) => {
@@ -236,6 +226,7 @@ function TestsList() {
                     //     testsSliceActions.setPreviewPublishedTestDetailsId(data.testDetails.id)
                     // );
                     // dispatch(testsSliceActions.setPreviewPublishedTestDetails(data.testDetails));
+                    dispatch(testsSliceActions.setTestDetails({ ...publishExamForm.test_details, mode: TEST_LIST_MODE.TEST_LIST }));
                     setTimeout(() => {
                         navigate('/tests/list/questions');
                     }, 10);
@@ -304,11 +295,11 @@ function TestsList() {
             name: 'Publish Exam',
             cell: (row) => (
                 <div className="flex justify-center">
-                    <CButton
-                        className="btn--primary text-xs"
-                        onClick={handlePublishExam.bind(null, row)}>
+                    <button
+                        className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-1.5 px-4 rounded-full text-xs shadow-md shadow-cyan-600/30 transition-all"
+                        onClick={() => handlePublishExam(row)}>
                         Publish
-                    </CButton>
+                    </button>
                 </div>
             ),
             selector: (row) => row.sl_roll_number,
@@ -318,97 +309,133 @@ function TestsList() {
             name: 'Action',
             cell: (row) => (
                 <div className="flex gap-2 items-center justify-center">
-                    <CButton
-                        className="btn--danger m-0"
-                        onClick={handleDeleteTest.bind(null, row.id)}
-                        icon={<FaTrash />}></CButton>
+                    <button
+                        className="w-8 h-8 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md shadow-rose-500/30 transition-all"
+                        onClick={() => handleDeleteTest(row.id)}
+                    >
+                        <FaTrash className="text-xs" />
+                    </button>
 
-                    <CButton
-                        className="btn--success m-0"
-                        isLoading={isLoading}
-                        onClick={handleEditTestDetails.bind(null, row.id)}
-                        icon={<FaPencil />}></CButton>
-                    <CButton
-                        className="btn--info m-0"
-                        onClick={handleViewQuestions.bind(null, row)}
-                        icon={<FaEye />}></CButton>
+                    <button
+                        className="w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/30 transition-all"
+                        disabled={isLoading}
+                        onClick={() => handleEditTestDetails(row)}
+                    >
+                        <FaPencil className="text-xs" />
+                    </button>
+                    <button
+                        className="w-8 h-8 rounded-full bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center shadow-md shadow-sky-500/30 transition-all"
+                        onClick={() => handleViewQuestions(row)}
+                    >
+                        <FaEye className="text-xs" />
+                    </button>
                 </div>
             ),
             selector: (row) => row.sl_roll_number,
-            width: '6rem',
+            width: '10rem',
         },
     ];
 
+    const customStyles = {
+        headRow: {
+            style: {
+                borderBottomColor: '#f1f5f9',
+            },
+        },
+        headCells: {
+            style: {
+                color: '#4B5563',
+                fontSize: '0.8rem',
+                fontWeight: '600',
+            },
+        },
+        cells: {
+            style: {
+                fontSize: '0.85rem',
+                color: '#374151',
+            },
+        },
+    };
+
     return (
         <>
-            <CModal id="publish-exam-modal" title={'Publish Exam'}>
-                <div className="grid grid-cols-2 gap-6">
+            <CModal id="publish-exam-modal" title={'Publish Exam'} className="w-[800px] max-w-[95vw]">
+                <div className="grid grid-cols-2 gap-4">
                     <div className="relative">
-                        <InputLabel name="Select Publish Date" htmlFor={'publish_date'} />
-                        <DatePicker
-                            autoComplete="off"
-                            onChange={(date) => {
-                                setPublishExamForm((prev) => {
-                                    return {
-                                        ...prev,
-                                        publish_date: `${date.getDate()}-${date.getMonth() + 1
-                                            }-${date.getFullYear()}`,
-                                    };
-                                });
-                            }}
-                            placeholderText="select date"
-                            defaultValue
-                            name="publish_date"
-                            id="publish_date"
-                            value={publishExamForm.publish_date}
-                            className="block !w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40"
-                        />
+                        <InputLabel name="Select Publish Date" htmlFor={'publish_date'} className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
+                        <div className="relative">
+                            <MdDateRange className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                            <DatePicker
+                                autoComplete="off"
+                                onChange={(date) => {
+                                    setPublishExamForm((prev) => {
+                                        return {
+                                            ...prev,
+                                            publish_date: `${date.getDate()}-${date.getMonth() + 1
+                                                }-${date.getFullYear()}`,
+                                        };
+                                    });
+                                }}
+                                placeholderText="select date"
+                                defaultValue
+                                name="publish_date"
+                                id="publish_date"
+                                value={publishExamForm.publish_date}
+                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-5 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800 disabled:opacity-50"
+                            />
+                        </div>
                         <InputError error={errors.publish_date} />
                     </div>
 
                     <div className="relative">
-                        <InputLabel name="Batch No" htmlFor="batch" />
+                        <InputLabel name="Batch No" htmlFor="batch" className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
 
-                        <select
-                            name="batch"
-                            id="batch"
-                            onChange={handleChange}
-                            value={publishExamForm.batch}
-                            className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40">
-                            <option value="">-- Select -- </option>
+                        <div className="relative">
+                            <MdNumbers className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                            <select
+                                name="batch"
+                                id="batch"
+                                onChange={handleChange}
+                                value={publishExamForm.batch}
+                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-4 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800 appearance-none disabled:opacity-50">
+                                <option value="">-- Select -- </option>
 
-                            {batchCount.map((el, idx) => {
-                                return (
-                                    <option key={idx} value={idx + 1}>
-                                        Batch {idx + 1}
-                                    </option>
-                                );
-                            })}
-                        </select>
+                                {batchCount.map((el, idx) => {
+                                    return (
+                                        <option key={idx} value={idx + 1}>
+                                            Batch {idx + 1}
+                                        </option>
+                                    );
+                                })}
+                            </select>
+                        </div>
 
                         <InputError error={errors.batch} />
                     </div>
 
                     <div className="relative col-span-2">
-                        <InputLabel name="Select IP/URL" htmlFor="server_ip_address" />
-                        <select
-                            name="server_ip_address"
-                            id="server_ip_address"
-                            onChange={handleChange}
-                            value={publishExamForm.server_ip_address}
-                            className="!w-full px-1 py-2 border focus:ring-2 focus:outline-4 outline-none transition-all duration-300 disabled:bg-gray-400/40">
-                            <option value="">-- Select -- </option>
-                            {getServerIPQuery.isLoading && <option>Loading...</option>}
+                        <InputLabel name="Select IP/URL" htmlFor="server_ip_address" className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
+                        <div className="relative">
+                            <MdDns className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                            <select
+                                name="server_ip_address"
+                                id="server_ip_address"
+                                onChange={handleChange}
+                                value={publishExamForm.server_ip_address}
+                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-4 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800 appearance-none disabled:opacity-50">
+                                <option value="">-- Select -- </option>
+                                {getServerIPQuery.isLoading && <option>Loading...</option>}
 
-                            {serverIPAddresses?.length > 0 &&
-                                serverIPAddresses.map((el, idx) => {
-                                    return (
-                                        <option key={idx} value={el.id}>
-                                            {el?.form_filling_server_ip}
-                                        </option>
-                                    );
-                                })}
-                        </select>
+                                {serverIPAddresses?.length > 0 &&
+                                    serverIPAddresses.map((el, idx) => {
+                                        return (
+                                            <option key={idx} value={el.id}>
+                                                {el?.form_filling_server_ip}
+                                            </option>
+                                        );
+                                    })}
+                            </select>
+                        </div>
 
                         <InputError error={errors.server_ip_address} />
                     </div>
@@ -422,108 +449,95 @@ function TestsList() {
                         />
                     </div>
 
-                    <div className="relative col-span-2 flex gap-2 items-center">
-                        <InputLabel name="Show Sections" />
-                        <div className="flex gap-3">
-                            <Input
-                                value="yes"
-                                name="is_show_exam_sections"
-                                type="radio"
-                                label={'Yes'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
-                            <Input
-                                value="no"
-                                name="is_show_exam_sections"
-                                type="radio"
-                                label={'No'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
+                    <div className="col-span-2 flex justify-between bg-slate-50/50 p-3 rounded-xl border border-slate-100 mt-2">
+                        <div className="flex flex-col gap-2">
+                            <InputLabel name="Show Sections" className="!mb-0 !text-[11px]" />
+                            <div className="flex gap-4">
+                                <Input value="yes" name="is_show_exam_sections" type="radio" label={'Yes'} className={'flex items-center gap-1.5 flex-row-reverse'} onChange={handleChange}></Input>
+                                <Input value="no" name="is_show_exam_sections" type="radio" label={'No'} className={'flex items-center gap-1.5 flex-row-reverse'} onChange={handleChange}></Input>
+                            </div>
+                            <InputError error={errors.is_show_exam_sections} />
                         </div>
-                        <InputError error={errors.is_show_exam_sections} />
-                    </div>
 
-                    <div className="relative col-span-2 flex gap-2 items-center">
-                        <InputLabel name="Mark For Review" className="" />
-                        <div className="flex gap-3">
-                            <Input
-                                value="yes"
-                                name="is_show_mark_for_review"
-                                type="radio"
-                                label={'Yes'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
-                            <Input
-                                value="no"
-                                name="is_show_mark_for_review"
-                                type="radio"
-                                label={'No'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
+                        <div className="flex flex-col gap-2">
+                            <InputLabel name="Mark For Review" className="!mb-0 !text-[11px]" />
+                            <div className="flex gap-4">
+                                <Input value="yes" name="is_show_mark_for_review" type="radio" label={'Yes'} className={'flex items-center gap-1.5 flex-row-reverse'} onChange={handleChange}></Input>
+                                <Input value="no" name="is_show_mark_for_review" type="radio" label={'No'} className={'flex items-center gap-1.5 flex-row-reverse'} onChange={handleChange}></Input>
+                            </div>
+                            <InputError error={errors.is_show_mark_for_review} />
                         </div>
-                        <InputError error={errors.is_show_mark_for_review} />
-                    </div>
 
-                    <div className="relative col-span-2 flex gap-2 items-center">
-                        <InputLabel name="Show Clear Response" className="" />
-                        <div className="flex gap-3">
-                            <Input
-                                value="yes"
-                                name="is_show_clear_response"
-                                type="radio"
-                                label={'Yes'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
-                            <Input
-                                value="no"
-                                name="is_show_clear_response"
-                                type="radio"
-                                label={'No'}
-                                className={'flex items-center gap-2 flex-row-reverse'}
-                                onChange={handleChange}></Input>
+                        <div className="flex flex-col gap-2">
+                            <InputLabel name="Show Clear Response" className="!mb-0 !text-[11px]" />
+                            <div className="flex gap-4">
+                                <Input value="yes" name="is_show_clear_response" type="radio" label={'Yes'} className={'flex items-center gap-1.5 flex-row-reverse'} onChange={handleChange}></Input>
+                                <Input value="no" name="is_show_clear_response" type="radio" label={'No'} className={'flex items-center gap-1.5 flex-row-reverse'} onChange={handleChange}></Input>
+                            </div>
+                            <InputError error={errors.is_show_clear_response} />
                         </div>
-                        <InputError error={errors.is_show_clear_response} />
                     </div>
 
                     <div className="relative">
-                        <Input
-                            label={'End button time'}
-                            name={'end_button_time'}
-                            onChange={handleChange}
-                            value={publishExamForm.end_button_time}
-                        />
+                        <InputLabel name="End Button Time" className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
+                        <div className="relative">
+                            <MdTimer className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                            <input
+                                type="number"
+                                name={'end_button_time'}
+                                onChange={handleChange}
+                                value={publishExamForm.end_button_time}
+                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-5 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800"
+                            />
+                        </div>
                         <InputError error={errors.end_button_time} />
                     </div>
 
-                    <div className="relative">
-                        <Input
-                            label={'Test key'}
-                            name={'test_key'}
-                            value={publishExamForm.test_key}
-                            disabled
-                        />
-                        <InputError error={errors.test_key} />
-                    </div>
-                    <div className="flex items-center mt-3">
-                        <CButton className={'btn--success'} onClick={handleGenerateTestKey}>
-                            Generate Test Key
-                        </CButton>
+                    <div className="relative flex items-end gap-3">
+                        <div className="flex-1">
+                            <InputLabel name="Test Key" className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
+                            <div className="relative">
+                                <MdVpnKey className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                                <input
+                                    type="text"
+                                    name={'test_key'}
+                                    value={publishExamForm.test_key}
+                                    disabled
+                                    className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-100 font-bold text-[0.95rem] pl-11 pr-5 outline-none transition-all text-slate-500"
+                                />
+                            </div>
+                        </div>
+                        <button className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-[11px] px-5 rounded-lg text-sm shadow-md shadow-emerald-500/30 transition-all whitespace-nowrap mb-1" onClick={handleGenerateTestKey}>
+                            Generate Key
+                        </button>
                     </div>
 
-                    <CButton className="col-span-2 mt-3" onClick={handleFinalPublishExam}>
-                        Publish
-                    </CButton>
+                    <div className="col-span-2 mt-2 flex justify-center w-full">
+                        <button
+                            className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-12 rounded-full shadow-lg shadow-cyan-500/40 transition-all text-[0.95rem] tracking-wide w-full max-w-[400px]"
+                            onClick={handleFinalPublishExam}
+                        >
+                            Publish Exam
+                        </button>
+                    </div>
                 </div>
             </CModal>
-            <div className="mt-6">
-                <H1 className="text-center">Tests List</H1>
+            <div className="w-full mt-6 px-4 pb-8">
+                <div className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-4 rounded-2xl flex items-center gap-3 mb-6 shadow-md shadow-cyan-500/30">
+                    <MdList className="text-2xl" />
+                    <span className="font-black text-xl tracking-wide">TESTS LIST</span>
+                </div>
 
-                <DataTable
-                    columns={columns}
-                    data={testsList}
-                    pagination
-                    highlightOnHover
-                    width="5rem"></DataTable>
+                <div className="border border-slate-100 rounded-xl overflow-hidden shadow-sm bg-white">
+                    <DataTable
+                        columns={columns}
+                        data={testsList}
+                        pagination
+                        highlightOnHover
+                        customStyles={customStyles}
+                        width="100%"
+                    />
+                </div>
             </div>
         </>
     );

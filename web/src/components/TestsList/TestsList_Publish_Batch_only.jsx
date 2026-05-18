@@ -71,6 +71,7 @@ function TestsList() {
     }, []);
 
     const getExamListQuery = useQuery({
+        queryKey: ['get-exams-list'],
         queryFn: getExamsList,
     });
 

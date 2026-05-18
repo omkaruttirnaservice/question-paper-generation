@@ -15,10 +15,12 @@ import PDFGenerator from './components/Reports/GenerateRports/PDFGenerator.jsx';
 import ReportsLayout from './components/Reports/GenerateRports/ReportsLayout.jsx';
 import StudentExamReportSingle from './components/Reports/GenerateRports/StudentExamReportSingle.jsx';
 import ViewReports from './components/Reports/GenerateRports/ViewReports.jsx';
+import ActivityLogReports from './components/Reports/GenerateRports/ActivityLogReports.jsx';
 import RootComponent from './components/RootComponent/RootComponent.jsx';
 import AddNewStudent from './components/StudentArea/AddNewStudent/AddNewStudent.jsx';
 import StudentsList from './components/StudentArea/StudentsList/StudentsList.jsx';
 import TestQuestionsView from './components/TestsList/TestQuestionsView.jsx';
+import EditQuestionView from './components/TestsList/EditQuestionView.jsx';
 import TestsList from './components/TestsList/TestsList.jsx';
 import { ToastContainer } from 'react-toastify';
 
@@ -33,6 +35,7 @@ export const _router = createBrowserRouter([
             { path: '/tests/list', element: <TestsList /> },
             { path: '/tests/published', element: <PublishedTestsList /> },
             { path: '/tests/list/questions', element: <TestQuestionsView /> },
+            { path: '/tests/questions/edit', element: <EditQuestionView /> },
 
             // create test
             {
@@ -75,6 +78,7 @@ export const _router = createBrowserRouter([
 
             // reports
             { path: '/reports/generate', element: <GenerateRports /> },
+            { path: '/reports/activity-log', element: <ActivityLogReports /> },
             {
                 path: '/reports',
                 element: <ReportsLayout />,

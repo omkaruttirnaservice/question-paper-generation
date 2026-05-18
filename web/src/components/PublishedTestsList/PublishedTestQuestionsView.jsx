@@ -96,7 +96,17 @@ function PublishedTestQuestionsView() {
     return (
         <>
             <EditQuestionView />
-            <CModal id={'view-pdf-modal'} title={'Questions Print List'} className={`min-w-[95vw]`}>
+            <CModal
+                id={'view-pdf-modal'}
+                title={
+                    <div className="flex items-center gap-2">
+                        <FaPrint />
+                        <span>QUESTIONS PRINT LIST</span>
+                    </div>
+                }
+                className={`min-w-[95vw]`}
+                headerClass="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-6 py-4 rounded-2xl mb-6 shadow-md"
+            >
                 <PDFGenerator
                     questions={publishedTestQuestionsList}
                     testDetails={previewPublishedTestDetails}

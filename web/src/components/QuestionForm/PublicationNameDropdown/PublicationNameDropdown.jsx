@@ -28,10 +28,14 @@ function PublicationNameDropdown() {
 		<div className="flex flex-col gap-1 relative ">
 			<label htmlFor="pub-name">Publication Name</label>
 
-			<div className="flex">
-				<CButton onClick={handleAddPulicationModal} icon={<FaPlus />} />
+			<div className="flex items-center gap-2">
+				<CButton 
+                    onClick={handleAddPulicationModal} 
+                    icon={<FaPlus />} 
+                    className="!rounded-full !p-3 !bg-cyan-600 !shadow-lg !shadow-cyan-200"
+                />
 				<select
-					className="input-el grow"
+					className="input-el grow w-full"
 					type="text"
 					onChange={handleChange}
 					name="pub_name"
@@ -40,7 +44,7 @@ function PublicationNameDropdown() {
 					{publicationsList.length >= 1 &&
 						publicationsList.map((el) => {
 							return (
-								<option value={el.msq_publication_name}>
+								<option key={el.id} value={el.msq_publication_name}>
 									{el.msq_publication_name}
 								</option>
 							);

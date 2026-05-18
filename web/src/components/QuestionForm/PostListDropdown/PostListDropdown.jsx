@@ -32,8 +32,8 @@ function PostListDropdown({ isShowAddNewBtn = true, disabled = false }) {
 	};
 
 	return (
-		<div className="flex flex-col gap-1 relative">
-			<label htmlFor="">Post</label>
+		<div className="flex flex-col gap-1.5 relative">
+			<label className="text-[0.7rem] font-black text-slate-500 uppercase tracking-wider px-1">Post</label>
 			<div className="flex">
 				{isShowAddNewBtn && <CButton onClick={handlePostAddModal} icon={<FaPlus />} />}
 				<select id="post-id" className="input-el grow w-48" name="post_id" disabled={disabled} onChange={handleChange}>

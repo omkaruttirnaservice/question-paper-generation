@@ -40,14 +40,14 @@ const subjectModel = {
 						mtl.id id,
 						stl_name topic_name,
 						mtl.stl_main_topic_list_id subject_id,
-						COUNT(mqs.id) question_count
+						COUNT(CASE WHEN mqs.is_que_selected_previously = 0 THEN mqs.id ELSE NULL END) question_count
 				FROM
 						tm_sub_topic_list mtl
 								LEFT JOIN
 						tm_mega_question_set mqs ON mtl.id = mqs.mqs_chapter_id
 				WHERE
-						mtl.stl_main_topic_list_id = ? AND is_que_selected_previously = 0
-				GROUP BY stl_name;`,
+						mtl.stl_main_topic_list_id = ?
+				GROUP BY mtl.id;`,
 			+subjectId
 		);
 	},

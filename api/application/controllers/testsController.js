@@ -6,6 +6,7 @@ import tm_test_user_master_list from '../schemas/tm_test_user_master_list.js';
 import testsModel from '../model/testsModel.js';
 import { sendError, sendSuccess } from '../utils/commonFunctions.js';
 import mock_exam_report from '../schemas/mock_exam_report.js';
+import activityLogger from '../utils/activityLogger.js';
 
 const testsController = {
     getList: async (req, res) => {
@@ -67,6 +68,9 @@ const testsController = {
         try {
             let _createTestRes = await testsModel.createTest(_t, _q);
             if (_createTestRes) {
+                // Log Activity
+                await activityLogger.log(req, req.app.get('pool'), 'TEST_CREATED', `Admin created manual test: ${_t.test_name}`, { exam_name: _t.test_name });
+
                 return sendSuccess(res, {
                     testDetails: _createTestRes,
                     message: 'Successfully created test',
@@ -238,6 +242,9 @@ const testsController = {
 
             await transact.commit();
 
+            // Log Activity
+            await activityLogger.log(req, req.app.get('pool'), 'TEST_AUTO_CREATED', `Admin created auto test: ${_t.test_name}`, { exam_id: masterTestId, exam_name: _t.test_name });
+
             return sendSuccess(res, {
                 testDetails: _masterTest.toJSON(),
                 message: 'Successfully created auto test',
@@ -316,6 +323,9 @@ const testsController = {
             let _publishTestInsert = await testsModel.publishTest(req.body);
             console.log(_publishTestInsert, '==_publishTestInsert==');
             if (_publishTestInsert.toJSON().id) {
+                // Log Activity
+                await activityLogger.log(req, req.app.get('pool'), 'TEST_PUBLISHED', `Admin published test: ${req.body.test_details.mt_name}`, { exam_id: req.body.test_id_for_publish, exam_name: req.body.test_details.mt_name });
+
                 return sendSuccess(res, {
                     testDetails: _publishTestInsert.toJSON(),
                     message: 'Successfully published test',
@@ -379,8 +389,8 @@ const testsController = {
     createMock: async (req, res, next) => {
         try {
             /**
-			 * Sample req.body
-			 * {
+             * Sample req.body
+             * {
                     center_code: '101',
                     examDate: '2025-06-20',
                     examTime: '10:00 AM TO 01:00 PM',
@@ -392,7 +402,7 @@ const testsController = {
                     startingRollNumber: '1001',
                     defaultPassword: '1111'
                 }
-			 */
+             */
             const data = req.body;
 
             let testData = {

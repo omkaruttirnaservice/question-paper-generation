@@ -1,44 +1,39 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { memo } from 'react';
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa6';
 import { toast } from 'react-toastify';
-import CButton from '../../UI/CButton';
-import { deleteServerIP, getServerIP } from './api';
+import { deleteServerIP } from './api';
+import { confirmDialouge } from '../../../helpers/confirmDialouge';
 
 function DeleteIpBtn({ id }) {
-    const { refetch: refetchServerIPList } = useQuery({
-        queryKey: ['getServerIP'],
-        queryFn: getServerIP,
-        refetchOnWindowFocus: false,
-        refetchInterval: false,
-        retry: false,
-    });
-    // delete server ip
-    function handleDeleteFormFillingIP(deleteId) {
-        if (!deleteId) {
-            toast.warn('No delete id found.');
-            return false;
-        }
-        deleteFormFillingIPMutation.mutate(deleteId);
-    }
+    const queryClient = useQueryClient();
 
-    const deleteFormFillingIPMutation = useMutation({
+    const deleteMutation = useMutation({
         mutationFn: deleteServerIP,
         onSuccess: (data) => {
-            refetchServerIPList();
-            toast.success(data?.data?.message || 'Successful.');
+            queryClient.invalidateQueries(['getServerIP']);
+            toast.success(data?.data?.message || 'Configuration deleted');
         },
-        onError: (data) => {
-            const er = data?.response?.data?.message || 'Server error.';
-            toast.warn(er);
-        },
+        onError: (error) => toast.warn(error?.response?.data?.message || 'Server error'),
     });
+
+    const handleDelete = async () => {
+        const isConfirm = await confirmDialouge({
+            title: 'Delete configuration?',
+            text: 'This will remove the server sync settings.',
+        });
+        if (isConfirm) deleteMutation.mutate(id);
+    };
+
     return (
-        <CButton
-            icon={<FaTrash />}
-            onClick={handleDeleteFormFillingIP.bind(null, id)}
-            className={'btn--danger self-end'}
-        />
+        <button
+            onClick={handleDelete}
+            disabled={deleteMutation.isPending}
+            className="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-all border border-rose-100 shadow-sm"
+            title="Delete IP Configuration"
+        >
+            <FaTrash size={12} />
+        </button>
     );
 }
 

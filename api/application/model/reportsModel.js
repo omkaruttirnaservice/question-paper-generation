@@ -294,6 +294,74 @@ const reportsModel = {
 
         return await db.query(q);
     },
+
+    getStudentActivityLogs: async (filters) => {
+        let whereClauses = [];
+        let params = [];
+
+        // Apply filters if provided
+        if (filters && filters.searchBy && filters.searchValue) {
+            if (filters.searchBy === 'roll_no') {
+                whereClauses.push("eal.roll_no LIKE ?");
+                params.push(`%${filters.searchValue}%`);
+            } else if (filters.searchBy === 'name') {
+                whereClauses.push("eal.student_name LIKE ?");
+                params.push(`%${filters.searchValue}%`);
+            }
+        }
+        
+        if (filters && filters.batch) {
+            whereClauses.push("eal.batch_id = ?");
+            params.push(filters.batch);
+        }
+        if (filters && filters.exam_name) {
+            whereClauses.push("eal.exam_name LIKE ?");
+            params.push(`%${filters.exam_name}%`);
+        }
+        if (filters && filters.date) {
+            whereClauses.push("DATE(eal.created_at) = ?");
+            params.push(filters.date);
+        }
+
+        let whereString = whereClauses.length > 0 ? 'WHERE ' + whereClauses.join(' AND ') : '';
+
+        let q = `
+            SELECT 
+                eal.*,
+                sl.sl_post AS post,
+                DATE_FORMAT(eal.created_at, '%d-%m-%Y %h:%i %p') AS date_time,
+                'Success' AS status 
+            FROM dv_exp_db.exam_activity_log AS eal
+            LEFT JOIN tn_student_list AS sl ON eal.roll_no COLLATE utf8mb4_unicode_ci = sl.sl_roll_number COLLATE utf8mb4_unicode_ci
+            ${whereString}
+            ORDER BY eal.log_id ASC
+        `;
+
+        try {
+            return await db.query(q, params);
+        } catch (error) {
+            console.error("Error in getStudentActivityLogs:", error);
+            return [[{ log_id: 'ERROR', message: error.message }]];
+        }
+    },
+
+    getActivityLogFilters: async () => {
+        try {
+            let qBatch = `SELECT DISTINCT batch_id FROM dv_exp_db.exam_activity_log WHERE batch_id IS NOT NULL ORDER BY batch_id ASC`;
+            let qExam = `SELECT DISTINCT exam_name FROM dv_exp_db.exam_activity_log WHERE exam_name IS NOT NULL AND exam_name != '' ORDER BY exam_name ASC`;
+            
+            const [batches] = await db.query(qBatch);
+            const [exams] = await db.query(qExam);
+            
+            return {
+                batches: batches.map(b => b.batch_id),
+                exams: exams.map(e => e.exam_name)
+            };
+        } catch (error) {
+            console.error("Error in getActivityLogFilters:", error);
+            return { batches: [], exams: [] };
+        }
+    },
 };
 
 export default reportsModel;

@@ -8,7 +8,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import useHttp from '../Hooks/use-http.jsx';
 import CButton from '../UI/CButton.jsx';
 import { H1, H3 } from '../UI/Headings.jsx';
-import './TestsList.css';
+import { MdOutlinePublish, MdDeleteOutline } from 'react-icons/md';
+import './PublishedTestsList.css';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import Swal from 'sweetalert2';
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
@@ -22,9 +23,8 @@ function PublishedTestsList() {
     const dispatch = useDispatch();
 
     const [publishedTestsList, setPublishedTestsList] = useState([]);
-    const [loading, setLoading] = useState(false)
-
-    const [listMode, setListMode] = useState("NEW")
+    const [loading, setLoading] = useState(false);
+    const [listMode, setListMode] = useState("NEW");
 
     useEffect(() => {
         getExamsList();
@@ -34,9 +34,9 @@ function PublishedTestsList() {
         const reqData = {
             url: SERVER_IP + `/api/test/list-published?type=EXAM&mode=${listMode}`,
         };
-        setLoading(true)
+        setLoading(true);
         sendRequest(reqData, ({ data }) => {
-            setLoading(false)
+            setLoading(false);
             if (data.length >= 1) {
                 setPublishedTestsList(data);
             } else {
@@ -97,145 +97,251 @@ function PublishedTestsList() {
         {
             sortable: true,
             name: 'Paper',
+            center: true,
             selector: (row, idx) => idx + 1,
-            width: '5rem',
+            width: '6rem',
         },
         {
             sortable: true,
             name: 'Published test id',
-            selector: (row) => row.id,
+            center: true,
+            selector: (row) => (
+                <span className="font-black text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded-lg border border-cyan-100 text-[10px]">
+                    {row.id}
+                </span>
+            ),
+            width: '10rem',
         },
         {
             sortable: true,
             name: 'Test Name',
             selector: (row) => row.mt_name,
+            grow: 3,
+            minWidth: '250px',
+            wrap: true,
         },
-
         {
             sortable: true,
             name: 'Batch',
-            selector: (row) => 'Batch-' + row.tm_allow_to,
+            center: true,
+            selector: (row) => (
+                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-tighter">
+                    Batch-{row.tm_allow_to}
+                </span>
+            ),
+            width: '7rem',
         },
         {
             sortable: true,
             name: 'Duration',
-            selector: (row) => row.mt_test_time,
+            center: true,
+            selector: (row) => `${row.mt_test_time}m`,
+            width: '8rem',
         },
         {
             sortable: true,
             name: 'Total Questions',
+            center: true,
             selector: (row) => row.mt_total_test_question,
+            width: '10rem',
         },
         {
             sortable: true,
             name: 'Test Date',
-            selector: (row) => row.ptl_active_date,
+            selector: (row) => (
+                <span className="text-[11px] font-bold text-slate-800 leading-tight">{row.ptl_active_date}</span>
+            ),
+            width: '9rem',
         },
-
         {
             sortable: true,
             name: 'Posts',
-            width: '190px',
             cell: (row) => {
+                const posts = typeof row.post_details === 'string' ? JSON.parse(row.post_details) : row.post_details;
                 return (
-                    <div className="flex flex-col gap-2">
-                        {row.post_details.map((_post, idx) => (
-                            <mark key={idx} className="me-1 p-1">
+                    <div className="flex flex-wrap gap-1 max-w-[300px] py-1">
+                        {posts?.map((_post, idx) => (
+                            <span key={idx} className="bg-cyan-50 text-cyan-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-cyan-100 uppercase tracking-tight whitespace-nowrap">
                                 {_post.post_name}
-                            </mark>
+                            </span>
                         ))}
                     </div>
                 );
             },
+            grow: 2,
         },
-
         {
             sortable: true,
             name: 'Scheduled',
-            cell: (row) => (
-                <>
-                    {isExamToday(row.ptl_active_date) === 1 && (
-                        <span className="bg-gradient-to-tr from-indigo-500 to-indigo-600 p-1 text-white shadow-md text-xs">
-                            Today
-                        </span>
-                    )}
-                    {isExamToday(row.ptl_active_date) === 2 && (
-                        <span className="bg-gradient-to-tr from-green-500 to-green-600 p-1 text-white shadow-md text-xs">
-                            Upcomming
-                        </span>
-                    )}
-
-                    {![1, 2].includes(isExamToday(row.ptl_active_date)) && <p>-</p>}
-                </>
-            ),
+            cell: (row) => {
+                const status = isExamToday(row.ptl_active_date);
+                return (
+                    <div className="flex items-center">
+                        {status === 1 && (
+                            <span className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-wide flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> Today
+                            </span>
+                        )}
+                        {status === 2 && (
+                            <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-wide">
+                                Upcoming
+                            </span>
+                        )}
+                        {status === -1 && (
+                            <span className="text-slate-400 font-medium text-[11px]">-</span>
+                        )}
+                    </div>
+                );
+            },
+            width: '10rem',
         },
         {
             sortable: true,
             name: 'Unpublish',
+            center: true,
             cell: (row) => (
-                <>
-                    {isExamToday(row.ptl_active_date) === 2 && (
-                        <CButton
-                            icon={<FaXmark />}
-                            onClick={handleUnpublishExam.bind(null, row)}></CButton>
+                <div className="flex items-center justify-center w-full">
+                    {isExamToday(row.ptl_active_date) === 2 ? (
+                        <button
+                            className="w-8 h-8 rounded-full bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center border border-rose-100 shadow-sm"
+                            onClick={() => handleUnpublishExam(row)}
+                            title="Unpublish Exam"
+                        >
+                            <MdDeleteOutline size={16} />
+                        </button>
+                    ) : (
+                        <span className="text-slate-300">—</span>
                     )}
-
-                    {isExamToday(row.ptl_active_date) !== 2 && <p>-</p>}
-                </>
+                </div>
             ),
+            width: '9rem',
         },
-
         {
             sortable: true,
-            name: 'View Questions',
+            name: 'View',
+            center: true,
             cell: (row) => (
-                <>
-                    <CButton
-                        className="btn--info m-0"
-                        onClick={handlePublishedTestQuePreview.bind(null, row)}
-                        icon={<FaEye />}></CButton>
-                </>
+                <div className="flex items-center justify-center w-full">
+                    <button
+                        className="w-8 h-8 rounded-full bg-sky-50 text-sky-600 hover:bg-sky-600 hover:text-white transition-all flex items-center justify-center border border-sky-100 shadow-sm"
+                        onClick={() => handlePublishedTestQuePreview(row)}
+                        title="View Questions"
+                    >
+                        <FaEye size={14} />
+                    </button>
+                </div>
             ),
+            width: '10rem',
         },
     ];
 
-    const listModeChangeHandler = (e) => {
-        setListMode(e.target.value)
-    }
+
+
 
     return (
-        <>
-            <div className="mt-6">
-                <H3 className="text-center">Published Tests List</H3>
-
-                <div className="w-28 p-1">
-
-                    <span title='All gets all published test list, NEW gets only new tests' className='bg-red-200 rounded-full px-2 cursor-pointer'>i</span>
-                    <InputSelect
-                        label={"List mode"}
-                        name="list_mode"
-                        value={listMode}
-                        onChange={listModeChangeHandler}
-                    >
-                        <option value="NEW">Active</option>
-                        <option value="ALL">All</option>
-                    </InputSelect>
+        <div className="ptl-root">
+            {/* Premium Header Bar */}
+            <div className="ptl-header-bar">
+                <div className="ptl-header-content">
+                    <MdOutlinePublish />
+                    <span>PUBLISHED TESTS LIST</span>
                 </div>
+                <div className="flex items-center gap-4">
+                    <div className="ptl-mode-indicator flex items-center bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-1.5 shadow-sm">
+                        <div className="ptl-mode-label text-white/90 text-[10px] font-black uppercase tracking-wider mr-3 border-r border-white/20 pr-3">
+                            List Mode
+                        </div>
+                        <select
+                            className="bg-transparent text-white text-[13px] font-bold outline-none cursor-pointer appearance-none pr-6 relative"
+                            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'white\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'3\' d=\'M19 9l-7 7-7-7\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right center', backgroundSize: '12px' }}
+                            value={listMode}
+                            onChange={(e) => setListMode(e.target.value)}
+                        >
+                            <option className="text-slate-800 font-bold" value="NEW">Active Tests</option>
+                            <option className="text-slate-800 font-bold" value="ALL">All Published</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
 
-                {loading && <p className='text-center bg-red-50 p-1'>Loading tests...</p>}
+            <div className="ptl-content-container">
+                {/* Loading State */}
 
-                {publishedTestsList.length === 0 && !loading && <p className='text-center bg-red-50 p-1'>No tests list found</p>}
+                {/* Loading State */}
+                {loading && (
+                    <div className="flex justify-center p-12">
+                        <div className="flex items-center gap-3 bg-cyan-50 text-cyan-700 px-6 py-3 rounded-2xl font-black text-sm animate-pulse shadow-sm border border-cyan-100">
+                            <AiOutlineLoading3Quarters className="animate-spin" />
+                            LOADING DATA...
+                        </div>
+                    </div>
+                )}
 
-                {publishedTestsList.length > 0 &&
-                    <DataTable
-                        columns={columns}
-                        data={publishedTestsList}
-                        pagination
-                        highlightOnHover
-                    />
-                }
-            </div >
-        </>
+                {/* Empty State */}
+                {publishedTestsList.length === 0 && !loading && (
+                    <div className="text-center p-12 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                        <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No tests found in this category</p>
+                    </div>
+                )}
+
+                {/* Table Card */}
+                {publishedTestsList.length > 0 && (
+                    <div className="ptl-table-card">
+                        <DataTable
+                            columns={columns}
+                            data={publishedTestsList}
+                            pagination
+                            highlightOnHover
+                            customStyles={{
+                                header: { style: { display: 'none' } },
+                                headRow: {
+                                    style: {
+                                        backgroundColor: '#F8FAFC',
+                                        borderTopLeftRadius: '1.25rem',
+                                        borderTopRightRadius: '1.25rem',
+                                        borderBottomColor: '#E2E8F0',
+                                        minHeight: '52px',
+                                    },
+                                },
+                                headCells: {
+                                    style: {
+                                        color: '#64748B',
+                                        fontSize: '0.75rem',
+                                        fontWeight: '800',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.05em',
+                                    },
+                                },
+                                cells: {
+                                    style: {
+                                        color: '#1E293B',
+                                        fontSize: '0.875rem',
+                                        fontWeight: '600',
+                                        paddingTop: '1rem',
+                                        paddingBottom: '1rem',
+                                    },
+                                },
+                                rows: {
+                                    style: {
+                                        borderBottomColor: '#F1F5F9',
+                                        '&:hover': {
+                                            backgroundColor: '#F8FAFC',
+                                        },
+                                    },
+                                },
+                                pagination: {
+                                    style: {
+                                        borderTopColor: '#E2E8F0',
+                                        borderBottomLeftRadius: '1.25rem',
+                                        borderBottomRightRadius: '1.25rem',
+                                    },
+                                },
+                            }}
+                        />
+                    </div>
+                )}
+            </div>
+        </div>
     );
 }
 

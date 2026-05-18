@@ -33,8 +33,8 @@ function TopicListDropdown({ isShowAddNewBtn = true }) {
 		dispatch(ModalActions.toggleModal('add-topic-modal'));
 	};
 	return (
-		<div className="flex flex-col gap-1 relative">
-			<label htmlFor="">Topic</label>
+		<div className="flex flex-col gap-1.5 relative">
+			<label className="text-[0.7rem] font-black text-slate-500 uppercase tracking-wider px-1">Topic</label>
 			<div className="flex">
 				{isShowAddNewBtn && (
 					<CButton onClick={handleTopicAddModal} icon={<FaPlus />} />

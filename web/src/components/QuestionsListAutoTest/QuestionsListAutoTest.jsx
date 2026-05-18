@@ -1,646 +1,398 @@
 let SERVER_IP = import.meta.env.VITE_API_SERVER_IP;
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { BiReset } from 'react-icons/bi';
-import { CiViewList } from 'react-icons/ci';
-import { FaEdit, FaGripLinesVertical, FaPlus, FaTrash } from 'react-icons/fa';
-
-import './QuestionsListAutoTest.css';
-
-import { FaAngleRight } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaCheck } from 'react-icons/fa';
+import {
+    MdAutoAwesome, MdAddChart, MdSearch, MdOutlineTableChart,
+    MdOutlineDriveFileRenameOutline, MdTimer, MdStars, MdFactCheck,
+    MdCheckCircle
+} from 'react-icons/md';
+import { FaRocket, FaLayerGroup, FaEye } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     EditQuestionFormActions,
     getPostListThunk,
     getSubjectsListThunk,
+    getTopicsListThunk,
 } from '../../Store/edit-question-form-slice.jsx';
 import useHttp from '../Hooks/use-http.jsx';
 import PostListDropdown from '../QuestionForm/PostListDropdown/PostListDropdown.jsx';
 import SubjectListDropdown from '../QuestionForm/SubjectListDropdown/SubjectListDropdown.jsx';
-
+import TopicListDropdown from '../QuestionForm/TopicListDropdown/TopicListDropdown.jsx';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { ModalActions } from '../../Store/modal-slice.jsx';
 import { testsSliceActions } from '../../Store/tests-slice.jsx';
 import { confirmDialouge } from '../../helpers/confirmDialouge.jsx';
-import CButton from '../UI/CButton.jsx';
 import CModal from '../UI/CModal.jsx';
-import { H3 } from '../UI/Headings.jsx';
-import InfoContainer from '../UI/InfoContainer.jsx';
 import Spinner from '../UI/Spinner.jsx';
 import { TEST_LIST_MODE } from '../Utils/Constants.jsx';
+import './QuestionsListAutoTest.css';
 
 function QuestionsListAutoTest() {
-    useLayoutEffect(() => {
-        if (!isTestDetailsFilled) {
-            navigate('/tests/create/form');
-            dispatch(testsSliceActions.resetTestDetails());
-            dispatch(EditQuestionFormActions.reset());
-            dispatch(testsSliceActions.setTestDetailsFilled(false));
-        }
-    }, []);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { sendRequest } = useHttp();
 
-    const {
-        testDetails: test,
-        topicList,
-        selectedTopicList,
-        isTestDetailsFilled,
-    } = useSelector((state) => state.tests);
-
-    const {
-        data: _formData,
-        postsList,
-        subjectsList,
-        topicsList,
-    } = useSelector((state) => state.questionForm);
-
-    console.log(_formData, '=_formData');
-
+    const { testDetails: test, topicList, selectedTopicList, isTestDetailsFilled } = useSelector((state) => state.tests);
+    const { data: _formData, postsList, subjectsList } = useSelector((state) => state.questionForm);
     const { isLoading } = useSelector((state) => state.loader);
+    const [previewQuestions, setPreviewQuestions] = useState([]);
+    const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+
+    useLayoutEffect(() => {
+        if (!isTestDetailsFilled) navigate('/tests/create/form');
+    }, [isTestDetailsFilled]);
 
     useEffect(() => {
-        if (postsList.length === 0) {
-            dispatch(getPostListThunk());
-        }
+        if (postsList.length === 0) dispatch(getPostListThunk());
     }, []);
 
     useEffect(() => {
-        dispatch(getSubjectsListThunk(_formData.post_id, sendRequest));
-        dispatch(testsSliceActions.setTopicList([]));
+        if (_formData.post_id) {
+            dispatch(getSubjectsListThunk(_formData.post_id, sendRequest));
+            dispatch(testsSliceActions.setTopicList([]));
+        }
     }, [_formData.post_id]);
 
     useEffect(() => {
-        dispatch(testsSliceActions.setTopicList([]));
-
-        getTopicAndQuestionCount(_formData.subject_id);
-        let selectedSubject = subjectsList.filter((el) => el.id == _formData.subject_id);
-        if (selectedSubject.length !== 0) {
-            dispatch(EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
+        if (_formData.subject_id) {
+            dispatch(getTopicsListThunk(_formData.subject_id, sendRequest));
+            dispatch(testsSliceActions.setTopicList([]));
+            getTopicAndQuestionCount(_formData.subject_id);
+            let selectedSubject = subjectsList.filter((el) => el.id == _formData.subject_id);
+            if (selectedSubject.length !== 0)
+                dispatch(EditQuestionFormActions.setSubjectName(selectedSubject[0].mtl_name));
         }
     }, [_formData.subject_id]);
 
     const getTopicAndQuestionCount = (subjectId) => {
-        console.log(_formData, '=_formData');
-        console.log(subjectId);
         if (!subjectId) return;
-        let reqData = {
+        sendRequest({
             url: SERVER_IP + '/api/topics/get-topic-list-and-question-count',
             method: 'POST',
-            body: JSON.stringify({
-                subjectId,
-            }),
-        };
-        sendRequest(reqData, ({ data }) => {
-            dispatch(testsSliceActions.setTopicList(data));
-        });
+            body: JSON.stringify({ subjectId }),
+        }, ({ data }) => dispatch(testsSliceActions.setTopicList(data)));
     };
 
     const searchTopics = () => {
-        let subjectId = _formData?.subject_id;
-        if (!subjectId) {
-            Swal.fire('Warning', 'Please select subject');
-            return false;
-        }
-        getTopicAndQuestionCount(subjectId);
+        if (!_formData?.subject_id) { Swal.fire('Warning', 'Please select subject'); return false; }
+        getTopicAndQuestionCount(_formData.subject_id);
     };
 
     const topicListCheckboxHandler = (e) => {
         const isChecked = e.target.checked;
         const topicId = parseInt(e.target.dataset.id);
-
-        const updatedList = topicList.map((topic) => {
-            if (topic.id === topicId) {
-                return {
-                    ...topic,
-                    isChecked: isChecked,
-                    selectedCount: isChecked ? topic.selectedCount : 0,
-                };
-            }
-            return topic;
-        });
-
+        const updatedList = topicList.map((topic) =>
+            topic.id === topicId ? { ...topic, isChecked, selectedCount: isChecked ? topic.selectedCount : 0 } : topic
+        );
         dispatch(testsSliceActions.setTopicList(updatedList));
     };
 
     const questionCountChangeHandler = (e) => {
         const { value, name } = e.target;
-
-        if (isNaN(value)) {
-            e.target.value = '';
-            return false;
-        }
-
-        let __topicListCopy = topicList.map((el) => el);
-        const topicIdx = __topicListCopy.findIndex((el) => +el.id === +name);
-        if (topicIdx === -1) return false;
-
-        const maxQuestionCount = __topicListCopy[topicIdx].question_count;
-
-        if (+value > maxQuestionCount) {
-            e.target.value = maxQuestionCount.toString();
-            __topicListCopy[topicIdx] = {
-                ...__topicListCopy[topicIdx],
-                selectedCount: maxQuestionCount,
-            };
-        } else {
-            __topicListCopy[topicIdx] = {
-                ...__topicListCopy[topicIdx],
-                selectedCount: parseInt(value),
-            };
-        }
-
-        dispatch(testsSliceActions.setTopicList([...__topicListCopy]));
+        if (isNaN(value)) { e.target.value = ''; return false; }
+        let copy = topicList.map((el) => el);
+        const idx = copy.findIndex((el) => +el.id === +name);
+        if (idx === -1) return false;
+        const max = copy[idx].question_count;
+        if (+value > max) { e.target.value = max.toString(); copy[idx] = { ...copy[idx], selectedCount: max }; }
+        else copy[idx] = { ...copy[idx], selectedCount: parseInt(value) };
+        dispatch(testsSliceActions.setTopicList([...copy]));
     };
 
     const handleAddToTestChart = () => {
-        let isValid = validateQuestionsSelection();
-        if (!isValid) return false;
-
-        let _editSubjectName = subjectsList.filter((el) => el.id == topicList[0].subject_id);
-        _editSubjectName = _editSubjectName[0].mtl_name;
-
-        let testChartAddData = {
+        if (!validateQuestionsSelection()) return false;
+        let subjectName = subjectsList.filter((el) => el.id == topicList[0].subject_id);
+        subjectName = subjectName[0].mtl_name;
+        let data = {
             _postName: _formData.post_name,
-            _subjectName: _editSubjectName,
+            _subjectName: subjectName,
             _topicsList: topicList.filter((el) => el?.selectedCount >= 1),
         };
-
-        testChartAddData['_totalQuestionsCount'] = testChartAddData._topicsList.reduce(
-            (sum, el) => sum + el.selectedCount,
-            0
-        );
-
+        data['_totalQuestionsCount'] = data._topicsList.reduce((sum, el) => sum + el.selectedCount, 0);
         let updatedList = [...selectedTopicList];
-        let isExsistsIndex = updatedList.findIndex(
-            (el) => el._subjectName == testChartAddData._subjectName
-        );
-
-        if (isExsistsIndex != -1) {
-            updatedList.splice(isExsistsIndex, 1);
-        }
-        updatedList.push(testChartAddData);
-
+        let existIdx = updatedList.findIndex((el) => el._subjectName == data._subjectName);
+        if (existIdx !== -1) updatedList.splice(existIdx, 1);
+        updatedList.push(data);
         dispatch(testsSliceActions.setSelectedTopicList(updatedList));
         dispatch(testsSliceActions.setTopicList([]));
-
         updateTotalQuestionsCount(updatedList);
     };
+
     function updateTotalQuestionsCount(list) {
         let count = 0;
-        list.forEach((item1) => {
-            item1._topicsList.forEach((el) => {
-                count += el.selectedCount;
-            });
-        });
+        list.forEach((item) => item._topicsList.forEach((el) => { count += el.selectedCount; }));
         dispatch(testsSliceActions.updateTotalQuestionsCount_AUTO_TEST(count));
     }
 
     const handleRemoveFromEamChart = async ({ idx, el }) => {
-        let isConfirm = await confirmDialouge({
-            title: `Are you sure?`,
-            text: `Do you want to delete the topic ${el._subjectName}`,
-        });
-        if (!isConfirm) return false;
-
-        Swal.fire('Deleted!', '', 'success');
-
-        let updatedList = [...selectedTopicList];
-
-        updatedList.splice(idx, 1);
-
-        dispatch(testsSliceActions.setSelectedTopicList(updatedList));
-
-        updateTotalQuestionsCount(updatedList);
+        let ok = await confirmDialouge({ title: 'Are you sure?', text: `Delete ${el._subjectName}?` });
+        if (!ok) return false;
+        let updated = [...selectedTopicList];
+        updated.splice(idx, 1);
+        dispatch(testsSliceActions.setSelectedTopicList(updated));
+        updateTotalQuestionsCount(updated);
     };
 
     const handleEditFromExamChart = async ({ idx, el }) => {
-        if (!el) {
-            Swal.fire({
-                title: 'Warning!',
-                text: 'Please select topic to edit details from exam chart',
-                icon: 'warning',
-            });
-            return false;
-        }
         const subjectId = el._topicsList[0].subject_id;
-        const topicsListForEdit = el._topicsList;
-
-        let reqData = {
+        sendRequest({
             url: SERVER_IP + '/api/topics/get-topic-list-and-question-count',
             method: 'POST',
-            body: JSON.stringify({
-                subjectId,
-            }),
-        };
-        sendRequest(reqData, ({ data }) => {
-            let updatedTopicList = [...data];
-            topicsListForEdit.forEach((item1) => {
-                let index = updatedTopicList.findIndex((item2) => item2.id == item1.id);
-                if (index !== -1) updatedTopicList[index] = item1;
+            body: JSON.stringify({ subjectId }),
+        }, ({ data }) => {
+            let updated = [...data];
+            el._topicsList.forEach((item1) => {
+                let i = updated.findIndex((item2) => item2.id == item1.id);
+                if (i !== -1) updated[i] = item1;
             });
-
-            dispatch(testsSliceActions.setTopicList(updatedTopicList));
+            dispatch(testsSliceActions.setTopicList(updated));
         });
     };
 
-    const validateQuestionsSelection = (cb) => {
-        let isValid = false;
-        let checkedCount = 0;
-
+    const validateQuestionsSelection = () => {
+        let isValid = false, checkedCount = 0;
         for (let i = 0; i < topicList.length; i++) {
             let el = topicList[i];
             if (el.isChecked) {
-                checkedCount += 1;
-
-                if (el.selectedCount == 0 || !el.selectedCount) {
-                    Swal.fire({
-                        title: 'Oops!',
-                        text: 'Please enter total questions',
-                        icon: 'warning',
-                    });
+                checkedCount++;
+                if (!el.selectedCount || el.selectedCount == 0) {
+                    Swal.fire({ title: 'Oops!', text: 'Please enter total questions', icon: 'warning' });
                     return false;
                 }
                 isValid = true;
             }
-            el = null;
         }
-
-        if (checkedCount == 0) {
-            Swal.fire({
-                title: 'Oops!',
-                text: 'Please select question',
-                icon: 'warning',
-            });
-            isValid = false;
-        }
-
+        if (checkedCount == 0) { Swal.fire({ title: 'Oops!', text: 'Please select question', icon: 'warning' }); return false; }
         return isValid;
     };
 
-    const handleResetExam = async () => {
-        const isConfirm = await confirmDialouge({
-            title: 'Are you sure?',
-            text: 'Do you want to reset exam?',
-        });
-
-        if (!isConfirm) return false;
-        dispatch(EditQuestionFormActions.reset());
-        dispatch(testsSliceActions.reset());
-        dispatch(ModalActions.toggleModal('create-test-modal-auto'));
-    };
-
     const finalTestSubmitHandler = async () => {
-        const __allTopicListToCreateExam = [];
-
-        selectedTopicList.forEach((item1) => {
-            __allTopicListToCreateExam.push(...item1._topicsList);
-        });
-
-        const isConfirm = await confirmDialouge({
-            title: 'Are you sure?',
-            text: 'Do you want to create test?',
-        });
-        if (!isConfirm) return false;
-        let rD = {
+        const allTopics = [];
+        selectedTopicList.forEach((item) => allTopics.push(...item._topicsList));
+        sendRequest({
             url: SERVER_IP + '/api/test/v2/create-auto',
             method: 'POST',
-            body: JSON.stringify({
-                test: test,
-                topicList: __allTopicListToCreateExam,
-            }),
-        };
-        sendRequest(rD, ({ success, data }) => {
+            body: JSON.stringify({ test, topicList: allTopics }),
+        }, ({ success, data }) => {
             if (success == 1) {
                 Swal.fire('Success', 'Test has been generated!');
-
-                const updated = { ...data.testDetails };
-                // updated is test details cloned variable
-                updated.mode = TEST_LIST_MODE.TEST_LIST;
-
+                const updated = { ...data.testDetails, mode: TEST_LIST_MODE.TEST_LIST };
                 dispatch(testsSliceActions.setTestDetails(updated));
                 dispatch(testsSliceActions.setTestDetailsId(updated.id));
-
-                setTimeout(() => {
-                    navigate('/tests/list/questions');
-                }, 10);
+                setTimeout(() => navigate('/tests/list/questions'), 10);
             }
         });
     };
 
-    useEffect(() => {
-        // This is cleanup of states when component unmounts
-        return () => {
-            dispatch(ModalActions.toggleModal('create-exam-preview-modal'));
-            dispatch(EditQuestionFormActions.reset());
-            dispatch(testsSliceActions.setTestDetailsFilled(false));
-        };
-    }, []);
+    const handleResetExam = async () => {
+        let ok = await confirmDialouge({ title: 'Are you sure?', text: 'Reset exam?' });
+        if (!ok) return false;
+        dispatch(EditQuestionFormActions.reset());
+        dispatch(testsSliceActions.reset());
+        navigate('/tests/create/form');
+    };
+
+    const handlePreviewTopic = (topicId) => {
+        setIsPreviewLoading(true);
+        dispatch(ModalActions.toggleModal('topic-questions-preview-modal'));
+        sendRequest({
+            url: SERVER_IP + '/api/questions/list',
+            method: 'POST',
+            body: JSON.stringify({ post_id: _formData.post_id, subject_id: _formData.subject_id, topic_id: topicId }),
+        }, (data) => {
+            setPreviewQuestions(data.data.slice(0, 10));
+            setIsPreviewLoading(false);
+        });
+    };
+
+    const totalSelectedQ = selectedTopicList.reduce((s, el) => s + el._totalQuestionsCount, 0);
 
     return (
-        <>
-            <CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
+        <div className="qat-root">
+            <CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} totalSelectedQ={totalSelectedQ} />
+            <TopicQuestionsPreviewModal questions={previewQuestions} isLoading={isPreviewLoading} />
 
-            {isTestDetailsFilled && (
-                <>
-                    <div className="container mx-auto mt-6 shadow-sm">
-                        <InfoContainer>
-                            <div className="grid grid-cols-5 items-center gap-3">
-                                <div className="flex items-center gap-1">
-                                    <FaGripLinesVertical />
-                                    <p>Test Type</p>
-                                    <FaAngleRight />
-                                    <span className="underline">{test.test_creation_type}</span>
-                                </div>
+            <div className="qat-header-bar">
+                <div className="qat-header-content">
+                    <MdAutoAwesome />
+                    <span>GENERATE AUTO TEST</span>
+                </div>
+                <button className="qat-header-btn" onClick={handleResetExam}>
+                    <BiReset /> Reset Exam
+                </button>
+            </div>
 
-                                <div className="flex items-center gap-1">
-                                    <FaGripLinesVertical />
-                                    <p>Test Name</p>
-                                    <FaAngleRight />
-                                    <span className="underline">{test.test_name}</span>
-                                </div>
-
-                                <div className="flex items-center gap-1">
-                                    <FaGripLinesVertical />
-                                    <p>Test Duration</p>
-                                    <FaAngleRight />
-                                    <span className="underline">{test.test_duration}</span>
-                                </div>
-
-                                <div className="flex items-center gap-1">
-                                    <FaGripLinesVertical />
-                                    <p>Marks Per Question</p>
-                                    <FaAngleRight />
-                                    <span className="underline">{test.marks_per_question}</span>
-                                </div>
+            <div className="qat-info-banner">
+                <div className="qat-info-stats">
+                    {[
+                        { label: 'Test Name', value: test.test_name, color: '#06B6D4' },
+                        { label: 'Duration', value: `${test.test_duration}m`, color: '#10B981' },
+                        { label: 'Marks/Q', value: test.marks_per_question, color: '#8B5CF6' },
+                        { label: 'Total Q', value: totalSelectedQ, color: '#F59E0B' },
+                    ].map((s, i) => (
+                        <div key={i} className="qat-info-stat">
+                            <div className="qat-info-stat-dot" style={{ backgroundColor: s.color }} />
+                            <div>
+                                <div className="qat-info-stat-val">{s.value || '—'}</div>
+                                <div className="qat-info-stat-lbl">{s.label}</div>
                             </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
 
-                            <div className="grid grid-cols-5 items-center py-3 gap-3">
-                                <div className="flex items-center gap-1">
-                                    <FaGripLinesVertical />
-                                    <p>Total posts</p>
-                                    <FaAngleRight />
-                                    <span className="underline">{postsList.length}</span>
-                                </div>
-
-                                <div className="flex items-center gap-1">
-                                    <FaGripLinesVertical />
-                                    <p>Total Subjets</p>
-                                    <FaAngleRight />
-                                    <span className="underline">{subjectsList.length}</span>
-                                </div>
-
-                                <div className="flex items-center gap-1">
-                                    <FaGripLinesVertical />
-                                    <p>Total Topics</p>
-                                    <FaAngleRight />
-                                    <span className="underline">{topicsList.length}</span>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-5 gap-3 ">
+            <div className="qat-layout">
+                <div className="qat-main">
+                    <div className="qat-card">
+                        <div className="qat-filter-row">
+                            <div className="qat-filter-field">
                                 <PostListDropdown isShowAddNewBtn={false} />
                             </div>
-                        </InfoContainer>
-                    </div>
-                    <InfoContainer>
-                        <div className="grid grid-cols-2 mb-4">
-                            <div className="flex gap-2">
-                                <SubjectListDropdown isShowAddNewBtn={false} className={'w-fit'} />
-                                <CButton className={'h-fit mt-auto'} onClick={searchTopics}>
-                                    Search
-                                </CButton>
+                            <div className="qat-filter-field">
+                                <SubjectListDropdown isShowAddNewBtn={false} />
                             </div>
+                            <div className="qat-filter-field">
+                                <TopicListDropdown isShowAddNewBtn={false} />
+                            </div>
+                            <button className="qat-search-btn" onClick={searchTopics}><MdSearch /> Search</button>
+                        </div>
+                    </div>
 
-                            {_formData.subject_id && (
-                                <CButton
-                                    icon={<BiReset />}
-                                    className={
-                                        'btn--danger w-fit justify-self-end h-fit self-end mb-1'
-                                    }
-                                    onClick={handleResetExam}>
-                                    Reset Exam
-                                </CButton>
-                            )}
+                    <div className="qat-card">
+                        <div className="qat-card-header">
+                            <div className="qat-card-icon" style={{ background: '#ECFEFF', color: '#0891B2' }}><FaLayerGroup /></div>
+                            <h2 className="qat-card-title">Select Topics to Include</h2>
                         </div>
 
-                        {topicList.length >= 1 && (
-                            <div className="grid grid-cols-1 gap-2">
-                                <form action="" className="">
-                                    <table className="w-full shadow-sm" id="questions-list-table">
+                        {isLoading ? <div className="qat-loading"><Spinner /></div> : (
+                            topicList.length > 0 ? (
+                                <div className="qat-table-wrap">
+                                    <table className="qat-table">
                                         <thead>
-                                            <tr className="bg-cyan-500 text-white">
-                                                <td className="p-2 text-center">#</td>
-                                                <td className="p-2">Check/Unckeck</td>
-                                                <td className="p-2">Section Name</td>
-                                                <td className="p-2">Select Question</td>
-                                                <td className="p-2">Question</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {topicList.length >= 1 &&
-                                                topicList.map((el, idx) => {
-                                                    return (
-                                                        <tr className="border hover:bg-gray-50">
-                                                            <td className="p-2 text-center ">
-                                                                {idx + 1}
-                                                            </td>
-                                                            <td
-                                                                className="p-2 text-center"
-                                                                width={'5%'}>
-                                                                <input
-                                                                    type="checkbox"
-                                                                    name={el.id}
-                                                                    value=""
-                                                                    data-id={el.id}
-                                                                    onChange={
-                                                                        topicListCheckboxHandler
-                                                                    }
-                                                                />
-                                                            </td>
-                                                            <td className="p-2">{el.topic_name}</td>
-                                                            <td className="p-2">
-                                                                {el.question_count}
-                                                            </td>
-                                                            <td>
-                                                                <input
-                                                                    type=""
-                                                                    className="border w-16 p-1"
-                                                                    name={el.id}
-                                                                    value={
-                                                                        el.selectedCount
-                                                                            ? el.selectedCount
-                                                                            : 0
-                                                                    }
-                                                                    onChange={
-                                                                        questionCountChangeHandler
-                                                                    }
-                                                                    disabled={!el.isChecked}
-                                                                />
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })}
-                                        </tbody>
-                                    </table>
-                                </form>
-
-                                <CButton
-                                    icon={<CiViewList />}
-                                    className={'btn--danger h-fit w-fit justify-self-end'}
-                                    onClick={handleAddToTestChart}
-                                    isLoading={isLoading}>
-                                    Add to test chart
-                                </CButton>
-                            </div>
-                        )}
-
-                        {isLoading && <Spinner />}
-                        {!isLoading && topicList.length === 0 && (
-                            <p className="text-center text-[#555]">Woops! no questions found!</p>
-                        )}
-                    </InfoContainer>
-                    {selectedTopicList.length >= 1 && (
-                        <InfoContainer>
-                            <div className="grid grid-cols-2 mb-4">
-                                <H3>Exam Chart</H3>
-                                {_formData.subject_id && (
-                                    <CButton
-                                        icon={<FaPlus />}
-                                        className={
-                                            'btn--success w-fit justify-self-end h-fit self-end mb-1'
-                                        }
-                                        onClick={finalTestSubmitHandler}>
-                                        Create Exam
-                                    </CButton>
-                                )}
-                            </div>
-                            <div className="grid grid-cols-1 gap-2">
-                                <form action="" className="">
-                                    <table className="w-full shadow-sm" id="questions-list-table">
-                                        <thead>
-                                            <tr className="bg-cyan-500 text-white text-center">
-                                                <td className="p-2 text-center">#</td>
-                                                <td className="p-2">Subject Name</td>
-                                                <td className="p-2">Topics For Test</td>
-                                                <td className="p-2">Questions</td>
-                                                <td className="p-2">Edit|Remove</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {selectedTopicList.map((el, idx) => {
-                                                return (
-                                                    <tr className="border hover:bg-gray-50 text-center">
-                                                        <td className="p-2 text-center ">
-                                                            {idx + 1}
-                                                        </td>
-                                                        <td className="p-2">{el._subjectName}</td>
-                                                        <td className="p-2">
-                                                            {el._topicsList.length}
-                                                        </td>
-                                                        <td>{el._totalQuestionsCount}</td>
-                                                        <td>
-                                                            <div className="flex justify-center gap-2">
-                                                                <CButton
-                                                                    icon={<FaEdit />}
-                                                                    className={
-                                                                        'btn--success h-fit w-fit justify-self-end'
-                                                                    }
-                                                                    onClick={handleEditFromExamChart.bind(
-                                                                        null,
-                                                                        {
-                                                                            idx,
-                                                                            el,
-                                                                        }
-                                                                    )}></CButton>
-                                                                <CButton
-                                                                    icon={<FaTrash />}
-                                                                    className={
-                                                                        'btn--danger h-fit w-fit justify-self-end'
-                                                                    }
-                                                                    onClick={handleRemoveFromEamChart.bind(
-                                                                        null,
-                                                                        {
-                                                                            idx,
-                                                                            el,
-                                                                        }
-                                                                    )}></CButton>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
                                             <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>
-                                                    Total Questions&nbsp;&mdash;&nbsp;
-                                                    {test.total_questions}
-                                                </td>
-                                                <td></td>
+                                                <th className="qat-th">✓</th>
+                                                <th className="qat-th">TOPIC NAME</th>
+                                                <th className="qat-th">AVAIL.</th>
+                                                <th className="qat-th">PREVIEW</th>
+                                                <th className="qat-th">COUNT</th>
                                             </tr>
+                                        </thead>
+                                        <tbody>
+                                            {topicList.map((el) => (
+                                                <tr key={el.id} className={`qat-tr ${el.isChecked ? 'qat-tr--checked' : ''}`}>
+                                                    <td className="qat-td">
+                                                        <input type="checkbox" data-id={el.id} checked={el.isChecked || false} onChange={topicListCheckboxHandler} />
+                                                    </td>
+                                                    <td className="qat-td"><span className="qat-topic-name">{el.topic_name}</span></td>
+                                                    <td className="qat-td"><span className="qat-avail-badge">{el.question_count} Q</span></td>
+                                                    <td className="qat-td">
+                                                        <button className="qat-preview-btn" onClick={() => handlePreviewTopic(el.id)}><FaEye /></button>
+                                                    </td>
+                                                    <td className="qat-td">
+                                                        <input type="number" name={el.id} value={el.selectedCount || 0} onChange={questionCountChangeHandler} disabled={!el.isChecked} className="qat-count-input" />
+                                                    </td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
-                                </form>
-                            </div>
-                        </InfoContainer>
-                    )}
-                </>
-            )}
-        </>
+                                    <div className="qat-add-row">
+                                        <button className="qat-add-btn" onClick={handleAddToTestChart}><MdAddChart /> Add to Exam Chart</button>
+                                    </div>
+                                </div>
+                            ) : <div className="qat-empty">Search to load topics</div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="qat-sidebar">
+                    <div className="qat-card">
+                        <div className="qat-card-header">
+                            <div className="qat-card-icon" style={{ background: '#FFF7ED', color: '#D97706' }}><MdOutlineTableChart /></div>
+                            <h2 className="qat-card-title">Exam Chart</h2>
+                        </div>
+                        {selectedTopicList.length > 0 ? (
+                            <>
+                                <div className="qat-chart-list">
+                                    {selectedTopicList.map((el, idx) => (
+                                        <div key={idx} className="qat-chart-row">
+                                            <div className="qat-chart-info">
+                                                <div className="qat-chart-subject">{el._subjectName}</div>
+                                                <div className="qat-chart-meta"><span>{el._topicsList.length} topics</span> • <span className="qat-chart-q">{el._totalQuestionsCount} Q</span></div>
+                                            </div>
+                                            <div className="qat-chart-actions">
+                                                <button className="qat-chart-btn--edit" onClick={() => handleEditFromExamChart({ idx, el })}><FaEdit /></button>
+                                                <button className="qat-chart-btn--del" onClick={() => handleRemoveFromEamChart({ idx, el })}><FaTrash /></button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="qat-chart-total">
+                                    <span className="qat-chart-total-label">TOTAL SELECTED</span>
+                                    <span className="qat-chart-total-value">{totalSelectedQ}</span>
+                                </div>
+                                <button className="qat-create-btn" onClick={() => dispatch(ModalActions.toggleModal('create-exam-preview-modal'))}><FaRocket /> GENERATE TEST</button>
+                            </>
+                        ) : (
+                            <div className="qat-empty">Add topics to begin</div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 
-function CreatePreSubmitView({ test, finalTestSubmitHandler }) {
-    const { isLoading } = useSelector((state) => state.loader);
+function CreatePreSubmitView({ test, finalTestSubmitHandler, totalSelectedQ }) {
+    const { isLoading } = useSelector((s) => s.loader);
     return (
-        <CModal id="create-exam-preview-modal" title="Create Exam">
-            <table className="w-full">
-                <tbody>
-                    <tr>
-                        <td className="border p-2" width="50%">
-                            Name of exam
-                        </td>
-                        <td className="border p-2" width="50%">
-                            {test.test_name}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className="border p-2" width="50%">
-                            Exam duration
-                        </td>
-                        <td className="border p-2" width="50%">
-                            {test.test_duration}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td className="border p-2" width="50%">
-                            Marks per question
-                        </td>
-                        <td className="border p-2" width="50%">
-                            {test.marks_per_question}
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td className="border p-2" width="50%">
-                            Total questions
-                        </td>
-                        <td className="border p-2" width="50%">
-                            {test.total_questions}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div className="flex justify-center mt-4">
-                <CButton isLoading={isLoading} onClick={finalTestSubmitHandler}>
-                    Submit
-                </CButton>
+        <CModal id="create-exam-preview-modal" title="Final Review" width="450px">
+            <div className="qat-preview-table">
+                {[
+                    { label: 'Exam Name', value: test.test_name, icon: <MdOutlineDriveFileRenameOutline /> },
+                    { label: 'Duration', value: `${test.test_duration}m`, icon: <MdTimer /> },
+                    { label: 'Marks Per Q', value: test.marks_per_question, icon: <MdStars /> },
+                    { label: 'Total Questions', value: totalSelectedQ, icon: <MdFactCheck /> },
+                ].map((r, i) => (
+                    <div key={i} className="qat-preview-row">
+                        <div className="flex items-center gap-2">
+                            <span className="text-cyan-500 text-lg">{r.icon}</span>
+                            <span className="qat-preview-label">{r.label}</span>
+                        </div>
+                        <span className="qat-preview-value">{r.value || '—'}</span>
+                    </div>
+                ))}
             </div>
+            <button className="qat-create-btn qat-btn-success" onClick={finalTestSubmitHandler} disabled={isLoading}>
+                <MdCheckCircle /> {isLoading ? 'Generating...' : 'Confirm & Generate Test'}
+            </button>
+        </CModal>
+    );
+}
+
+function TopicQuestionsPreviewModal({ questions, isLoading }) {
+    return (
+        <CModal id="topic-questions-preview-modal" title="Topic Questions Preview" className="w-[1200px] max-w-[95vw]">
+            {isLoading ? <div className="qat-loading"><Spinner /></div> : (
+                <div className="qat-preview-list">
+                    {questions.length > 0 ? questions.map((q, i) => (
+                        <div key={i} className="qat-preview-item mb-6 border-b border-slate-100 pb-4 last:border-0">
+                            <div className="qat-preview-q flex gap-2 font-bold text-slate-800">
+                                <span>{i + 1}.</span>
+                                <div dangerouslySetInnerHTML={{ __html: q.q }} />
+                            </div>
+                            <div className="qat-preview-options grid grid-cols-2 gap-4 mt-3 text-sm text-slate-600">
+                                {q.q_a && <div className="flex gap-2"><strong>A:</strong> <div dangerouslySetInnerHTML={{ __html: q.q_a }} /></div>}
+                                {q.q_b && <div className="flex gap-2"><strong>B:</strong> <div dangerouslySetInnerHTML={{ __html: q.q_b }} /></div>}
+                                {q.q_c && <div className="flex gap-2"><strong>C:</strong> <div dangerouslySetInnerHTML={{ __html: q.q_c }} /></div>}
+                                {q.q_d && <div className="flex gap-2"><strong>D:</strong> <div dangerouslySetInnerHTML={{ __html: q.q_d }} /></div>}
+                                {q.q_e && <div className="flex gap-2"><strong>E:</strong> <div dangerouslySetInnerHTML={{ __html: q.q_e }} /></div>}
+                            </div>
+                        </div>
+                    )) : <p>No questions found in this topic.</p>}
+                </div>
+            )}
         </CModal>
     );
 }

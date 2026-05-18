@@ -82,11 +82,11 @@ function QuestionYearDropdown() {
     return (
         <>
             <div className="flex flex-col gap-1 relative">
-                <label htmlFor="" className="input-label">
+                <label htmlFor="" className="input-label text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">
                     Month
                 </label>
                 <div className="flex">
-                    <select ref={monthRef} className="input-el grow w-48">
+                    <select ref={monthRef} className="input-el grow w-full">
                         <option value="" className="">
                             -- Select --
                         </option>
@@ -101,11 +101,11 @@ function QuestionYearDropdown() {
                 </div>
             </div>
             <div className="flex flex-col gap-1 relative">
-                <label htmlFor="" className="input-label">
+                <label htmlFor="" className="input-label text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">
                     Year
                 </label>
-                <div className="flex">
-                    <select ref={yearRef} className="input-el grow w-48">
+                <div className="flex items-center gap-2">
+                    <select ref={yearRef} className="input-el grow w-full">
                         <option value="" className="">
                             -- Select --
                         </option>
@@ -118,21 +118,25 @@ function QuestionYearDropdown() {
                                 );
                             })}
                     </select>
-                    <CButton onClick={handleChange} icon={<FaPlus />} />
+                    <CButton 
+                        onClick={handleChange} 
+                        icon={<FaPlus />} 
+                        className="!rounded-full !p-3.5 !bg-cyan-600 !shadow-lg !shadow-cyan-200"
+                    />
                 </div>
             </div>
-            <div className="col-span-3 flex gap-1">
+            <div className="col-span-3 flex flex-wrap gap-2 pt-6">
                 {_formData?.year?.length > 0 &&
                     _formData?.year?.map((_el) => {
                         return (
-                            <div className="relative ">
-                                <span className="bg-yellow-300 p-2 rounded-full text-xs">
+                            <div key={_el} className="relative group">
+                                <span className="bg-cyan-50 text-cyan-700 border border-cyan-100 px-4 py-2 rounded-full text-xs font-bold shadow-sm flex items-center gap-2">
                                     {_el}
+                                    <FaXmark
+                                        onClick={handleRemoveYear.bind(null, _el)}
+                                        className="cursor-pointer w-4 h-4 text-cyan-400 hover:text-rose-500 transition-colors"
+                                    />
                                 </span>
-                                <FaXmark
-                                    onClick={handleRemoveYear.bind(null, _el)}
-                                    className="cursor-pointer w-4 h-4 bg-gray-200 rounded-full absolute right-0 top-[-0.4rem]"
-                                />
                             </div>
                         );
                     })}

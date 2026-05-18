@@ -20,7 +20,7 @@ function DifficultyLevelDropdown() {
 			<label htmlFor="">Difficulty</label>
 			<div className="flex">
 				<select
-					className="input-el grow w-48"
+					className="input-el grow w-full"
 					name="difficulty"
 					onChange={handleChange}>
 					<option value="" className="">

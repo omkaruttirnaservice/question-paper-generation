@@ -36,25 +36,25 @@ const testsModel = {
             {
                 // prettier-ignore
                 attributes: [
-					'id',
-					'mt_name',
-					[db.fn('DATE_FORMAT', db.col('mt_added_date'), '%d-%m-%Y'), 'mt_added_date'],
-					'mt_descp',
-					'mt_added_time',
-					'mt_is_live',
-					'mt_time_stamp',
-					'mt_type',
-					'tm_aouth_id',
-					'mt_test_time',
-					'mt_total_test_takan',
-					'mt_is_negative',
-					'mt_negativ_mark',
-					'mt_mark_per_question',
-					'mt_passing_out_of',
-					'mt_total_marks',
-					'mt_pattern_type',
-					'mt_total_test_question',
-				],
+                    'id',
+                    'mt_name',
+                    [db.fn('DATE_FORMAT', db.col('mt_added_date'), '%d-%m-%Y'), 'mt_added_date'],
+                    'mt_descp',
+                    'mt_added_time',
+                    'mt_is_live',
+                    'mt_time_stamp',
+                    'mt_type',
+                    'tm_aouth_id',
+                    'mt_test_time',
+                    'mt_total_test_takan',
+                    'mt_is_negative',
+                    'mt_negativ_mark',
+                    'mt_mark_per_question',
+                    'mt_passing_out_of',
+                    'mt_total_marks',
+                    'mt_pattern_type',
+                    'mt_total_test_question',
+                ],
                 where: query,
             },
             { raw: true },
@@ -109,6 +109,11 @@ const testsModel = {
 				ptl_master_exam_id,
 				ptl_master_exam_name,
 				is_test_generated,
+				is_show_exam_sections,
+				is_show_mark_for_review,
+				is_show_clear_response,
+				end_button_time,
+				tm_server_ip_list.form_filling_server_ip as server_ip_address,
 				post_id, post_name, published_test_id
 			FROM tm_publish_test_list
  
@@ -116,9 +121,13 @@ const testsModel = {
 				tm_publish_test_by_post
 			ON tm_publish_test_list.id = tm_publish_test_by_post.published_test_id
 			
+			LEFT JOIN
+				tm_server_ip_list
+			ON tm_publish_test_list.center_code = tm_server_ip_list.id
+
 			WHERE 
-                ${mode !== 'ALL' ? 'ptl_active_date >= CURDATE() AND' : ''}
-                ptl_test_mode = '${type}'
+				${mode !== 'ALL' ? 'ptl_active_date >= CURDATE() AND' : ''}
+				ptl_test_mode = '${type}'
 			GROUP BY tm_publish_test_list.id`,
             {
                 type: Sequelize.QueryTypes.SELECT,
@@ -464,6 +473,7 @@ const testsModel = {
         test_key,
         test_details: mt,
         selected_posts,
+        server_ip_address,
         is_show_exam_sections,
         is_show_mark_for_review,
         is_show_clear_response,
@@ -508,7 +518,7 @@ const testsModel = {
             mt_pattern_name: '-',
             is_test_generated: 0,
             ptl_test_mode: 'EXAM',
-            center_code: '',
+            center_code: server_ip_address || '',
             tm_allow_to: batch,
             is_test_loaded: 0,
             is_student_added: 0,
@@ -904,7 +914,7 @@ const testsModel = {
                         stl_publish_id,
                         CONCAT(sl_f_name,' ',sl_m_name,' ',sl_l_name) AS full_name,
                         ptl.id AS published_test_id
-                    FROM tn_student_list AS sl
+                    FROM tn_student_list_mock AS sl
 
                     LEFT JOIN mock_exam_report AS mer
                     ON sl.id =  mer.stl_stud_id

@@ -1,24 +1,247 @@
-.menu-button-list {
+/* ====================================================
+   MenuBar - Premium Glassmorphism Sidebar Styles
+   ==================================================== */
+
+/* ---- Scrollable Nav Area ---- */
+.menu-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.25rem 0.5rem 1rem;
     display: flex;
     flex-direction: column;
+    gap: 0.2rem;
 }
-.menu-button-item {
-    cursor: pointer;
-    color: #fefefe;
 
+/* Custom Scrollbar */
+.menu-scroll-area::-webkit-scrollbar {
+    width: 3px;
+}
+.menu-scroll-area::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+.menu-scroll-area::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+.menu-scroll-area::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+/* Firefox */
+.menu-scroll-area {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+/* ---- Menu Container ---- */
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 0;
+    padding: 0;
+}
+
+/* ---- Base Menu Item ---- */
+.menu-item-base {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem !important;
-
-    font-size: 1.2rem;
-
+    gap: 0.75rem;
+    padding: 0.7rem 1rem;
+    border-radius: 0.875rem;
+    color: rgba(255, 255, 255, 0.82);
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-.menu-button-item.active {
-    background-color: #fff;
-    margin: 0;
-    padding: 0;
-    color: #4c7bb6;
+.menu-item-base:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateX(5px);
+    border-color: rgba(255, 255, 255, 0.12);
 }
+
+.menu-item-base.active {
+    background: #ffffff;
+    color: #0891B2;
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow:
+        0 8px 20px -4px rgba(0, 0, 0, 0.15),
+        0 4px 8px -2px rgba(0, 0, 0, 0.08);
+    transform: translateX(0);
+}
+
+.menu-item-base.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 22%;
+    bottom: 22%;
+    width: 3px;
+    background: linear-gradient(180deg, #06B6D4, #0891B2);
+    border-radius: 0 4px 4px 0;
+}
+
+/* ---- Section Label ---- */
+.menu-section-label {
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 0.5rem 1rem 0.2rem;
+    margin-top: 0.5rem;
+}
+
+/* ---- Submenu Parent ---- */
+.submenu-parent {
+    margin-bottom: 0.1rem;
+}
+
+.submenu-trigger {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.submenu-container {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: 1rem;
+    border-left: 2px solid rgba(255, 255, 255, 0.12);
+    padding-left: 0.4rem;
+    margin-top: 0.15rem;
+}
+
+.submenu-container.open {
+    grid-template-rows: 1fr;
+}
+
+.submenu-inner {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-bottom: 0.15rem;
+}
+
+.submenu-item {
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.75rem;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 500;
+}
+
+.submenu-item:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(4px);
+}
+
+.submenu-item.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    font-weight: 700;
+}
+
+/* ---- Profile Card ---- */
+.profile-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 1.1rem;
+    padding: 0.75rem 0.9rem;
+    margin: 0.25rem 0.5rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+}
+
+/* ---- Clock Widget ---- */
+.clock-widget {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.65rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.clock-time {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.82rem;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.clock-date {
+    font-size: 0.6rem;
+    color: rgba(255, 255, 255, 0.45);
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    margin-top: 0.1rem;
+}
+
+/* ---- Collapsed State ---- */
+.sidebar-collapsed .menu-item-base {
+    padding: 0.8rem;
+    justify-content: center;
+    margin: 0 0.1rem;
+}
+
+.sidebar-collapsed .menu-item-base:hover {
+    transform: scale(1.08);
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* ---- Logout Button ---- */
+.logout-btn {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important;
+    box-shadow:
+        0 8px 15px -3px rgba(225, 29, 72, 0.3),
+        0 4px 6px -2px rgba(225, 29, 72, 0.15) !important;
+    border: none !important;
+    color: white !important;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow:
+        0 16px 25px -5px rgba(225, 29, 72, 0.35),
+        0 8px 10px -5px rgba(225, 29, 72, 0.2) !important;
+    filter: brightness(1.1);
+}
+
+.logout-btn:active {
+    transform: scale(0.97) !important;
+}
+
+/* ---- Logout footer area ---- */
+.logout-area {
+    padding: 0.6rem 0.6rem 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+/* ---- No scrollbar utility ---- */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

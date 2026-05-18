@@ -111,29 +111,30 @@ const EditAddQuestionForm = () => {
         <>
             <AddPublicationModal />
             <AddBookModal />
-            <div className="container mx-auto border  relative">
-                <form id="add-question-form" className="grid gap-6">
-                    <div className={`bg-white sticky top-0 z-10`}>
-                        <div className="container mx-auto mb-3">
-                            <div className="bg-cyan-100  border-t-sky-700 border-t-4 p-3">
-                                <div className="grid grid-cols-4 items-center gap-1">
-                                    <div className="flex items-center gap-1">
-                                        <FaGripLinesVertical />
-                                        <p>Subject Name</p>
-                                        <FaAngleRight />
-                                        <span className="underline">{_formData.subject_name}</span>
+            <form id="add-question-form" className="grid gap-2">
+                    <div className={`bg-white py-1`}>
+                        <div className="mb-4">
+                            <div className="bg-cyan-50/50 border border-cyan-100 rounded-[1.25rem] p-3 px-5 shadow-sm">
+                                <div className="flex items-center gap-8">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-1 h-6 bg-cyan-500 rounded-full opacity-40" />
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] leading-none mb-1">Subject Name</span>
+                                            <span className="text-[15px] font-black text-cyan-900">{_formData.subject_name}</span>
+                                        </div>
                                     </div>
 
-                                    <div className="flex items-center gap-1">
-                                        <FaGripLinesVertical />
-                                        <p>Topic Name</p>
-                                        <FaAngleRight />
-                                        <span className="underline">{_formData.topic_name}</span>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-1 h-6 bg-cyan-500 rounded-full opacity-40" />
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] leading-none mb-1">Topic Name</span>
+                                            <span className="text-[15px] font-black text-cyan-900">{_formData.topic_name}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="grid grid-cols-5 gap-3">
+                        <div className="grid grid-cols-6 gap-4">
                             <DifficultyLevelDropdown />
                             <PublicationNameDropdown />
                             <BookNameDropdown />
@@ -156,21 +157,21 @@ const EditAddQuestionForm = () => {
 
                     <EditQuestionExplanationInput />
 
-                    <div className="sticky bottom-5 right-0">
-                        <div className="flex justify-end gap-4">
-                            <div className="flex items-center gap-3 ">
-                                <label htmlFor="master-update" className="cursor-pointer">
+                    <div className="bg-white py-3 mt-4 border-t border-slate-100">
+                        <div className="flex justify-end items-center gap-6 px-4">
+                            <div className="flex items-center gap-4 bg-slate-50/80 px-4 py-2 rounded-2xl border border-slate-200/60 shadow-sm">
+                                <label htmlFor="master-update" className="cursor-pointer text-xs font-black text-slate-500 uppercase tracking-wider">
                                     Update to master
                                 </label>
                                 <input
                                     type="checkbox"
                                     id="master-update"
-                                    className="cursor-pointer"
+                                    className="w-5 h-5 cursor-pointer accent-cyan-600 rounded-lg"
                                     checked={isUpdateToMaster}
-                                    onClick={(e) => {
+                                    onChange={(e) => {
                                         dispatch(
                                             EditQuestionFormActions.setUpdateToMaster({
-                                                isUpdateToMaster: e.currentTarget.checked,
+                                                isUpdateToMaster: e.target.checked,
                                                 isUpdateToMasterPersist: isUpdateToMasterPersist,
                                             })
                                         );
@@ -179,7 +180,7 @@ const EditAddQuestionForm = () => {
                             </div>
                             <CButton
                                 onClick={handleUpdateQuestion}
-                                className="w-[10%] flex justify-center items-center "
+                                className="!px-6 !py-2 !rounded-xl !text-[12px] !font-black !bg-gradient-to-r !from-cyan-600 !to-cyan-500 !shadow-lg !shadow-cyan-200/40 hover:!scale-105 active:!scale-95 transition-all uppercase tracking-widest"
                                 type="button"
                                 isLoading={useSelector((state) => state.loader.isLoading)}>
                                 Update
@@ -187,8 +188,6 @@ const EditAddQuestionForm = () => {
                         </div>
                     </div>
                 </form>
-            </div>
-
             <ConfirmUpdateToMasterModal postQuestionData={postQuestionData} />
         </>
     );

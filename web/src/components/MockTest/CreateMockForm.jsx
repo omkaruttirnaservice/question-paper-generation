@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import useHttp from '../Hooks/use-http';
 import { getBatchAndCenterList } from '../StudentArea/StudentsListByCenter/stud-list-by-center-api';
-import CButton from '../UI/CButton';
-import { H2 } from '../UI/Headings';
+import { MdModelTraining, MdArrowBack, MdSave, MdList } from 'react-icons/md';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import Input, { InputSelect } from '../UI/Input';
 import InputError from '../UI/InputError';
 import { SERVER_IP } from '../Utils/Constants';
+import { toast } from 'react-toastify';
+import '../CreateTestForm.css';
 
 function CreateMockForm() {
     const navigate = useNavigate();
@@ -31,8 +33,6 @@ function CreateMockForm() {
             setCentersList(_centersList);
         }
     }, [_batchAndCenterList]);
-
-    console.log(centersList, '=centersList');
 
     const [formData, setFormData] = useState({
         center_code: '',
@@ -98,11 +98,14 @@ function CreateMockForm() {
             setErrors({});
             submitMock(formData);
         } catch (error) {
-            console.log(error, 'error')
+            console.error('Validation Error:', error);
+            toast.error('Please fix the errors in the form before submitting.');
             let __err = {};
-            error.inner.forEach((el) => {
-                __err[el.path] = el.message;
-            });
+            if (error.inner) {
+                error.inner.forEach((el) => {
+                    __err[el.path] = el.message;
+                });
+            }
             setErrors(__err);
         }
     };
@@ -114,148 +117,195 @@ function CreateMockForm() {
             body: JSON.stringify(formData),
         };
         sendRequest(rD, (data) => {
-            console.log(data, '=data');
             navigate('/mock/list');
         });
     }
 
     return (
-        <div className="mt-4">
-            <H2 className={'text-center'}>Create Mock Exam</H2>
+        <div className="ctf-simple-wrapper">
+            {/* Header Bar */}
+            <div className="ctf-title-bar-manual">
+                <div className="ctf-title-content">
+                    <MdModelTraining />
+                    <span>CREATE MOCK EXAM</span>
+                </div>
+                <button className="ctf-header-btn" onClick={() => navigate('/mock/list')}>
+                    <MdList className="text-2xl" /> View Mock List
+                </button>
+            </div>
 
-            <div className="max-w-2xl mx-auto p-6">
-                <form className="grid grid-cols-2 gap-4" onSubmit={handleMockAdd}>
+            <div className="ctf-form-card">
+                <form className="ctf-form-grid" onSubmit={handleMockAdd}>
+                    
+                    {/* Mock Name */}
+                    <div className="ctf-form-group full">
+                        <Input
+                            label={<>MOCK NAME <span className="ctf-required-star">*</span></>}
+                            name="mockName"
+                            placeholder="e.g. Maharashtra State Level Mock - 2024"
+                            onChange={handleChange}
+                            value={formData.mockName}
+                            error={errors.mockName}
+                            className="ctf-custom-input"
+                        />
+                        <InputError error={errors.mockName} />
+                    </div>
+
                     {/* Center Dropdown */}
-                    <InputSelect
-                        label="Center"
-                        name="center_code"
-                        value={formData.center_code}
-                        onChange={handleChange}
-                        error={errors.center_code}>
-                        <option value="">Select Center</option>
-                        {centersList.length > 0 &&
-                            centersList.map((_el) => {
-                                return (
-                                    <option value={`${_el.cl_number}`}>
-                                        ({_el.cl_number}){_el.cl_name}
+                    <div className="ctf-form-group">
+                        <InputSelect
+                            label={<>EXAM CENTER <span className="ctf-required-star">*</span></>}
+                            name="center_code"
+                            value={formData.center_code}
+                            onChange={handleChange}
+                            error={errors.center_code}
+                            className="ctf-custom-input"
+                        >
+                            <option value="">Select Center</option>
+                            {centersList.length > 0 &&
+                                centersList.map((_el) => (
+                                    <option key={_el.cl_number} value={`${_el.cl_number}`}>
+                                        ({_el.cl_number}) {_el.cl_name}
                                     </option>
-                                );
-                            })}
-                    </InputSelect>
-                    <InputError error={errors.center_code} />
+                                ))
+                            }
+                        </InputSelect>
+                        <InputError error={errors.center_code} />
+                    </div>
 
                     {/* Exam Date */}
-                    <Input
-                        label="Exam Date"
-                        name="examDate"
-                        type="date"
-                        onChange={handleChange}
-                        value={formData.examDate}
-                        error={errors.examDate}>
+                    <div className="ctf-form-group">
+                        <Input
+                            label={<>EXAM DATE <span className="ctf-required-star">*</span></>}
+                            name="examDate"
+                            type="date"
+                            onChange={handleChange}
+                            value={formData.examDate}
+                            error={errors.examDate}
+                            className="ctf-custom-input"
+                        />
                         <InputError error={errors.examDate} />
-                    </Input>
+                    </div>
 
                     {/* Exam Time */}
-                    <Input
-                        label="Exam Time"
-                        name="examTime"
-                        type="text"
-                        placeholder="e.g. 10:00 AM TO 01:00 PM"
-                        onChange={handleChange}
-                        value={formData.examTime}
-                        error={errors.examTime}>
+                    <div className="ctf-form-group">
+                        <Input
+                            label={<>EXAM TIME <span className="ctf-required-star">*</span></>}
+                            name="examTime"
+                            type="text"
+                            placeholder="10:00 AM TO 01:00 PM"
+                            onChange={handleChange}
+                            value={formData.examTime}
+                            error={errors.examTime}
+                            className="ctf-custom-input"
+                        />
                         <InputError error={errors.examTime} />
-                    </Input>
-
-                    {/* Mock Name */}
-                    <Input
-                        label="Mock Name"
-                        name="mockName"
-                        placeholder="Enter mock name"
-                        onChange={handleChange}
-                        value={formData.mockName}
-                        error={errors.mockName}>
-                        <InputError error={errors.mockName} />
-                    </Input>
+                    </div>
 
                     {/* Total Questions */}
-                    <Input
-                        label="Total Questions"
-                        name="totalQuestions"
-                        type="number"
-                        placeholder="e.g. 50"
-                        onChange={handleChange}
-                        value={formData.totalQuestions}
-                        error={errors.totalQuestions}>
+                    <div className="ctf-form-group">
+                        <Input
+                            label={<>QUESTIONS <span className="ctf-required-star">*</span></>}
+                            name="totalQuestions"
+                            type="number"
+                            placeholder="e.g. 50"
+                            onChange={handleChange}
+                            value={formData.totalQuestions}
+                            error={errors.totalQuestions}
+                            className="ctf-custom-input"
+                        />
                         <InputError error={errors.totalQuestions} />
-                    </Input>
+                    </div>
 
                     {/* Marks Per Questions */}
-                    <Input
-                        label="Marks Per Question"
-                        name="marksPerQuestion"
-                        type="number"
-                        placeholder="e.g. 1"
-                        onChange={handleChange}
-                        value={formData.marksPerQuestion}
-                        error={errors.marksPerQuestion}>
+                    <div className="ctf-form-group">
+                        <Input
+                            label={<>MARKS / QUES <span className="ctf-required-star">*</span></>}
+                            name="marksPerQuestion"
+                            type="number"
+                            placeholder="e.g. 1"
+                            onChange={handleChange}
+                            value={formData.marksPerQuestion}
+                            error={errors.marksPerQuestion}
+                            className="ctf-custom-input"
+                        />
                         <InputError error={errors.marksPerQuestion} />
-                    </Input>
+                    </div>
 
                     {/* Total Duration */}
-                    <Input
-                        label="Total Duration (in minutes)"
-                        name="duration"
-                        type="number"
-                        placeholder="e.g. 60"
-                        onChange={handleChange}
-                        value={formData.duration}
-                        error={errors.duration}>
+                    <div className="ctf-form-group">
+                        <Input
+                            label={<>DURATION (MINS) <span className="ctf-required-star">*</span></>}
+                            name="duration"
+                            type="number"
+                            placeholder="e.g. 60"
+                            onChange={handleChange}
+                            value={formData.duration}
+                            error={errors.duration}
+                            className="ctf-custom-input"
+                        />
                         <InputError error={errors.duration} />
-                    </Input>
+                    </div>
 
                     {/* Total Candidates */}
-                    <Input
-                        label="Total Candidates"
-                        name="candidates"
-                        type="number"
-                        placeholder="e.g. 100"
-                        onChange={handleChange}
-                        value={formData.candidates}
-                        error={errors.candidates}>
+                    <div className="ctf-form-group">
+                        <Input
+                            label={<>TOTAL CANDIDATES <span className="ctf-required-star">*</span></>}
+                            name="candidates"
+                            type="number"
+                            placeholder="e.g. 100"
+                            onChange={handleChange}
+                            value={formData.candidates}
+                            error={errors.candidates}
+                            className="ctf-custom-input"
+                        />
                         <InputError error={errors.candidates} />
-                    </Input>
-
+                    </div>
 
                     {/* Starting Roll Number */}
-                    <Input
-                        label="Starting Roll Number"
-                        name="startingRollNumber"
-                        type="text"
-                        placeholder="e.g. exam2025"
-                        onChange={handleChange}
-                        value={formData.startingRollNumber}
-                        error={errors.startingRollNumber}>
+                    <div className="ctf-form-group">
+                        <Input
+                            label="STARTING ROLL"
+                            name="startingRollNumber"
+                            type="text"
+                            placeholder="e.g. 1001"
+                            onChange={handleChange}
+                            value={formData.startingRollNumber}
+                            error={errors.startingRollNumber}
+                            className="ctf-custom-input"
+                        />
                         <InputError error={errors.startingRollNumber} />
-                    </Input>
+                    </div>
 
                     {/* Default Password */}
-                    <Input
-                        label="Default Password"
-                        name="defaultPassword"
-                        type="text"
-                        placeholder="e.g. exam2025"
-                        onChange={handleChange}
-                        value={formData.defaultPassword}
-                        error={errors.defaultPassword}>
+                    <div className="ctf-form-group">
+                        <Input
+                            label="DEFAULT PASSWORD"
+                            name="defaultPassword"
+                            type="text"
+                            placeholder="e.g. 1111"
+                            onChange={handleChange}
+                            value={formData.defaultPassword}
+                            error={errors.defaultPassword}
+                            className="ctf-custom-input"
+                        />
                         <InputError error={errors.defaultPassword} />
-                    </Input>
+                    </div>
 
                     {/* Submit Button */}
-                    <div className="col-span-2 flex justify-center pt-4">
-                        <CButton type="submit" isLoading={isLoading}>
-                            Create Mock Test
-                        </CButton>
+                    <div className="ctf-footer">
+                        <button 
+                            type="submit" 
+                            disabled={isLoading}
+                            className="ctf-btn-primary"
+                        >
+                            {isLoading ? (
+                                <AiOutlineLoading3Quarters className="animate-spin text-xl" />
+                            ) : (
+                                <MdSave />
+                            )}
+                            <span>CONFIRM & CREATE MOCK</span>
+                        </button>
                     </div>
                 </form>
             </div>

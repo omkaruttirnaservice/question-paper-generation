@@ -28,10 +28,14 @@ function BookNameDropdown() {
 		<div className="flex flex-col gap-1 relative ">
 			<label htmlFor="pub-name">Book Name</label>
 
-			<div className="flex">
-				<CButton onClick={handleAddBookModal} icon={<FaPlus />} />
+			<div className="flex items-center gap-2">
+				<CButton 
+                    onClick={handleAddBookModal} 
+                    icon={<FaPlus />} 
+                    className="!rounded-full !p-3 !bg-cyan-600 !shadow-lg !shadow-cyan-200"
+                />
 				<select
-					className="input-el grow"
+					className="input-el grow w-full"
 					type="text"
 					onChange={handleChange}
 					name="book_name"
@@ -40,7 +44,7 @@ function BookNameDropdown() {
 					{bookNamesList.length >= 1 &&
 						bookNamesList.map((el) => {
 							return (
-								<option value={el.msq_book_name}>{el.msq_book_name}</option>
+								<option key={el.id} value={el.msq_book_name}>{el.msq_book_name}</option>
 							);
 						})}
 				</select>

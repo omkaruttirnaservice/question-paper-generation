@@ -1,143 +1,40 @@
-import { memo, useState } from 'react';
-import { FaTrash } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
-import { confirmDialouge } from '../../helpers/confirmDialouge';
-import { testsSliceActions } from '../../Store/tests-slice';
-import CButton from '../UI/CButton';
+import { memo } from 'react';
 
-function SelectedQuestionsPreview({ el, idx, topicHeader }) {
-    const dispatch = useDispatch();
-    const { selectedQuestionsList } = useSelector((state) => state.tests);
-    const [isOpen, setIsOpen] = useState(false);
-    const handleRemoveQuestion = async (el) => {
-        const isConfirm = await confirmDialouge({
-            title: 'Are you sure?',
-            text: 'Do you want to delete the question?',
-        });
-        if (!isConfirm) return false;
-        let updatedList = [...selectedQuestionsList];
-        let index = selectedQuestionsList.findIndex((_el) => _el.q_id == el.q_id);
-        updatedList.splice(index, 1);
-        dispatch(testsSliceActions.setSelectedQuestionsList(updatedList));
-    };
+const SelectedQuestionsPreview = memo(({ el, topicHeader }) => {
     return (
-        <>
-            {topicHeader && <div className="border p-2 text-center">{topicHeader}</div>}
-            <div
-                className={`border mb-2  overflow-y-hidden preview-question ${
-                    isOpen ? 'h-auto' : 'h-[8rem]'
-                } relative`}
-                key={idx}
-                onClick={() => {
-                    setIsOpen(!isOpen);
-                }}>
-                <CButton
-                    icon={<FaTrash />}
-                    onClick={handleRemoveQuestion.bind(null, el)}
-                    className={'btn--danger absolute top-0 right-0 remove-que-btn'}>
-                    Remove
-                </CButton>
-                <div className="py-3 px-4 text-start">
-                    <div className="py-3 flex items-start gap-2">
-                        <p className="font-bold text-[#555] mb-4  text-start inline-block">
-                            Q. {el.q_id})
-                        </p>
-                        <p
-                            className="text-start inline-block"
-                            dangerouslySetInnerHTML={{
-                                __html: el.q,
-                            }}></p>
-                    </div>
+        <div className="ql-selected-item-wrap">
+            {topicHeader}
+            <div className="ql-q-card ql-q-card--selected">
+                <div className="ql-q-header">
+                    <span className="ql-q-id">Question #{el.q_id}</span>
+                </div>
 
-                    <div className="py-3">
-                        <span className="font-bold text-[#555] mb-4 block text-start">
-                            Option A
-                        </span>
+                <div
+                    className="ql-q-content"
+                    dangerouslySetInnerHTML={{ __html: el.q }}
+                />
 
-                        <p
-                            dangerouslySetInnerHTML={{
-                                __html: el.q_a,
-                            }}></p>
-                    </div>
-
-                    <hr />
-
-                    <div className="py-3">
-                        <span className="font-bold text-[#555] mb-4 block text-start">
-                            Option B
-                        </span>
-
-                        <p
-                            dangerouslySetInnerHTML={{
-                                __html: el.q_b,
-                            }}></p>
-                    </div>
-
-                    <hr />
-
-                    <div className="py-3">
-                        <span className="font-bold text-[#555] mb-4 block text-start">
-                            Option C
-                        </span>
-                        <p
-                            dangerouslySetInnerHTML={{
-                                __html: el.q_c,
-                            }}></p>
-                    </div>
-
-                    <hr />
-
-                    <div className="py-3">
-                        <span className="font-bold text-[#555] mb-4 block text-start">
-                            Option D
-                        </span>
-                        <p
-                            dangerouslySetInnerHTML={{
-                                __html: el.q_d,
-                            }}></p>
-                    </div>
-
-                    <hr />
-
-                    {el.q_e && (
-                        <div className="py-3">
-                            <span className="font-bold text-[#555] mb-4 block text-start">
-                                Option E
-                            </span>
-                            <p
-                                dangerouslySetInnerHTML={{
-                                    __html: el.q_e,
-                                }}></p>
+                <div className="ql-q-options">
+                    {[
+                        { label: 'A', value: el.q_a },
+                        { label: 'B', value: el.q_b },
+                        { label: 'C', value: el.q_c },
+                        { label: 'D', value: el.q_d },
+                        { label: 'E', value: el.q_e },
+                    ].filter(opt => opt.value).map((opt, i) => (
+                        <div key={i} className="ql-q-opt">
+                            <span className="ql-q-opt-lbl">{opt.label}</span>
+                            <div dangerouslySetInnerHTML={{ __html: opt.value }} />
                         </div>
-                    )}
+                    ))}
+                </div>
 
-                    <hr />
-
-                    <div className="py-3">
-                        <span className="font-bold text-[#555] mb-4 me-3">Correct Option</span>
-                        <span className="mb-6 bg-blue-200 px-2 py-1 w-fit">
-                            {el.q_ans.toUpperCase()}
-                        </span>
-                    </div>
-
-                    <hr />
-
-                    {el.q_sol && (
-                        <div className="py-3">
-                            <span className="font-bold text-[#555] my-4 block text-start">
-                                Solution
-                            </span>
-                            <p
-                                className="text-start"
-                                dangerouslySetInnerHTML={{
-                                    __html: el.q_sol,
-                                }}></p>
-                        </div>
-                    )}
+                <div className="ql-q-footer">
+                    <span className="ql-q-ans">Correct: {el.q_ans}</span>
                 </div>
             </div>
-        </>
+        </div>
     );
-}
+});
 
-export default memo(SelectedQuestionsPreview);
+export default SelectedQuestionsPreview;

@@ -302,6 +302,25 @@ const reportsController = {
 
         // return workbook.xlsx.write(res);
     }),
+
+    getActivityLogs: asyncHandler(async (req, res) => {
+        const filters = {
+            searchBy: req.query.searchBy, // 'roll_no' or 'name'
+            searchValue: req.query.searchValue,
+            batch: req.query.batch,
+            exam_name: req.query.exam_name,
+            date: req.query.date
+        };
+
+        const [_logs] = await reportsModel.getStudentActivityLogs(filters);
+
+        return res.status(200).json(new ApiResponse(200, _logs, 'Successfully fetched activity logs'));
+    }),
+
+    getActivityLogsFilters: asyncHandler(async (req, res) => {
+        const filtersData = await reportsModel.getActivityLogFilters();
+        return res.status(200).json(new ApiResponse(200, filtersData, 'Successfully fetched filters'));
+    }),
 };
 
 export default reportsController;

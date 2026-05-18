@@ -1,0 +1,112 @@
+/* Published Tests List Styles */
+.ptl-root {
+    padding: 1rem 1.5rem;
+    background-color: #f8fafc;
+    min-height: 100vh;
+}
+
+.ptl-header-bar {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.3);
+    margin-bottom: 1.5rem;
+}
+
+.ptl-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+}
+
+.ptl-content-container {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.ptl-mode-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ptl-mode-label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.ptl-table-card {
+    background: white;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+}
+
+/* DataTable Custom Styles Overrides */
+.rdt_Table {
+    background-color: transparent !important;
+}
+
+.rdt_Header {
+    display: none !important;
+}
+
+.rdt_TableCol {
+    padding: 0.5rem 0.75rem !important;
+}
+
+.rdt_TableCell {
+    padding: 0.5rem 0.75rem !important;
+}
+
+.rdt_TableRow {
+    min-height: 52px !important;
+    transition: all 0.2s ease;
+}
+
+.rdt_TableRow:hover {
+    background-color: #f1f5f9 !important;
+}
+
+/* Custom Scrollbar for the table container */
+.rdt_TableBody::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.rdt_TableBody::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.rdt_TableBody::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.rdt_TableBody::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Pagination Styling */
+.rdt_Pagination {
+    color: #64748B !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+}
+
+.rdt_Pagination button svg {
+    fill: #06b6d4 !important;
+}
+

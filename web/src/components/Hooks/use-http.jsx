@@ -1,18 +1,18 @@
 import { useDispatch } from 'react-redux';
 import { loaderActions } from '../../Store/loader-slice.jsx';
 import { toast } from 'react-toastify';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+
 const useHttp = () => {
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
 
-    const sendRequest = async (requestData, callback) => {
+    const sendRequest = useCallback(async (requestData, callback) => {
         setIsLoading(true);
         try {
             dispatch(loaderActions.showLoader());
             let res = await fetch(requestData.url, {
                 method: requestData.method ? requestData.method : 'GET',
-                // headers: requestData.headers ? requestData.headers : {},
                 headers: {
                     'Content-Type': 'application/json',
                     ...requestData.headers,
@@ -26,29 +26,24 @@ const useHttp = () => {
                 } else {
                     const data = await res.json();
                     throw new Error(
-                        data?.usrMsg || data?.message || data?.message || 'Request failed'
+                        data?.usrMsg || data?.message || 'Request failed'
                     );
                 }
             }
             const data = await res.json();
-
-            toast(data?.message);
+            if (data?.message) toast(data?.message);
 
             dispatch(loaderActions.hideLoader());
-            // THIS FUNCTION IS FOR GETTING RESPONSE RECIVED FROM THE REQUEST
             callback(data);
         } catch (err) {
             console.log(err, '----');
-            console.log(err.message, '----');
             dispatch(loaderActions.hideLoader());
             toast(err?.message || 'Unable to connect to backend');
-            if (err.message == 'Invalid token') {
-                navigate('/login', { replace: true });
-            }
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [dispatch]);
+
     return {
         sendRequest,
         isLoading,

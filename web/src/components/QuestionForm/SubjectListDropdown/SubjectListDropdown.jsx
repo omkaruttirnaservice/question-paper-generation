@@ -24,8 +24,8 @@ function SubjectListDropdown({ isShowAddNewBtn = true, className }) {
 		dispatch(ModalActions.toggleModal('add-subject-modal'));
 	};
 	return (
-		<div className={`flex flex-col gap-1 relative ${className}`}>
-			<label htmlFor="subject-id">Subject</label>
+		<div className={`flex flex-col gap-1.5 relative ${className}`}>
+			<label className="text-[0.7rem] font-black text-slate-500 uppercase tracking-wider px-1">Subject</label>
 			<div className="flex">
 				{isShowAddNewBtn && <CButton onClick={handleSubjectAddModal} icon={<FaPlus />} />}
 				<select id="subject-id" className="input-el grow w-48" name="subject_id" onChange={handleChange}>

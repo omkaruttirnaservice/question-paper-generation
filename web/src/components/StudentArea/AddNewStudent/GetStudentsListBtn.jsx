@@ -1,38 +1,45 @@
 import { useMutation } from '@tanstack/react-query';
-import CButton from '../../UI/CButton';
 import { getStudentsList } from './api';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import { memo } from 'react';
+import { MdOutlineGroups } from 'react-icons/md';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 function GetStudentsListBtn({ form_filling_server_ip }) {
-    const getStudetListMutation = useMutation({
+    const getStudentListMutation = useMutation({
         mutationFn: getStudentsList,
-        onSuccess: (data, variables) => {
-            Swal.fire('Success', 'Downloaded students list');
+        onSuccess: (data) => {
+            Swal.fire({
+                title: 'Success',
+                text: 'Downloaded students list successfully',
+                icon: 'success'
+            });
         },
-        onError: (error, variables) => {
+        onError: (error) => {
             const er = error?.response?.data?.message || 'Server error.';
-            if (er == 'Validation error') {
-                Swal.fire('Error', 'Student data already present');
-                return false;
+            if (er === 'Validation error') {
+                Swal.fire('Notice', 'Student data is already up to date', 'info');
             } else {
                 toast.warn(er);
             }
         },
     });
 
-    const handleGetStudentsList = (form_filling_server_ip) => {
-        getStudetListMutation.mutate(form_filling_server_ip);
-    };
     return (
-        <CButton
+        <button
             type="button"
-            onClick={handleGetStudentsList.bind(null, form_filling_server_ip)}
-            className={'w-fit text-xs'}
-            isLoading={getStudetListMutation.isPending}>
-            Get All Stuents List
-        </CButton>
+            onClick={() => getStudentListMutation.mutate(form_filling_server_ip)}
+            disabled={getStudentListMutation.isPending}
+            className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-[10px] shadow-sm uppercase tracking-wider transition-all disabled:opacity-50 whitespace-nowrap"
+        >
+            {getStudentListMutation.isPending ? (
+                <AiOutlineLoading3Quarters className="animate-spin text-xs" />
+            ) : (
+                <MdOutlineGroups className="text-sm" />
+            )}
+            Sync Students
+        </button>
     );
 }
 

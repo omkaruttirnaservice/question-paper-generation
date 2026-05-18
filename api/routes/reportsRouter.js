@@ -26,4 +26,8 @@ reportsRouter.get(
 reportsRouter.post('/get-result-excel', reportsController.getResultExcel);
 reportsRouter.post('/get-custom-result-excel', reportsController.getCustomResultExcel);
 
+// Activity Logs endpoint
+reportsRouter.get('/activity-logs', reportsController.getActivityLogs);
+reportsRouter.get('/activity-logs-filters', reportsController.getActivityLogsFilters);
+
 export default reportsRouter;
