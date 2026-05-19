@@ -56,7 +56,7 @@ function MockTestReport() {
             sortable: true,
             name: 'Test ID',
             selector: (row) => (
-                <span className="font-black text-cyan-600 bg-cyan-50 px-2 py-1 rounded-lg border border-cyan-100">
+                <span className="font-black text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200">
                     {row.published_test_id}
                 </span>
             ),

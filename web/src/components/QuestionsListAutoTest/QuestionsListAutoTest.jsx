@@ -227,7 +227,7 @@ function QuestionsListAutoTest() {
             <div className="qat-info-banner">
                 <div className="qat-info-stats">
                     {[
-                        { label: 'Test Name', value: test.test_name, color: '#06B6D4' },
+                        { label: 'Test Name', value: test.test_name, color: '#2F54EB' },
                         { label: 'Duration', value: `${test.test_duration}m`, color: '#10B981' },
                         { label: 'Marks/Q', value: test.marks_per_question, color: '#8B5CF6' },
                         { label: 'Total Q', value: totalSelectedQ, color: '#F59E0B' },
@@ -262,7 +262,7 @@ function QuestionsListAutoTest() {
 
                     <div className="qat-card">
                         <div className="qat-card-header">
-                            <div className="qat-card-icon" style={{ background: '#ECFEFF', color: '#0891B2' }}><FaLayerGroup /></div>
+                            <div className="qat-card-icon" style={{ background: '#F0F5FF', color: '#2F54EB' }}><FaLayerGroup /></div>
                             <h2 className="qat-card-title">Select Topics to Include</h2>
                         </div>
 
@@ -357,7 +357,7 @@ function CreatePreSubmitView({ test, finalTestSubmitHandler, totalSelectedQ }) {
                 ].map((r, i) => (
                     <div key={i} className="qat-preview-row">
                         <div className="flex items-center gap-2">
-                            <span className="text-cyan-500 text-lg">{r.icon}</span>
+                            <span className="text-blue-500 text-lg">{r.icon}</span>
                             <span className="qat-preview-label">{r.label}</span>
                         </div>
                         <span className="qat-preview-value">{r.value || '—'}</span>

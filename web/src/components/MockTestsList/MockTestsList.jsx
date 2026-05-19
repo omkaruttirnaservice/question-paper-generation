@@ -32,7 +32,7 @@ function MockTestsList() {
     function getExamsList() {
         setLoading(true);
         const reqData = {
-            url: SERVER_IP + '/api/test/list-published?type=MOCK',
+            url: SERVER_IP + '/api/test/list-published?type=MOCK&mode=ALL',
         };
         sendRequest(reqData, ({ data }) => {
             setLoading(false);
@@ -101,7 +101,7 @@ function MockTestsList() {
             name: 'Test ID',
             center: true,
             selector: (row) => (
-                <span className="font-black text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded-lg border border-cyan-100 text-[10px]">
+                <span className="font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg border border-amber-200 text-[10px]">
                     {row.id}
                 </span>
             ),
@@ -148,7 +148,7 @@ function MockTestsList() {
             cell: (row) => (
                 <div className="flex flex-wrap gap-1 max-w-[300px] py-1">
                     {row.post_details?.map((_post, idx) => (
-                        <span key={idx} className="bg-cyan-50 text-cyan-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-cyan-100 uppercase tracking-tight whitespace-nowrap">
+                        <span key={idx} className="bg-amber-50 text-amber-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-amber-200 uppercase tracking-tight whitespace-nowrap">
                             {_post.post_name}
                         </span>
                     ))}
@@ -165,7 +165,7 @@ function MockTestsList() {
                 return (
                     <div className="flex items-center">
                         {status === 1 && (
-                            <span className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-wide flex items-center gap-1">
+                            <span className="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-wide flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> Today
                             </span>
                         )}
@@ -225,7 +225,7 @@ function MockTestsList() {
     return (
         <div className="ptl-root">
             {/* Premium Header Bar */}
-            <div className="ptl-header-bar">
+            <div className="ptl-header-bar mtl-header-bar">
                 <div className="ptl-header-content">
                     <MdAssignment />
                     <span>MOCK TESTS LIST</span>
@@ -255,7 +255,7 @@ function MockTestsList() {
                 {/* Loading State */}
                 {loading && (
                     <div className="flex justify-center p-12">
-                        <div className="flex items-center gap-3 bg-cyan-50 text-cyan-700 px-6 py-3 rounded-2xl font-black text-sm animate-pulse shadow-sm border border-cyan-100">
+                        <div className="flex items-center gap-3 bg-amber-50 text-amber-700 px-6 py-3 rounded-2xl font-black text-sm animate-pulse shadow-sm border border-amber-200">
                             <AiOutlineLoading3Quarters className="animate-spin" />
                             LOADING MOCK TESTS...
                         </div>

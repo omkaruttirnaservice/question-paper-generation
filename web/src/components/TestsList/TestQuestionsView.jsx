@@ -64,12 +64,12 @@ function TestQuestionsView() {
                     </div>
                 }
                 className={`min-w-[95vw]`}
-                headerClass="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-6 py-4 rounded-2xl mb-6 shadow-md"
+                headerClass="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4 rounded-2xl mb-6 shadow-md"
             >
                 <PDFGenerator questions={questionsList} testDetails={testDetails} />
             </CModal>
 
-            {/* ✅ Same Cyan Header Bar as Auto Test */}
+            {/* ✅ Same Blue Header Bar as Auto Test */}
             <div className="qat-header-bar">
                 <div className="qat-header-content">
                     <MdAssignment />
@@ -91,7 +91,7 @@ function TestQuestionsView() {
             <div className="qat-info-banner">
                 <div className="qat-info-stats">
                     {[
-                        { label: 'Test Name', value: testDetails.test_name, color: '#06B6D4' },
+                        { label: 'Test Name', value: testDetails.test_name, color: '#2F54EB' },
                         { label: 'Duration', value: `${testDetails.test_duration}m`, color: '#10B981' },
                         { label: 'Marks/Q', value: testDetails.marks_per_question, color: '#8B5CF6' },
                         { label: 'Total Q', value: testDetails.total_questions, color: '#F59E0B' },
@@ -162,7 +162,7 @@ const QuestionSplitView = memo(({ questionsList, renderTopicHeader, handleEditQu
                 return (
                     <div key={idx} className="qat-card" style={{ position: 'relative', transition: 'all 0.3s', borderRadius: '1.5rem' }}>
                         {topicHeader && (
-                            <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#0891B2', background: '#ECFEFF', borderRadius: '0.5rem', padding: '0.3rem 0.75rem', display: 'inline-block', marginBottom: '0.75rem' }}>
+                            <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#2F54EB', background: '#F0F5FF', borderRadius: '0.5rem', padding: '0.3rem 0.75rem', display: 'inline-block', marginBottom: '0.75rem' }}>
                                 {el.main_topic_name}{el.sub_topic_section ? ` › ${el.sub_topic_section}` : ''}
                             </div>
                         )}
@@ -171,7 +171,7 @@ const QuestionSplitView = memo(({ questionsList, renderTopicHeader, handleEditQu
                             style={{ position: 'absolute', top: '1rem', right: '1rem', background: '#FEF9C3', color: '#854D0E', border: 'none', width: 34, height: 34, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '0.9rem' }}>
                             <GoPencil />
                         </button>
-                        <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#06B6D4', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
+                        <div style={{ fontSize: '0.7rem', fontWeight: 900, color: '#2F54EB', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
                             Q. {idx + 1}
                         </div>
                         <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1E293B', lineHeight: 1.6, marginBottom: '1rem' }}
@@ -185,7 +185,7 @@ const QuestionSplitView = memo(({ questionsList, renderTopicHeader, handleEditQu
                                 { label: 'E', val: el?.q_e || el?.mqs_opt_five },
                             ].filter(o => o.val).map((o, i) => (
                                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', padding: '0.5rem 0.75rem', borderRadius: '0.75rem', background: '#F8FAFC', fontSize: '0.85rem', color: '#475569' }}>
-                                    <span style={{ fontWeight: 950, color: '#0891B2', minWidth: 18 }}>{o.label}.</span>
+                                    <span style={{ fontWeight: 950, color: '#2F54EB', minWidth: 18 }}>{o.label}.</span>
                                     <span dangerouslySetInnerHTML={{ __html: o.val }} />
                                 </div>
                             ))}
@@ -214,7 +214,7 @@ export function ExamThemeView({ testDetails, questionsList, handleEditQuestion, 
         <>
             <div className="flex justify-center mt-8">
                 <CButton icon={<FaEye size={18} />} disabled={questionsList.length === 0}
-                    className="!px-8 !py-2.5 !text-sm !font-black !bg-gradient-to-r !from-violet-600 !to-indigo-600 !shadow-xl !shadow-indigo-200 !text-white transform hover:!scale-105 transition-all !rounded-xl uppercase tracking-widest"
+                    className="!px-8 !py-2.5 !text-sm !font-black !bg-gradient-to-r !from-blue-600 !to-blue-500 !shadow-xl !shadow-blue-200/50 !text-white transform hover:!scale-105 transition-all !rounded-xl uppercase tracking-widest"
                     onClick={() => dispatch(ModalActions.toggleModal('exam-theme-1-modal'))}>
                     <span>Launch Exam View</span>
                 </CButton>
@@ -228,7 +228,7 @@ export function ExamThemeView({ testDetails, questionsList, handleEditQuestion, 
                             <div className="flex-1 overflow-y-auto pr-2 space-y-4 scrollbar-thin">
                                 <div className="bg-white rounded-[1.5rem] p-6 min-h-[300px] shadow-xl border border-slate-100 relative overflow-hidden">
                                     {/* Question Indicator Pill */}
-                                    <div className="absolute top-0 left-0 bg-gradient-to-r from-cyan-600 to-cyan-400 text-white px-4 py-1 rounded-br-[0.75rem] text-[8px] font-black tracking-[0.2em] uppercase shadow-md z-10">
+                                    <div className="absolute top-0 left-0 bg-gradient-to-r from-blue-600 to-blue-400 text-white px-4 py-1 rounded-br-[0.75rem] text-[8px] font-black tracking-[0.2em] uppercase shadow-md z-10">
                                         Question {idx + 1}
                                     </div>
 
@@ -244,8 +244,8 @@ export function ExamThemeView({ testDetails, questionsList, handleEditQuestion, 
                                                 { label: 'D', val: currentQuestion?.q_d || currentQuestion?.mqs_opt_four },
                                                 { label: 'E', val: currentQuestion?.q_e || currentQuestion?.mqs_opt_five },
                                             ].filter(o => o.val).map((o, i) => (
-                                                <div key={i} className="flex items-center gap-3 p-1.5 rounded-lg bg-slate-50/50 border border-slate-100 hover:border-cyan-400 hover:bg-cyan-50/30 transition-all group cursor-pointer shadow-sm">
-                                                    <span className="w-5 h-5 shrink-0 rounded-md bg-white border border-slate-200 flex items-center justify-center font-black text-[9px] text-slate-400 group-hover:text-cyan-600 group-hover:border-cyan-200 shadow-sm transition-all">
+                                                <div key={i} className="flex items-center gap-3 p-1.5 rounded-lg bg-slate-50/50 border border-slate-100 hover:border-blue-400 hover:bg-blue-50/30 transition-all group cursor-pointer shadow-sm">
+                                                    <span className="w-5 h-5 shrink-0 rounded-md bg-white border border-slate-200 flex items-center justify-center font-black text-[9px] text-slate-400 group-hover:text-blue-600 group-hover:border-blue-200 shadow-sm transition-all">
                                                         {o.label}
                                                     </span>
                                                     <span className="text-sm font-semibold text-slate-600 group-hover:text-slate-800" dangerouslySetInnerHTML={{ __html: o.val }} />
@@ -267,6 +267,7 @@ export function ExamThemeView({ testDetails, questionsList, handleEditQuestion, 
                             {/* Navigation Footer */}
                             <div className="flex justify-between items-center bg-white p-3 rounded-xl shadow-xl border border-slate-100">
                                 <CButton 
+                                    varient=""
                                     disabled={idx === 0} 
                                     className="!bg-slate-50 !text-slate-500 hover:!bg-slate-100 !px-6 !py-2.5 !rounded-xl !font-black !text-[10px] uppercase tracking-[0.15em] border border-slate-200/60 shadow-sm transition-all" 
                                     icon={<FaArrowAltCircleLeft size={13} />} 
@@ -287,7 +288,7 @@ export function ExamThemeView({ testDetails, questionsList, handleEditQuestion, 
 
                                 <CButton 
                                     disabled={questionsList.length === idx + 1} 
-                                    className="!bg-gradient-to-r !from-cyan-600 !to-cyan-500 !text-white hover:!scale-105 !px-8 !py-2.5 !rounded-xl !font-black !text-[10px] uppercase tracking-[0.15em] shadow-lg shadow-cyan-200/50 transition-all" 
+                                    className="!bg-gradient-to-r !from-blue-600 !to-blue-500 !text-white hover:!scale-105 !px-8 !py-2.5 !rounded-xl !font-black !text-[10px] uppercase tracking-[0.15em] shadow-lg shadow-blue-200/50 transition-all" 
                                     icon={<FaArrowAltCircleRight size={13} />} 
                                     onClick={() => setIdx(p => p + 1)}
                                 >
@@ -301,7 +302,7 @@ export function ExamThemeView({ testDetails, questionsList, handleEditQuestion, 
                             <div className="p-8 border-b border-slate-50 bg-slate-50/50">
                                 <div className="flex justify-between items-center mb-4">
                                     <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em]">Questions Navigator</h3>
-                                    <span className="px-3 py-1 bg-cyan-50 text-cyan-600 rounded-lg text-[10px] font-black tracking-widest uppercase border border-cyan-100">
+                                    <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black tracking-widest uppercase border border-blue-100">
                                         Active
                                     </span>
                                 </div>
@@ -318,7 +319,7 @@ export function ExamThemeView({ testDetails, questionsList, handleEditQuestion, 
                                         <div key={_i}
                                             className={`aspect-square rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 font-black text-xs
                                                 ${idx === _i
-                                                    ? 'bg-gradient-to-br from-cyan-600 to-cyan-400 text-white shadow-xl shadow-cyan-100 scale-110 z-10'
+                                                    ? 'bg-gradient-to-br from-blue-600 to-blue-400 text-white shadow-xl shadow-blue-100 scale-110 z-10'
                                                     : 'bg-slate-50 text-slate-400 hover:bg-slate-100 border border-slate-100 hover:border-slate-200'}`}
                                             onClick={() => setIdx(_i)}>
                                             {_i + 1}

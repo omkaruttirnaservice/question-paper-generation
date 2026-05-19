@@ -3,70 +3,83 @@
    ======================================================== */
 
 .qat-root {
-    padding: 0;
-    background: transparent;
-    min-height: auto;
+    padding: 1.5rem 2rem;
+    background: #F5F7FB;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    /* Prevent horizontal scroll */
+    width: 100%;
+    max-width: 100vw;
+    font-family: 'Inter', system-ui, sans-serif;
+    animation: qatFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes qatFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Header Bar (Matching CreateTestForm) */
 .qat-header-bar {
     width: 100%;
     max-width: 1200px;
-    background: linear-gradient(135deg, #06B6D4, #0891B2);
+    background: linear-gradient(135deg, #2F54EB, #1D4ED8);
     color: #fff;
-    padding: 0.75rem 2rem;
-    border-radius: 1.25rem;
+    padding: 1.1rem 2rem;
+    border-radius: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 0.5rem auto;
-    box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.3);
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 15px 35px -10px rgba(47, 84, 235, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .qat-header-content {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    font-weight: 950;
-    font-size: 1.15rem;
+    font-weight: 900;
+    font-size: 1.25rem;
     letter-spacing: 0.02em;
 }
 
 .qat-header-btn {
     background: #fff;
-    color: #0891B2;
-    padding: 0.5rem 1.25rem;
-    font-size: 0.8rem;
-    font-weight: 900;
-    border-radius: 0.875rem;
+    color: #2F54EB;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.78rem;
+    font-weight: 800;
+    border-radius: 0.85rem;
     display: flex;
     align-items: center;
     gap: 0.6rem;
     cursor: pointer;
     border: none;
-    transition: all 0.3s;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .qat-header-btn:hover {
-    background: #E0F2FE;
-    color: #0369A1;
-    transform: translateY(-1px);
+    background: #EEF2FF;
+    color: #1D4ED8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(47, 84, 235, 0.15);
 }
 
 /* Info Banner (High Density) */
 .qat-info-banner {
     max-width: 1200px;
     width: 100%;
-    margin: 0 auto 1rem;
+    margin: 0 auto 1.5rem;
     background: #fff;
-    border: 1px solid #E2E8F0;
+    border: 1px solid #ECEFF4;
     border-radius: 1.5rem;
     padding: 1.25rem 2rem;
-    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05);
+    box-shadow: 
+        0 15px 30px -10px rgba(0, 0, 0, 0.02),
+        0 4px 12px -2px rgba(0, 0, 0, 0.015);
 }
 
 .qat-info-stats {
@@ -89,9 +102,9 @@
 }
 
 .qat-info-stat-val {
-    font-size: 1rem;
-    font-weight: 950;
-    color: #1E293B;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0F172A;
     line-height: 1;
 }
 
@@ -113,17 +126,25 @@
     width: 100%;
     margin: 0 auto 3rem;
     align-items: flex-start;
-    padding: 0 1rem;
+    padding: 0;
 }
 
 /* Card Styling */
 .qat-card {
     background: #fff;
-    border: 1px solid #E2E8F0;
-    border-radius: 2rem;
+    border: 1px solid #ECEFF4;
+    border-radius: 1.5rem;
     padding: 1.5rem;
-    box-shadow: 0 15px 35px -8px rgba(15, 23, 42, 0.05);
+    box-shadow: 
+        0 8px 24px -8px rgba(0, 0, 0, 0.03),
+        0 1.5px 3px -1px rgba(0, 0, 0, 0.015);
     margin-bottom: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qat-card:hover {
+    border-color: #ADC6FF;
+    box-shadow: 0 15px 35px -8px rgba(47, 84, 235, 0.12);
 }
 
 .qat-card-header {
@@ -147,8 +168,8 @@
 
 .qat-card-title {
     font-size: 1rem;
-    font-weight: 950;
-    color: #1E293B;
+    font-weight: 800;
+    color: #0F172A;
     letter-spacing: 0.02em;
 }
 
@@ -163,9 +184,9 @@
 /* Modern Dropdowns */
 .qat-filter-row select {
     width: 100% !important;
-    height: 3rem !important;
-    border-radius: 1rem !important;
-    border: 1.5px solid #F1F5F9 !important;
+    height: 2.85rem !important;
+    border-radius: 0.85rem !important;
+    border: 1.5px solid #ECEFF4 !important;
     background: #F8FAFC !important;
     font-weight: 700 !important;
     font-size: 0.9rem !important;
@@ -173,13 +194,13 @@
     outline: none !important;
     appearance: none;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .qat-filter-row select:focus {
-    border-color: #06B6D4 !important;
+    border-color: #2F54EB !important;
     background: #fff !important;
-    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1) !important;
+    box-shadow: 0 0 0 4px rgba(47, 84, 235, 0.1) !important;
 }
 
 /* Filter Row Refinement */
@@ -191,31 +212,32 @@
 }
 
 .qat-search-btn {
-    background: #0891B2;
+    background: #2F54EB;
     color: #fff;
-    height: 3rem;
+    height: 2.85rem;
     padding: 0 1.5rem;
-    border-radius: 1rem;
-    font-weight: 900;
+    border-radius: 0.85rem;
+    font-weight: 800;
     display: flex;
     align-items: center;
     gap: 0.6rem;
     cursor: pointer;
     border: none;
-    transition: all 0.3s;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(47, 84, 235, 0.15);
 }
 
 .qat-search-btn:hover {
-    background: #0E7490;
+    background: #1D4ED8;
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(8, 145, 178, 0.3);
+    box-shadow: 0 8px 20px rgba(47, 84, 235, 0.25);
 }
 
 /* Table Styling */
 .qat-table-wrap {
     overflow: hidden;
     border-radius: 1.25rem;
-    border: 1px solid #F1F5F9;
+    border: 1px solid #ECEFF4;
 }
 
 .qat-table {
@@ -228,16 +250,18 @@
     padding: 1rem;
     text-align: left;
     font-size: 0.7rem;
-    font-weight: 900;
+    font-weight: 800;
     color: #64748B;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1.5px solid #F1F5F9;
+    border-bottom: 1.5px solid #ECEFF4;
 }
 
 .qat-td {
     padding: 1rem;
-    border-bottom: 1px solid #F1F5F9;
+    border-bottom: 1px solid #ECEFF4;
+    font-size: 0.85rem;
+    color: #334155;
 }
 
 .qat-tr:hover {
@@ -245,13 +269,13 @@
 }
 
 .qat-tr--checked {
-    background: #ECFEFF !important;
+    background: #F0F5FF !important;
 }
 
 .qat-topic-name {
     font-weight: 800;
     color: #334155;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .qat-avail-badge {
@@ -259,8 +283,8 @@
     color: #64748B;
     padding: 0.25rem 0.6rem;
     border-radius: 0.5rem;
-    font-weight: 900;
-    font-size: 0.75rem;
+    font-weight: 800;
+    font-size: 0.72rem;
 }
 
 .qat-count-input {
@@ -269,15 +293,15 @@
     border-radius: 0.75rem;
     border: 1.5px solid #E2E8F0;
     padding: 0 0.75rem;
-    font-weight: 900;
+    font-weight: 800;
     font-size: 0.9rem;
     outline: none;
     transition: all 0.2s;
 }
 
 .qat-count-input:focus {
-    border-color: #06B6D4;
-    box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
+    border-color: #2F54EB;
+    box-shadow: 0 0 0 4px rgba(47, 84, 235, 0.1);
 }
 
 .qat-count-input--disabled {
@@ -291,26 +315,29 @@
     display: flex;
     justify-content: flex-end;
     background: #F8FAFC;
+    border-top: 1px solid #ECEFF4;
 }
 
 .qat-add-btn {
-    background: #06B6D4;
+    background: #2F54EB;
     color: #fff;
     padding: 0.75rem 1.5rem;
-    border-radius: 0.875rem;
-    font-weight: 950;
-    font-size: 0.85rem;
+    border-radius: 0.85rem;
+    font-weight: 800;
+    font-size: 0.82rem;
     display: flex;
     align-items: center;
     gap: 0.6rem;
     cursor: pointer;
     border: none;
-    transition: all 0.3s;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(47, 84, 235, 0.15);
 }
 
 .qat-add-btn:hover {
-    background: #0891B2;
-    transform: scale(1.02);
+    background: #1D4ED8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(47, 84, 235, 0.25);
 }
 
 /* Sidebar Chart */
@@ -332,7 +359,7 @@
 }
 
 .qat-chart-row:hover {
-    border-color: #E2E8F0;
+    border-color: #ECEFF4;
     background: #fff;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
 }
@@ -342,9 +369,9 @@
 }
 
 .qat-chart-subject {
-    font-weight: 900;
+    font-weight: 800;
     font-size: 0.85rem;
-    color: #1E293B;
+    color: #0F172A;
 }
 
 .qat-chart-meta {
@@ -358,8 +385,8 @@
 }
 
 .qat-chart-q {
-    color: #06B6D4;
-    font-weight: 900;
+    color: #2F54EB;
+    font-weight: 800;
 }
 
 .qat-chart-actions {
@@ -382,8 +409,8 @@
 }
 
 .qat-chart-btn--edit {
-    background: #ECFEFF;
-    color: #0891B2;
+    background: #F0F5FF;
+    color: #2F54EB;
 }
 
 .qat-chart-btn--del {
@@ -392,7 +419,7 @@
 }
 
 .qat-chart-btn--edit:hover {
-    background: #0891B2;
+    background: #2F54EB;
     color: #fff;
 }
 
@@ -413,26 +440,25 @@
 
 .qat-chart-total-label {
     font-size: 0.75rem;
-    font-weight: 900;
+    font-weight: 800;
     color: #64748B;
     text-transform: uppercase;
 }
 
 .qat-chart-total-value {
     font-size: 1.25rem;
-    font-weight: 950;
-    color: #1E293B;
+    font-weight: 900;
+    color: #0F172A;
 }
 
 .qat-create-btn {
     width: 100%;
     background: linear-gradient(135deg, #10B981, #059669);
-    /* Success Green */
     color: #fff;
     padding: 1rem;
     border-radius: 1.25rem;
-    font-weight: 950;
-    font-size: 1rem;
+    font-weight: 800;
+    font-size: 0.95rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -441,31 +467,13 @@
     cursor: pointer;
     border: none;
     box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
-    transition: all 0.3s;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     text-transform: uppercase;
 }
 
 .qat-create-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 15px 35px -5px rgba(16, 185, 129, 0.5);
-}
-
-/* Global Fixes to prevent horizontal scroll */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-.qat-root {
-    padding: 0;
-    background: transparent;
-    min-height: auto;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-    width: 100%;
-    max-width: 100vw;
 }
 
 /* Modal Styling */
@@ -479,14 +487,14 @@
 
 .qat-preview-label {
     font-size: 0.75rem;
-    font-weight: 900;
+    font-weight: 800;
     color: #64748B;
     text-transform: uppercase;
 }
 
 .qat-preview-value {
-    font-weight: 950;
-    color: #1E293B;
+    font-weight: 800;
+    color: #0F172A;
 }
 
 .qat-btn-success {
@@ -509,9 +517,9 @@
 }
 
 .qat-preview-btn:hover {
-    background: #06B6D4;
+    background: #2F54EB;
     color: #fff;
-    border-color: #06B6D4;
+    border-color: #2F54EB;
 }
 
 .qat-empty {

@@ -32,7 +32,7 @@ export default function Input({
                 <input
                     type={type}
                     id={name}
-                    className={`w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 px-5 outline-none transition-all duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50 text-slate-800 font-medium placeholder:text-slate-400 ${
+                    className={`w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 px-5 outline-none transition-all duration-300 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:opacity-50 text-slate-800 font-medium placeholder:text-slate-400 ${
                         icon ? 'pl-12' : ''
                     } ${error ? 'border-red-400 ring-4 ring-red-400/10' : ''}`}
                     placeholder={inputPlaceholder}
@@ -70,7 +70,7 @@ export function InputSelect({
             )}
             <select
                 id={name}
-                className={`w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 px-5 outline-none transition-all duration-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 disabled:opacity-50 text-slate-800 font-medium appearance-none ${
+                className={`w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 px-5 outline-none transition-all duration-300 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:opacity-50 text-slate-800 font-medium appearance-none ${
                     error ? 'border-red-400 ring-4 ring-red-400/10' : ''
                 }`}
                 name={name}

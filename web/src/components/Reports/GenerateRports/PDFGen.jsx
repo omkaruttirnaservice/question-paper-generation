@@ -56,14 +56,14 @@ const PDFGenerator = ({ questions, testDetails }) => {
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8 max-w-5xl mx-auto">
                 <div className="flex justify-between items-center p-5 border-b border-slate-100">
                     <div className="flex items-center gap-3">
-                        <div className="bg-cyan-600 text-white p-2.5 rounded-lg">
+                        <div className="bg-blue-600 text-white p-2.5 rounded-lg">
                             <FaPrint className="text-lg" />
                         </div>
                         <h3 className="text-xl font-bold text-slate-800">Print Setup</h3>
                     </div>
                     <button 
                         onClick={handlePrint}
-                        className="bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors">
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors">
                         <FaPrint /> Print Document
                     </button>
                 </div>
@@ -75,7 +75,7 @@ const PDFGenerator = ({ questions, testDetails }) => {
                             <label className="block text-[11px] font-extrabold text-slate-400 mb-2 uppercase tracking-wider">Paper Title</label>
                             <input
                                 type="text"
-                                className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-sm font-semibold text-slate-800 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
+                                className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-sm font-semibold text-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                                 value={pdfConfig.title}
                                 onChange={(e) => setPdfConfig((prev) => ({ ...prev, title: e.target.value }))}
                             />
@@ -83,7 +83,7 @@ const PDFGenerator = ({ questions, testDetails }) => {
                         <div>
                             <label className="block text-[11px] font-extrabold text-slate-400 mb-2 uppercase tracking-wider">Option Label Style</label>
                             <select
-                                className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-sm font-semibold text-slate-800 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all appearance-none"
+                                className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-sm font-semibold text-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none"
                                 value={pdfConfig.optionInput}
                                 onChange={(e) => setPdfConfig((prev) => ({ ...prev, optionInput: e.target.value }))}>
                                 <option value={CIRCLE}>Circle (○)</option>
@@ -101,7 +101,7 @@ const PDFGenerator = ({ questions, testDetails }) => {
                                 <label className="block text-[11px] font-extrabold text-slate-400 mb-2 uppercase tracking-wider">Duration (Min)</label>
                                 <input
                                     type="text"
-                                    className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-sm font-semibold text-slate-800 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
+                                    className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-sm font-semibold text-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                                     value={pdfConfig.duration}
                                     onChange={(e) => setPdfConfig((prev) => ({ ...prev, duration: e.target.value }))}
                                 />
@@ -110,7 +110,7 @@ const PDFGenerator = ({ questions, testDetails }) => {
                                 <label className="block text-[11px] font-extrabold text-slate-400 mb-2 uppercase tracking-wider">Exam Date</label>
                                 <input
                                     type="date"
-                                    className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-sm font-semibold text-slate-800 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-all"
+                                    className="w-full border border-slate-200 bg-slate-50 rounded-lg p-2.5 text-sm font-semibold text-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
                                     value={pdfConfig.examDate}
                                     onChange={(e) => setPdfConfig((prev) => ({ ...prev, examDate: e.target.value }))}
                                 />
@@ -125,7 +125,7 @@ const PDFGenerator = ({ questions, testDetails }) => {
                                         name="viewType"
                                         checked={pdfConfig.isListView}
                                         onChange={() => setPdfConfig((prev) => ({ ...prev, isListView: true }))}
-                                        className="w-4 h-4 text-cyan-600 focus:ring-cyan-500 cursor-pointer"
+                                        className="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer"
                                     />
                                     <span className="text-sm font-bold text-slate-700">List View</span>
                                 </label>
@@ -135,7 +135,7 @@ const PDFGenerator = ({ questions, testDetails }) => {
                                         name="viewType"
                                         checked={!pdfConfig.isListView}
                                         onChange={() => setPdfConfig((prev) => ({ ...prev, isListView: false }))}
-                                        className="w-4 h-4 text-cyan-600 focus:ring-cyan-500 cursor-pointer"
+                                        className="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer"
                                     />
                                     <span className="text-sm font-bold text-slate-700">Split View</span>
                                 </label>
@@ -177,15 +177,15 @@ const PDFGenerator = ({ questions, testDetails }) => {
                 {/* Footer status bar */}
                 <div className="bg-[#F8FAFC] border-t border-slate-100 px-6 py-4 flex items-center gap-8 text-[11px] font-extrabold text-slate-500 uppercase tracking-widest">
                     <span className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></div>
+                        <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
                         Total Questions: {pdfConfig.totalQuestions}
                     </span>
                     <span className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></div>
+                        <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
                         Total Marks: {pdfConfig.totalQuestions}
                     </span>
-                    <span className="flex items-center gap-2 text-cyan-600 ml-auto">
-                        <div className="w-1.5 h-1.5 bg-cyan-600 rounded-full"></div>
+                    <span className="flex items-center gap-2 text-blue-600 ml-auto">
+                        <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
                         Live Preview
                     </span>
                 </div>
@@ -332,7 +332,7 @@ function ToggleButtonUi({ onClick, status }) {
             type="button"
             onClick={onClick}
             className={`w-[38px] h-5 flex items-center rounded-full transition-colors duration-300 focus:outline-none ${
-                status ? 'bg-cyan-600' : 'bg-slate-300'
+                status ? 'bg-blue-600' : 'bg-slate-300'
             }`}>
             <span
                 className={`w-3.5 h-3.5 bg-white rounded-full shadow-sm transform transition-transform duration-300 ${

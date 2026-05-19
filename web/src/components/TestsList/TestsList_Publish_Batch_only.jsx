@@ -303,15 +303,20 @@ function TestsList() {
         },
         {
             name: 'Publish Exam',
-            cell: (row) => (
-                <div className="flex justify-center">
-                    <CButton
-                        className="btn--primary text-xs"
-                        onClick={handlePublishExam.bind(null, row)}>
-                        Publish
-                    </CButton>
-                </div>
-            ),
+            cell: (row) => {
+                const isPublished = row.is_published > 0;
+                return (
+                    <div className="flex justify-center">
+                        <CButton
+                            className={`${isPublished ? 'btn--disabled' : 'btn--primary'} text-xs`}
+                            disabled={isPublished}
+                            onClick={handlePublishExam.bind(null, row)}
+                        >
+                            {isPublished ? 'Published' : 'Publish'}
+                        </CButton>
+                    </div>
+                );
+            },
             selector: (row) => row.sl_roll_number,
             width: '8rem',
         },

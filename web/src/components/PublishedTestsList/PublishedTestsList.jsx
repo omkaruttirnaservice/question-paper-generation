@@ -24,7 +24,7 @@ function PublishedTestsList() {
 
     const [publishedTestsList, setPublishedTestsList] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [listMode, setListMode] = useState("NEW");
+    const [listMode, setListMode] = useState("ALL");
 
     useEffect(() => {
         getExamsList();
@@ -106,7 +106,7 @@ function PublishedTestsList() {
             name: 'Published test id',
             center: true,
             selector: (row) => (
-                <span className="font-black text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded-lg border border-cyan-100 text-[10px]">
+                <span className="font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100 text-[10px]">
                     {row.id}
                 </span>
             ),
@@ -125,7 +125,7 @@ function PublishedTestsList() {
             name: 'Batch',
             center: true,
             selector: (row) => (
-                <span className="text-[10px] font-black text-indigo-500 uppercase tracking-tighter">
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-tighter">
                     Batch-{row.tm_allow_to}
                 </span>
             ),
@@ -161,7 +161,7 @@ function PublishedTestsList() {
                 return (
                     <div className="flex flex-wrap gap-1 max-w-[300px] py-1">
                         {posts?.map((_post, idx) => (
-                            <span key={idx} className="bg-cyan-50 text-cyan-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-cyan-100 uppercase tracking-tight whitespace-nowrap">
+                            <span key={idx} className="bg-emerald-50 text-emerald-700 text-[9px] font-black px-1.5 py-0.5 rounded border border-emerald-100 uppercase tracking-tight whitespace-nowrap">
                                 {_post.post_name}
                             </span>
                         ))}
@@ -178,7 +178,7 @@ function PublishedTestsList() {
                 return (
                     <div className="flex items-center">
                         {status === 1 && (
-                            <span className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-wide flex items-center gap-1">
+                            <span className="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-wide flex items-center gap-1">
                                 <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" /> Today
                             </span>
                         )}
@@ -270,7 +270,7 @@ function PublishedTestsList() {
                 {/* Loading State */}
                 {loading && (
                     <div className="flex justify-center p-12">
-                        <div className="flex items-center gap-3 bg-cyan-50 text-cyan-700 px-6 py-3 rounded-2xl font-black text-sm animate-pulse shadow-sm border border-cyan-100">
+                        <div className="flex items-center gap-3 bg-emerald-50 text-emerald-700 px-6 py-3 rounded-2xl font-black text-sm animate-pulse shadow-sm border border-emerald-100">
                             <AiOutlineLoading3Quarters className="animate-spin" />
                             LOADING DATA...
                         </div>

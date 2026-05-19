@@ -17,6 +17,8 @@ import {
 import { InputSelect } from '../../UI/Input.jsx';
 import { RESULT_BY_BATCH, RESULT_BY_POST, SERVER_IP } from '../../Utils/Constants.jsx';
 import { FiEye } from 'react-icons/fi';
+import { MdOutlineAssessment, MdFileDownload } from 'react-icons/md';
+import './ViewReports.css';
 
 function ViewReports() {
     const navigate = useNavigate();
@@ -72,55 +74,71 @@ function ViewReports() {
             sortable: true,
             name: '#',
             cell: (row, idx) => <p>{idx + 1}</p>,
-            width: '6%',
+            width: '6rem',
+            center: true,
         },
         {
             sortable: true,
             name: 'Student name',
-            selector: (row) => row['full_name'],
-            width: '20%',
+            cell: (row) => <span className="font-bold text-slate-800">{row['full_name']}</span>,
+            grow: 2,
         },
         {
             sortable: true,
             name: 'Roll No',
             selector: (row) => row.sfrs_student_roll_no,
+            width: '10rem',
+            center: true,
         },
 
         {
             sortable: true,
             name: 'Gender',
             selector: (row) => row.sl_gender,
+            width: '8rem',
+            center: true,
         },
         {
             sortable: true,
             name: 'Unattempted',
             selector: (row) => row.sfrs_unattempted,
+            width: '10rem',
+            center: true,
         },
         {
             sortable: true,
             name: 'Attempt',
             selector: (row) => Number(row.sfrc_total_marks) - Number(row.sfrs_unattempted) || '-',
+            width: '10rem',
+            center: true,
         },
-        { sortable: true, name: 'Wrong', selector: (row) => row.sfrs_wrong },
-        { sortable: true, name: 'Correct', selector: (row) => row.sfrs_correct },
+        { sortable: true, name: 'Wrong', selector: (row) => row.sfrs_wrong, width: '8rem', center: true },
+        { sortable: true, name: 'Correct', selector: (row) => row.sfrs_correct, width: '8rem', center: true },
         {
             sortable: true,
             name: 'Score',
+            center: true,
+            width: '10rem',
             cell: (row) => {
                 return showPercentileResult ? (
-                    <span>{row.srfs_percentile}</span>
+                    <span className="font-extrabold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-lg border border-indigo-100 text-xs">
+                        {row.srfs_percentile} %
+                    </span>
                 ) : (
-                    <span>{row.sfrs_marks_gain + ' / ' + row.sfrc_total_marks}</span>
+                    <span className="font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-100 text-xs">
+                        {row.sfrs_marks_gain + ' / ' + row.sfrc_total_marks}
+                    </span>
                 );
             },
         },
         {
             sortable: true,
             name: 'Action',
-            width: '13%',
+            width: '10rem',
+            center: true,
             cell: (row) => (
                 <CButton
-                    className="text-xs"
+                    className="!py-1.5 !px-3.5 !rounded-lg text-xs"
                     onClick={handleCandidateViewReport.bind(null, row)}
                     isLoading={candidateReportViewLoading}
                     icon={<FiEye />}>
@@ -251,136 +269,173 @@ function ViewReports() {
         _getResultExel.mutate(_data);
     };
 
-
-    const _getResponsePdf = useMutation({
-        mutationFn: () => {
-            return getCandidateResponseSheet();
-        },
-        onSuccess: (data) => { },
-        onError: (error) => {
-            console.log(error.message, '==error==');
-            toast.error(error?.message || 'Server error');
-        },
-    });
-
-    const handleGetResponsePdf = () => {
-
-        _getResponsePdf.mutate();
-    };
-
     return (
-        <>
-            <section className="grid grid-cols-6 mt-6 mb-2 gap-2">
-                <div>
-                    <InputSelect
-                        label="View Result By"
-                        className={'w-full'}
-                        name="viewResultBy"
-                        value={currentViewTestDetails?.viewResultBy || RESULT_BY_BATCH}
-                        onChange={handleChange}>
-                        <option value={RESULT_BY_BATCH}>{RESULT_BY_BATCH}</option>
-                        <option value={RESULT_BY_POST}>{RESULT_BY_POST}</option>
-                    </InputSelect>
+        <div className="vr-root">
+            {/* Premium Header Bar */}
+            <div className="vr-header-bar">
+                <div className="vr-header-content">
+                    <MdOutlineAssessment size={24} />
+                    <span>STUDENT EXAM SCORES</span>
                 </div>
+            </div>
 
-                {currentViewTestDetails?.viewResultBy === RESULT_BY_BATCH && (
-                    <div>
-                        <InputSelect
-                            label="Exam Dates"
-                            className={'w-full'}
-                            name="selectedExamDate"
-                            value={currentViewTestDetails?.selectedExamDate || ''}
-                            onChange={handleChange}>
-                            <option value="">--Select Exam Date--</option>
-                            {examDates?.length > 0 &&
-                                examDates.map((date) => {
-                                    return (
-                                        <option value={date.sl_exam_date}>
-                                            {date.sl_exam_date}
-                                        </option>
-                                    );
-                                })}
-                        </InputSelect>
-                    </div>
-                )}
+            <div className="vr-content-container">
+                {/* Search / Filters Card */}
+                <div className="vr-filter-card">
+                    <div className="grid grid-cols-12 gap-4 items-end">
+                        <div className="col-span-12 sm:col-span-6 md:col-span-3 lg:col-span-2">
+                            <InputSelect
+                                label="View Result By"
+                                className={'w-full'}
+                                name="viewResultBy"
+                                value={currentViewTestDetails?.viewResultBy || RESULT_BY_BATCH}
+                                onChange={handleChange}>
+                                <option value={RESULT_BY_BATCH}>{RESULT_BY_BATCH}</option>
+                                <option value={RESULT_BY_POST}>{RESULT_BY_POST}</option>
+                            </InputSelect>
+                        </div>
 
-                <div>
-                    <InputSelect
-                        label="Posts"
-                        className={'w-full'}
-                        name="selectedPost"
-                        value={currentViewTestDetails?.selectedPost || ''}
-                        onChange={handleChange}>
-                        <option value="">--Select Post--</option>
-                        {postsList?.length > 0 &&
-                            postsList.map((post) => {
-                                return <option value={post.sl_post}>{post.sl_post}</option>;
-                            })}
-                    </InputSelect>
-                </div>
+                        {currentViewTestDetails?.viewResultBy === RESULT_BY_BATCH && (
+                            <div className="col-span-12 sm:col-span-6 md:col-span-3 lg:col-span-2">
+                                <InputSelect
+                                    label="Exam Dates"
+                                    className={'w-full'}
+                                    name="selectedExamDate"
+                                    value={currentViewTestDetails?.selectedExamDate || ''}
+                                    onChange={handleChange}>
+                                    <option value="">--Select Exam Date--</option>
+                                    {examDates?.length > 0 &&
+                                        examDates.map((date, idx) => {
+                                            return (
+                                                <option key={idx} value={date.sl_exam_date}>
+                                                    {date.sl_exam_date}
+                                                </option>
+                                            );
+                                        })}
+                                </InputSelect>
+                            </div>
+                        )}
 
-                <div className="self-end col-span-3">
-                    <div className="flex gap-2">
-                        <CButton
-                            onClick={handleGetResultData}
-                            isLoading={_getResultViewDataMutation.isPending}>
-                            View Result
-                        </CButton>
+                        <div className="col-span-12 sm:col-span-6 md:col-span-3 lg:col-span-2">
+                            <InputSelect
+                                label="Posts"
+                                className={'w-full'}
+                                name="selectedPost"
+                                value={currentViewTestDetails?.selectedPost || ''}
+                                onChange={handleChange}>
+                                <option value="">--Select Post--</option>
+                                {postsList?.length > 0 &&
+                                    postsList.map((post, idx) => {
+                                        return <option key={idx} value={post.sl_post}>{post.sl_post}</option>;
+                                    })}
+                            </InputSelect>
+                        </div>
 
-                        <CButton
-                            varient={'btn--warning'}
-                            onClick={handleGetExcelBtn}
-                            isLoading={_getResultExel.isPending}>
-                            Excel
-                        </CButton>
+                        <div className="col-span-12 lg:col-span-6 xl:col-span-6 self-end">
+                            <div className="flex flex-wrap gap-3 items-center mt-3 lg:mt-0">
+                                <CButton
+                                    className="!rounded-xl shadow-md !py-3 !px-5 flex-shrink-0"
+                                    onClick={handleGetResultData}
+                                    isLoading={_getResultViewDataMutation.isPending}>
+                                    View Result
+                                </CButton>
 
-                        {/* <CButton
-                            varient={'btn--warning'}
-                            onClick={handleGetResponsePdf}
+                                <CButton
+                                    varient={'btn--warning'}
+                                    className="!rounded-xl shadow-md !py-3 !px-5 flex-shrink-0"
+                                    onClick={handleGetExcelBtn}
+                                    isLoading={_getResultExel.isPending}>
+                                    Excel Export
+                                </CButton>
 
-                        >
-                            Response Pdf
-                        </CButton> */}
-                        <a href={`${SERVER_IP}/api/pdf/v3/candidate-response-sheet`}>
-                            Download Pdf Stream
-                        </a>
+                                <a 
+                                    href={`${SERVER_IP}/api/pdf/v3/candidate-response-sheet`}
+                                    className="vr-pdf-link flex-shrink-0">
+                                    <MdFileDownload size={18} className="mr-1" />
+                                    Response PDF
+                                </a>
 
-                        <div className="flex items-center gap-2">
-                            <label htmlFor="" for="percentile-result">
-                                Percentile
-                            </label>
-                            <input
-                                type="checkbox"
-                                id="percentile-result"
-                                onClick={() => {
-                                    setShowPercentileResult(!showPercentileResult);
-                                }}
-                            />
+                                <label className="vr-toggle-wrap flex-shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        className="vr-toggle-checkbox"
+                                        id="percentile-result"
+                                        checked={showPercentileResult}
+                                        onChange={() => setShowPercentileResult(!showPercentileResult)}
+                                    />
+                                    <span>Percentile</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <p className="text-red-500 text-sm pb-3">
-                Note: The negative marking is only calculated for wrong answered questions.
-            </p>
+                <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-2.5 mb-4 text-indigo-700 text-xs font-semibold">
+                    <span className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse" />
+                    <span>Note: Negative marking is only calculated for wrong answered questions.</span>
+                </div>
 
-            <DataTable
-                columns={columns}
-                data={currentViewTestDetails?.studentResultList || []}
-                pagination
-                highlightOnHover
-                paginationServer
-                paginationTotalRows={currentViewTestDetails?.totalRows || 0}
-                paginationDefaultPage={currentViewTestDetails?.page || 0}
-                onChangePage={handlePageChange}
-                onChangeRowsPerPage={handleChangeRowsPerPage}
-                paginationComponentOptions={{
-                    rowsPerPageText: 'Total Per Page',
-                    rangeSeparatorText: '--',
-                }}
-            />
-        </>
+                {/* Table Card */}
+                <div className="vr-table-card">
+                    <DataTable
+                        columns={columns}
+                        data={currentViewTestDetails?.studentResultList || []}
+                        pagination
+                        highlightOnHover
+                        paginationServer
+                        paginationTotalRows={currentViewTestDetails?.totalRows || 0}
+                        paginationDefaultPage={currentViewTestDetails?.page || 0}
+                        onChangePage={handlePageChange}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                        paginationComponentOptions={{
+                            rowsPerPageText: 'Total Per Page',
+                            rangeSeparatorText: '--',
+                        }}
+                        customStyles={{
+                            header: { style: { display: 'none' } },
+                            headRow: {
+                                style: {
+                                    backgroundColor: '#F8FAFC',
+                                    borderBottomColor: '#E2E8F0',
+                                    minHeight: '52px',
+                                },
+                            },
+                            headCells: {
+                                style: {
+                                    color: '#64748B',
+                                    fontSize: '0.75rem',
+                                    fontWeight: '800',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em',
+                                },
+                            },
+                            cells: {
+                                style: {
+                                    color: '#1E293B',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '600',
+                                    paddingTop: '0.5rem',
+                                    paddingBottom: '0.5rem',
+                                },
+                            },
+                            rows: {
+                                style: {
+                                    borderBottomColor: '#F1F5F9',
+                                    '&:hover': {
+                                        backgroundColor: '#F8FAFC',
+                                    },
+                                },
+                            },
+                            pagination: {
+                                style: {
+                                    borderTopColor: '#E2E8F0',
+                                },
+                            },
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
     );
 }
 

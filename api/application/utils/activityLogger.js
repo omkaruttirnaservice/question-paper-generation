@@ -32,7 +32,6 @@ const activityLogger = {
             const adminInfo = req.user || (req.session ? req.session.User : {}) || {};
 
             const logData = {
-                admin_id: customData.admin_id || adminInfo.id || adminInfo.u_id || null,
                 student_name: customData.admin_name || adminInfo.fullName || adminInfo.u_full_name || 'QP_Admin',
                 
                 session_id: (req.session ? req.sessionID : null) || null,

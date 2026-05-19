@@ -91,7 +91,7 @@ function StudentExamReportSingle() {
 
             {params.get('tab') == QUESTION_PAPER_TAB && (
                 <>
-                    <H3 className="text-3xl font-bold text-indigo-700 mb-6 text-center">
+                    <H3 className="text-3xl font-bold text-blue-700 mb-6 text-center">
                         Question paper
                     </H3>
 

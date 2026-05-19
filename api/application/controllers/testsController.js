@@ -497,6 +497,15 @@ const testsController = {
             return sendError(res, error.message);
         }
     },
+
+    getDashboardStats: async (req, res) => {
+        try {
+            const stats = await testsModel.getDashboardStats();
+            return sendSuccess(res, stats, 'Dashboard stats retrieved successfully');
+        } catch (error) {
+            return sendError(res, error.message);
+        }
+    },
 };
 
 export default testsController;

@@ -36,7 +36,6 @@ testsRouter.post('/create-mock', testsController.createMock);
 // save mock report This report will be push from exam panel
 testsRouter.post('/upload-mock-report', testsController.saveMockReport)
 testsRouter.get('/mock-test-report', testsController.getMockTestReport)
-
-
+testsRouter.get('/dashboard-stats', testsController.getDashboardStats);
 
 export default testsRouter;

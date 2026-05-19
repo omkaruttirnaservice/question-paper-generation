@@ -20,7 +20,7 @@ function ScoreCard({ studExam }) {
 
     return (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1">
-            <H3 className="text-3xl font-bold text-indigo-700 mb-6 text-center">Score Card</H3>
+            <H3 className="text-3xl font-bold text-blue-700 mb-6 text-center">Score Card</H3>
 
             {/* Dashboard-style highlight cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -32,35 +32,35 @@ function ScoreCard({ studExam }) {
                         <DetailRow
                             label="Name"
                             value={studExam.full_name}
-                            color="text-indigo-600"
+                            color="text-blue-600"
                             className="col-span-2"
                         />
                         <DetailRow
                             label="Roll No"
-                            color="text-indigo-600"
+                            color="text-blue-600"
                             value={studExam.sfrs_student_roll_no}
                         />
                         <DetailRow
                             label="Application No"
                             value={studExam.sl_application_number}
-                            color="text-indigo-600"
+                            color="text-blue-600"
                         />
 
-                        <DetailRow label="Post" value={studExam.sl_post} color="text-indigo-600" />
+                        <DetailRow label="Post" value={studExam.sl_post} color="text-blue-600" />
 
                         <DetailRow
                             label="Catagory"
                             value={studExam?.sl_catagory?.toUpperCase() || '-'}
-                            color="text-indigo-600"
+                            color="text-blue-600"
                         />
                     </DetailCard>
                 </div>
                 <div className="grid grid-cols-2 col-span-2 gap-3">
                     <HighlightCard
-                        icon={<FiTarget className="text-indigo-600" size={28} />}
+                        icon={<FiTarget className="text-blue-600" size={28} />}
                         label="Final Score"
                         value={`${studExam.sfrs_marks_gain} / ${studExam.sfrc_total_marks}`}
-                        color="text-indigo-600"
+                        color="text-blue-600"
                     />
 
                     <HighlightCard
@@ -109,39 +109,39 @@ function ScoreCard({ studExam }) {
                     />
                     <DetailRow
                         label="Time Left"
-                        color="text-indigo-600"
+                        color="text-blue-600"
                         value={`${studExam.sfrs_rem_min} Min ${studExam.sfrs_rem_sec} Sec`}
                     />
                 </DetailCard>
 
                 {/* Test Information */}
                 <DetailCard title="Test Info" icon={<FiBookOpen size={20} className="" />}>
-                    <DetailRow color="text-indigo-600" label="Exam Name" value={studExam.mt_name} />
+                    <DetailRow color="text-blue-600" label="Exam Name" value={studExam.mt_name} />
 
                     <DetailRow
-                        color="text-indigo-600"
+                        color="text-blue-600"
                         label="Total Questions"
                         value={studExam.mt_total_test_question}
                     />
                     <DetailRow
-                        color="text-indigo-600"
+                        color="text-blue-600"
                         label="Time Allowed"
                         value={`${studExam.mt_test_time} Min`}
                     />
                     <DetailRow
-                        color="text-indigo-600"
+                        color="text-blue-600"
                         label="Passing Marks"
                         value={studExam.mt_passing_out_of}
                     />
                     <DetailRow
-                        color="text-indigo-600"
+                        color="text-blue-600"
                         label="Mark per Question"
                         value={studExam.mt_mark_per_question}
                     />
                     <DetailRow
                         label="Negative Marking"
                         value={+studExam.mt_is_negative === 1 ? 'Yes' : 'No'}
-                        color={+studExam.mt_is_negative === 1 ? 'text-red-500' : 'text-indigo-600'}
+                        color={+studExam.mt_is_negative === 1 ? 'text-red-500' : 'text-blue-600'}
                     />
                     <DetailRow label="Negative Marks" value={negativeMarks} color="text-red-500" />
                 </DetailCard>
@@ -168,7 +168,7 @@ function DetailCard({ title, icon, children, childrenClassNames = '' }) {
     return (
         <div className="rounded-xl border border-gray-100 bg-white shadow-md hover:shadow-lg transition p-5">
             <div className="flex items-center gap-2 mb-4">
-                <div className="bg-indigo-100 p-2 rounded-full text-indigo-600">{icon}</div>
+                <div className="bg-blue-100 p-2 rounded-full text-blue-600">{icon}</div>
                 <h4 className="text-lg font-semibold text-gray-800">{title}</h4>
             </div>
             <div className={`grid grid-cols-2 gap-4 ${childrenClassNames}`}>{children}</div>

@@ -105,7 +105,7 @@ function PublishedTestQuestionsView() {
                     </div>
                 }
                 className={`min-w-[95vw]`}
-                headerClass="bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-6 py-4 rounded-2xl mb-6 shadow-md"
+                headerClass="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-4 rounded-2xl mb-6 shadow-md"
             >
                 <PDFGenerator
                     questions={publishedTestQuestionsList}

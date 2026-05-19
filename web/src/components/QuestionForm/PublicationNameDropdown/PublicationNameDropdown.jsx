@@ -32,7 +32,7 @@ function PublicationNameDropdown() {
 				<CButton 
                     onClick={handleAddPulicationModal} 
                     icon={<FaPlus />} 
-                    className="!rounded-full !p-3 !bg-cyan-600 !shadow-lg !shadow-cyan-200"
+                    className="!rounded-full !p-3 !bg-blue-600 !shadow-lg !shadow-blue-200"
                 />
 				<select
 					className="input-el grow w-full"

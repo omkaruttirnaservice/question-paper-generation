@@ -54,6 +54,12 @@ const testsModel = {
                     'mt_total_marks',
                     'mt_pattern_type',
                     'mt_total_test_question',
+                    [
+                        db.literal(
+                            '(SELECT COUNT(*) FROM tm_publish_test_list WHERE tm_publish_test_list.ptl_test_id = tm_test_user_master_list.id)'
+                        ),
+                        'is_published',
+                    ],
                 ],
                 where: query,
             },
@@ -927,6 +933,44 @@ const testsModel = {
         return db.query(q, {
             type: Sequelize.QueryTypes.SELECT,
         });
+    },
+
+    getDashboardStats: async () => {
+        let totalTests = 0;
+        let mockTests = 0;
+        let publishedTests = 0;
+        let totalStudents = 0;
+
+        try {
+            totalTests = await db.tm_test_user_master_list.count({ where: { mt_descp: 'EXAM' } });
+        } catch (e) {
+            console.error('Error counting total tests:', e);
+        }
+
+        try {
+            mockTests = await db.tm_test_user_master_list.count({ where: { mt_descp: 'MOCK' } });
+        } catch (e) {
+            console.error('Error counting mock tests:', e);
+        }
+
+        try {
+            publishedTests = await db.tm_publish_test_list.count({ where: { ptl_test_mode: 'EXAM' } });
+        } catch (e) {
+            console.error('Error counting published tests:', e);
+        }
+
+        try {
+            totalStudents = await db.tn_student_list.count();
+        } catch (e) {
+            console.error('Error counting total students:', e);
+        }
+
+        return {
+            totalTests,
+            publishedTests,
+            totalStudents,
+            mockTests,
+        };
     },
 };
 

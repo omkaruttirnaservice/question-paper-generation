@@ -6,7 +6,7 @@ const examActivityModel = {
         const query = `
             INSERT INTO ${MASTER_DB}.exam_activity_log 
             (
-                student_id, admin_id, student_name, roll_no, 
+                student_id, student_name, roll_no, 
                 batch_id, exam_id, published_id, exam_name, lab_name,
                 session_id, action_type, message, 
                 question_id, question_no, 
@@ -15,12 +15,11 @@ const examActivityModel = {
                 link_id, mac_address, ip_address, 
                 attempt_no, total_questions, attempted, duration_mins
             ) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
             data.student_id || null,
-            data.admin_id || null,
             data.student_name || null,
             data.roll_no || null,
             data.batch_id || null,

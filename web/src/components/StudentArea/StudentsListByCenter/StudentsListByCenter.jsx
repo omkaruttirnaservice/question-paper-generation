@@ -184,7 +184,9 @@ function StudentsListByCenter() {
 			sortable: true,
 			name: 'Post',
 			cell: (row) => (
-				<span className="bg-cyan-700 p-1 text-white">{row.sl_post}</span>
+				<span className="bg-blue-50 text-blue-600 border border-blue-200 rounded-full font-bold px-2.5 py-0.5 text-[10px] uppercase tracking-wide inline-block shadow-sm">
+					{row.sl_post}
+				</span>
 			),
 		},
 	];

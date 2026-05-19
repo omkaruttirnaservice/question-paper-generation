@@ -1,0 +1,71 @@
+/* Students List Premium Stylesheet */
+.sl-root {
+    padding: 1.5rem 2rem;
+    background-color: #f5f7fb;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.sl-header-bar {
+    background: linear-gradient(135deg, #2F54EB 0%, #1D4ED8 100%);
+    color: white;
+    padding: 1.1rem 2rem;
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 15px 35px -10px rgba(47, 84, 235, 0.3);
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sl-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+}
+
+.sl-content-container {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.sl-filter-card {
+    background: white;
+    border-radius: 1.5rem;
+    border: 1px solid #ECEFF4;
+    padding: 1.25rem 2rem;
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.5rem;
+}
+
+.sl-table-card {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.02), 0 4px 12px -2px rgba(0, 0, 0, 0.015);
+    border: 1px solid #eceff4;
+    overflow: hidden;
+}
+
+/* Custom Scrollbar */
+.rdt_TableBody::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.rdt_TableBody::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.rdt_TableBody::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Pagination Styling */
+.rdt_Pagination button svg {
+    fill: #2F54EB !important;
+}

@@ -31,7 +31,7 @@ function GetStudentsListBtn({ form_filling_server_ip }) {
             type="button"
             onClick={() => getStudentListMutation.mutate(form_filling_server_ip)}
             disabled={getStudentListMutation.isPending}
-            className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-4 rounded-lg text-[10px] shadow-sm uppercase tracking-wider transition-all disabled:opacity-50 whitespace-nowrap"
+            className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-1.5 px-4 rounded-lg text-[10px] shadow-sm uppercase tracking-wider transition-all disabled:opacity-50 whitespace-nowrap"
         >
             {getStudentListMutation.isPending ? (
                 <AiOutlineLoading3Quarters className="animate-spin text-xs" />

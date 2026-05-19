@@ -30,9 +30,9 @@ const navigationConfig = [
         key: 'testArea',
         icon: <MdQuiz />,
         childrens: [
-            { childrenTitle: 'Create Test',          _url: '/tests/create/form', icon: <MdAddCircleOutline /> },
-            { childrenTitle: 'Tests List',           _url: '/tests/list',        icon: <MdFormatListBulleted /> },
-            { childrenTitle: 'Published Tests List', _url: '/tests/published',   icon: <MdCloudDone /> },
+            { childrenTitle: 'Create Test', _url: '/tests/create/form', icon: <MdAddCircleOutline /> },
+            { childrenTitle: 'Tests List', _url: '/tests/list', icon: <MdFormatListBulleted /> },
+            { childrenTitle: 'Published Tests List', _url: '/tests/published', icon: <MdCloudDone /> },
         ],
     },
     {
@@ -41,8 +41,8 @@ const navigationConfig = [
         key: 'mockArea',
         icon: <MdModelTraining />,
         childrens: [
-            { childrenTitle: 'Tests List', _url: '/mock/list',   icon: <MdFormatListBulleted /> },
-            { childrenTitle: 'Mock Test',  _url: '/mock/create', icon: <MdAddCircleOutline /> },
+            { childrenTitle: 'Tests List', _url: '/mock/list', icon: <MdFormatListBulleted /> },
+            { childrenTitle: 'Mock Test', _url: '/mock/create', icon: <MdAddCircleOutline /> },
         ],
     },
     {
@@ -51,8 +51,8 @@ const navigationConfig = [
         key: 'studentArea',
         icon: <MdGroups />,
         childrens: [
-            { childrenTitle: 'Add New Student', _url: '/students/add',  icon: <MdPersonAddAlt1 /> },
-            { childrenTitle: 'Students List',   _url: '/students/list', icon: <MdFormatListNumbered /> },
+            { childrenTitle: 'Add New Student', _url: '/students/add', icon: <MdPersonAddAlt1 /> },
+            { childrenTitle: 'Students List', _url: '/students/list', icon: <MdFormatListNumbered /> },
         ],
     },
     {
@@ -61,9 +61,9 @@ const navigationConfig = [
         key: 'reportsArea',
         icon: <MdBarChart />,
         childrens: [
-            { childrenTitle: 'Gen Reports',          _url: '/reports/generate',     icon: <MdAutoGraph /> },
+            { childrenTitle: 'Gen Reports', _url: '/reports/generate', icon: <MdAutoGraph /> },
             { childrenTitle: 'Activity Log Reports', _url: '/reports/activity-log', icon: <MdHistory /> },
-            { childrenTitle: 'View Result',          _url: '/reports/list',         icon: <MdGrading /> },
+            { childrenTitle: 'View Result', _url: '/reports/list', icon: <MdGrading /> },
         ],
     },
 ];

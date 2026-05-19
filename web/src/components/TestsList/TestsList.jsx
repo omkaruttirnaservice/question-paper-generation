@@ -293,15 +293,24 @@ function TestsList() {
         },
         {
             name: 'Publish Exam',
-            cell: (row) => (
-                <div className="flex justify-center">
-                    <button
-                        className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold py-1.5 px-4 rounded-full text-xs shadow-md shadow-cyan-600/30 transition-all"
-                        onClick={() => handlePublishExam(row)}>
-                        Publish
-                    </button>
-                </div>
-            ),
+            cell: (row) => {
+                const isPublished = row.is_published > 0;
+                return (
+                    <div className="flex justify-center">
+                        <button
+                            className={`${
+                                isPublished
+                                    ? 'bg-slate-200 text-slate-500 cursor-not-allowed shadow-none'
+                                    : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/30'
+                            } font-semibold py-1.5 px-4 rounded-full text-xs transition-all`}
+                            disabled={isPublished}
+                            onClick={() => handlePublishExam(row)}
+                        >
+                            {isPublished ? 'Published' : 'Publish'}
+                        </button>
+                    </div>
+                );
+            },
             selector: (row) => row.sl_roll_number,
             width: '8rem',
         },
@@ -364,7 +373,7 @@ function TestsList() {
                     <div className="relative">
                         <InputLabel name="Select Publish Date" htmlFor={'publish_date'} className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
                         <div className="relative">
-                            <MdDateRange className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                            <MdDateRange className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 text-xl pointer-events-none z-10" />
                             <DatePicker
                                 autoComplete="off"
                                 onChange={(date) => {
@@ -381,7 +390,7 @@ function TestsList() {
                                 name="publish_date"
                                 id="publish_date"
                                 value={publishExamForm.publish_date}
-                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-5 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800 disabled:opacity-50"
+                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-5 focus:border-blue-500 focus:bg-white focus:ring-[5px] focus:ring-blue-500/10 outline-none transition-all text-slate-800 disabled:opacity-50"
                             />
                         </div>
                         <InputError error={errors.publish_date} />
@@ -391,13 +400,13 @@ function TestsList() {
                         <InputLabel name="Batch No" htmlFor="batch" className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
 
                         <div className="relative">
-                            <MdNumbers className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                            <MdNumbers className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 text-xl pointer-events-none z-10" />
                             <select
                                 name="batch"
                                 id="batch"
                                 onChange={handleChange}
                                 value={publishExamForm.batch}
-                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-4 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800 appearance-none disabled:opacity-50">
+                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-4 focus:border-blue-500 focus:bg-white focus:ring-[5px] focus:ring-blue-500/10 outline-none transition-all text-slate-800 appearance-none disabled:opacity-50">
                                 <option value="">-- Select -- </option>
 
                                 {batchCount.map((el, idx) => {
@@ -416,13 +425,13 @@ function TestsList() {
                     <div className="relative col-span-2">
                         <InputLabel name="Select IP/URL" htmlFor="server_ip_address" className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
                         <div className="relative">
-                            <MdDns className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                            <MdDns className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 text-xl pointer-events-none z-10" />
                             <select
                                 name="server_ip_address"
                                 id="server_ip_address"
                                 onChange={handleChange}
                                 value={publishExamForm.server_ip_address}
-                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-4 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800 appearance-none disabled:opacity-50">
+                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-4 focus:border-blue-500 focus:bg-white focus:ring-[5px] focus:ring-blue-500/10 outline-none transition-all text-slate-800 appearance-none disabled:opacity-50">
                                 <option value="">-- Select -- </option>
                                 {getServerIPQuery.isLoading && <option>Loading...</option>}
 
@@ -481,13 +490,13 @@ function TestsList() {
                     <div className="relative">
                         <InputLabel name="End Button Time" className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
                         <div className="relative">
-                            <MdTimer className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                            <MdTimer className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 text-xl pointer-events-none z-10" />
                             <input
                                 type="number"
                                 name={'end_button_time'}
                                 onChange={handleChange}
                                 value={publishExamForm.end_button_time}
-                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-5 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800"
+                                className="!w-full h-12 rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-5 focus:border-blue-500 focus:bg-white focus:ring-[5px] focus:ring-blue-500/10 outline-none transition-all text-slate-800"
                             />
                         </div>
                         <InputError error={errors.end_button_time} />
@@ -497,7 +506,7 @@ function TestsList() {
                         <div className="flex-1">
                             <InputLabel name="Test Key" className="!text-[0.725rem] font-black text-slate-500 uppercase tracking-widest mb-1.5" />
                             <div className="relative">
-                                <MdVpnKey className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-xl pointer-events-none z-10" />
+                                <MdVpnKey className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 text-xl pointer-events-none z-10" />
                                 <input
                                     type="text"
                                     name={'test_key'}
@@ -514,7 +523,7 @@ function TestsList() {
 
                     <div className="col-span-2 mt-2 flex justify-center w-full">
                         <button
-                            className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-2.5 px-12 rounded-full shadow-lg shadow-cyan-500/40 transition-all text-[0.95rem] tracking-wide w-full max-w-[400px]"
+                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 px-12 rounded-full shadow-lg shadow-blue-500/40 transition-all text-[0.95rem] tracking-wide w-full max-w-[400px]"
                             onClick={handleFinalPublishExam}
                         >
                             Publish Exam
@@ -523,7 +532,7 @@ function TestsList() {
                 </div>
             </CModal>
             <div className="w-full mt-6 px-4 pb-8">
-                <div className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 text-white p-4 rounded-2xl flex items-center gap-3 mb-6 shadow-md shadow-cyan-500/30">
+                <div className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-2xl flex items-center gap-3 mb-6 shadow-md shadow-blue-500/30">
                     <MdList className="text-2xl" />
                     <span className="font-black text-xl tracking-wide">TESTS LIST</span>
                 </div>

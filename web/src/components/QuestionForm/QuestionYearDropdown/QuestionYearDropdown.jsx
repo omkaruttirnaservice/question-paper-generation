@@ -121,7 +121,7 @@ function QuestionYearDropdown() {
                     <CButton 
                         onClick={handleChange} 
                         icon={<FaPlus />} 
-                        className="!rounded-full !p-3.5 !bg-cyan-600 !shadow-lg !shadow-cyan-200"
+                        className="!rounded-full !p-3.5 !bg-blue-600 !shadow-lg !shadow-blue-200"
                     />
                 </div>
             </div>
@@ -130,11 +130,11 @@ function QuestionYearDropdown() {
                     _formData?.year?.map((_el) => {
                         return (
                             <div key={_el} className="relative group">
-                                <span className="bg-cyan-50 text-cyan-700 border border-cyan-100 px-4 py-2 rounded-full text-xs font-bold shadow-sm flex items-center gap-2">
+                                <span className="bg-blue-50 text-blue-700 border border-blue-100 px-4 py-2 rounded-full text-xs font-bold shadow-sm flex items-center gap-2">
                                     {_el}
                                     <FaXmark
                                         onClick={handleRemoveYear.bind(null, _el)}
-                                        className="cursor-pointer w-4 h-4 text-cyan-400 hover:text-rose-500 transition-colors"
+                                        className="cursor-pointer w-4 h-4 text-blue-400 hover:text-rose-500 transition-colors"
                                     />
                                 </span>
                             </div>

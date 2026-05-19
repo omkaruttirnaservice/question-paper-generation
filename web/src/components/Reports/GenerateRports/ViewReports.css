@@ -1,0 +1,136 @@
+/* View Reports — Premium Glassmorphic Theme */
+.vr-root {
+    padding: 1.5rem 2rem;
+    background: #f5f7fb;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.vr-header-bar {
+    background: linear-gradient(135deg, #4F46E5 0%, #2563EB 100%);
+    color: white;
+    padding: 1.1rem 2rem;
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 15px 35px -10px rgba(79, 70, 229, 0.3);
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vr-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+}
+
+.vr-content-container {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.vr-filter-card {
+    background: white;
+    border-radius: 1.5rem;
+    border: 1px solid #ECEFF4;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.5rem;
+}
+
+.vr-table-card {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.02), 0 4px 12px -2px rgba(0, 0, 0, 0.015);
+    border: 1px solid #eceff4;
+    overflow: hidden;
+}
+
+/* Custom Scrollbar */
+.rdt_TableBody::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.rdt_TableBody::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.rdt_TableBody::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Pagination Styling */
+.rdt_Pagination button svg {
+    fill: #4F46E5 !important;
+}
+
+/* Toggle Checkbox styling */
+.vr-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    padding: 0.65rem 1.1rem;
+    border-radius: 0.75rem; /* Matches !rounded-xl */
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 0.82rem;
+    color: #64748B;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    height: 3rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.vr-toggle-wrap:hover {
+    border-color: #4F46E5;
+    color: #4F46E5;
+    background: #EEF2FF;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 12px -2px rgba(79, 70, 229, 0.1);
+}
+
+.vr-toggle-wrap:active {
+    transform: scale(0.97);
+}
+
+.vr-toggle-checkbox {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: #4F46E5;
+    cursor: pointer;
+}
+
+.vr-pdf-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F0FDF4;
+    border: 1.5px solid #BBF7D0;
+    color: #16A34A;
+    padding: 0 1.25rem;
+    border-radius: 0.75rem; /* Matches !rounded-xl */
+    font-weight: 800;
+    font-size: 0.82rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    height: 3rem;
+    text-decoration: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.vr-pdf-link:hover {
+    background: #DCFCE7;
+    border-color: #16A34A;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 12px -2px rgba(22, 163, 74, 0.15);
+}
+
+.vr-pdf-link:active {
+    transform: scale(0.97);
+}

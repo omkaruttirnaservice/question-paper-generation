@@ -29,7 +29,7 @@ function RootComponent() {
                         transition-all duration-500 ease-in-out
                         ${isSidebarOpen ? 'w-[16.5rem]' : 'w-[5rem]'}
                         h-screen flex-shrink-0
-                        bg-gradient-to-br from-cyan-600 via-cyan-500 to-teal-500
+                        bg-[#0F172A]
                         shadow-2xl relative z-50 flex flex-col
                     `}
                 >

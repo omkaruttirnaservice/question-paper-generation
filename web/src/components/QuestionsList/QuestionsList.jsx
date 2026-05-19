@@ -142,13 +142,13 @@ function QuestionsList() {
         return header;
     }, []);
 
-    const statColors = ['#06B6D4', '#10B981', '#8B5CF6', '#F59E0B', '#FB7185'];
+    const statColors = ['#2F54EB', '#10B981', '#8B5CF6', '#F59E0B', '#FB7185'];
 
     return (
         <div className="ql-root">
             <CreatePreSubmitView test={test} finalTestSubmitHandler={finalTestSubmitHandler} />
 
-            {/* ✅ Premium Cyan Header Bar */}
+            {/* ✅ Premium Blue Header Bar */}
             <div className="ql-header-bar">
                 <div className="ql-header-content">
                     <MdAssignment />
@@ -247,28 +247,28 @@ const CreatePreSubmitView = memo(({ test, finalTestSubmitHandler }) => {
             <div className="ql-preview-wrap">
                 <div className="ql-preview-row">
                     <div className="ql-preview-left">
-                        <HiPencilAlt className="ql-preview-icon" style={{ color: '#06B6D4' }} />
+                        <HiPencilAlt className="ql-preview-icon" style={{ color: '#2F54EB' }} />
                         <span className="ql-preview-label">EXAM NAME</span>
                     </div>
                     <span className="ql-preview-value">{test?.test_name}</span>
                 </div>
                 <div className="ql-preview-row">
                     <div className="ql-preview-left">
-                        <IoTimeOutline className="ql-preview-icon" style={{ color: '#0891B2' }} />
+                        <IoTimeOutline className="ql-preview-icon" style={{ color: '#2F54EB' }} />
                         <span className="ql-preview-label">DURATION</span>
                     </div>
                     <span className="ql-preview-value">{test?.test_duration}m</span>
                 </div>
                 <div className="ql-preview-row">
                     <div className="ql-preview-left">
-                        <AiOutlineStar className="ql-preview-icon" style={{ color: '#0EA5E9' }} />
+                        <AiOutlineStar className="ql-preview-icon" style={{ color: '#2F54EB' }} />
                         <span className="ql-preview-label">MARKS PER Q</span>
                     </div>
                     <span className="ql-preview-value">{test?.marks_per_question}</span>
                 </div>
                 <div className="ql-preview-row">
                     <div className="ql-preview-left">
-                        <MdFactCheck className="ql-preview-icon" style={{ color: '#22D3EE' }} />
+                        <MdFactCheck className="ql-preview-icon" style={{ color: '#2F54EB' }} />
                         <span className="ql-preview-label">TOTAL QUESTIONS</span>
                     </div>
                     <span className="ql-preview-value">{test?.total_questions}</span>

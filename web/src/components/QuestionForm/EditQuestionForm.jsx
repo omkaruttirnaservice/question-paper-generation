@@ -114,21 +114,21 @@ const EditAddQuestionForm = () => {
             <form id="add-question-form" className="grid gap-2">
                     <div className={`bg-white py-1`}>
                         <div className="mb-4">
-                            <div className="bg-cyan-50/50 border border-cyan-100 rounded-[1.25rem] p-3 px-5 shadow-sm">
+                            <div className="bg-blue-50/50 border border-blue-100 rounded-[1.25rem] p-3 px-5 shadow-sm">
                                 <div className="flex items-center gap-8">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-1 h-6 bg-cyan-500 rounded-full opacity-40" />
+                                        <div className="w-1 h-6 bg-blue-500 rounded-full opacity-40" />
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] leading-none mb-1">Subject Name</span>
-                                            <span className="text-[15px] font-black text-cyan-900">{_formData.subject_name}</span>
+                                            <span className="text-[15px] font-black text-blue-900">{_formData.subject_name}</span>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center gap-3">
-                                        <div className="w-1 h-6 bg-cyan-500 rounded-full opacity-40" />
+                                        <div className="w-1 h-6 bg-blue-500 rounded-full opacity-40" />
                                         <div className="flex flex-col">
                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] leading-none mb-1">Topic Name</span>
-                                            <span className="text-[15px] font-black text-cyan-900">{_formData.topic_name}</span>
+                                            <span className="text-[15px] font-black text-blue-900">{_formData.topic_name}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -166,7 +166,7 @@ const EditAddQuestionForm = () => {
                                 <input
                                     type="checkbox"
                                     id="master-update"
-                                    className="w-5 h-5 cursor-pointer accent-cyan-600 rounded-lg"
+                                    className="w-5 h-5 cursor-pointer accent-blue-600 rounded-lg"
                                     checked={isUpdateToMaster}
                                     onChange={(e) => {
                                         dispatch(
@@ -180,7 +180,7 @@ const EditAddQuestionForm = () => {
                             </div>
                             <CButton
                                 onClick={handleUpdateQuestion}
-                                className="!px-6 !py-2 !rounded-xl !text-[12px] !font-black !bg-gradient-to-r !from-cyan-600 !to-cyan-500 !shadow-lg !shadow-cyan-200/40 hover:!scale-105 active:!scale-95 transition-all uppercase tracking-widest"
+                                className="!px-6 !py-2 !rounded-xl !text-[12px] !font-black !bg-gradient-to-r !from-blue-600 !to-blue-500 !shadow-lg !shadow-blue-200/40 hover:!scale-105 active:!scale-95 transition-all uppercase tracking-widest"
                                 type="button"
                                 isLoading={useSelector((state) => state.loader.isLoading)}>
                                 Update

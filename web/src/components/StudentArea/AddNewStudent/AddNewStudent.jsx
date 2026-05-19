@@ -93,15 +93,17 @@ function AddNewStudent() {
             name: 'FORM FILLING SERVER (URL/IP)',
             selector: row => row.form_filling_server_ip,
             grow: 2,
+            minWidth: '250px',
             cell: row => (
-                <div className="flex items-center gap-2 group">
-                    <div className="w-8 h-8 rounded-lg bg-cyan-50 flex items-center justify-center text-cyan-600">
+                <div className="flex items-center gap-2 group w-full">
+                    <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
                         <FaLink className="text-xs" />
                     </div>
-                    <span className="font-mono text-xs text-slate-600 font-bold tracking-tight">{row.form_filling_server_ip}</span>
+                    <span className="font-mono text-xs text-slate-600 font-bold tracking-tight truncate" title={row.form_filling_server_ip}>{row.form_filling_server_ip}</span>
                     <button 
                         onClick={() => writeToClipboard(row.form_filling_server_ip)}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-slate-100 rounded transition-all text-slate-400 hover:text-cyan-600"
+                        className="opacity-0 flex-shrink-0 group-hover:opacity-100 p-1.5 hover:bg-slate-100 rounded transition-all text-slate-400 hover:text-blue-600"
+                        title="Copy"
                     >
                         <FaRegClipboard size={12} />
                     </button>
@@ -112,15 +114,17 @@ function AddNewStudent() {
             name: 'EXAM PANEL IP',
             selector: row => row.exam_panel_server_ip,
             grow: 2,
+            minWidth: '200px',
             cell: row => (
-                <div className="flex items-center gap-2 group">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                <div className="flex items-center gap-2 group w-full">
+                    <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
                         <MdOutlineTerminal className="text-sm" />
                     </div>
-                    <span className="font-mono text-xs text-slate-600 font-bold tracking-tight">{row.exam_panel_server_ip}</span>
+                    <span className="font-mono text-xs text-slate-600 font-bold tracking-tight truncate" title={row.exam_panel_server_ip}>{row.exam_panel_server_ip}</span>
                     <button 
                         onClick={() => writeToClipboard(row.exam_panel_server_ip)}
-                        className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-slate-100 rounded transition-all text-slate-400 hover:text-indigo-600"
+                        className="opacity-0 flex-shrink-0 group-hover:opacity-100 p-1.5 hover:bg-slate-100 rounded transition-all text-slate-400 hover:text-blue-600"
+                        title="Copy"
                     >
                         <FaRegClipboard size={12} />
                     </button>
@@ -157,35 +161,35 @@ function AddNewStudent() {
                     <div className="relative">
                         <InputLabel name="Form Filling Server URL/IP" className="!text-[0.7rem] font-black text-slate-500 mb-1.5 uppercase" />
                         <div className="relative">
-                            <FaLink className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 z-10" />
+                            <FaLink className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 z-10" />
                             <input 
                                 type="url" 
                                 name="form_filling_server_ip"
                                 placeholder="https://example.com or 192.168.1.1"
                                 value={ipDetails.form_filling_server_ip || ''}
                                 onChange={(e) => setIpDetails(prev => ({...prev, [e.target.name]: e.target.value}))}
-                                className="w-full h-12 bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 font-bold text-slate-800 outline-none focus:border-cyan-500 focus:bg-white transition-all shadow-sm"
+                                className="w-full h-12 bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all shadow-sm"
                             />
                         </div>
                     </div>
                     <div className="relative">
                         <InputLabel name="Exam Panel Server IP" className="!text-[0.7rem] font-black text-slate-500 mb-1.5 uppercase" />
                         <div className="relative">
-                            <MdOutlineTerminal className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-500 text-xl z-10" />
+                            <MdOutlineTerminal className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 text-xl z-10" />
                             <input 
                                 type="text" 
                                 name="exam_panel_server_ip"
                                 placeholder="http://localhost:3150"
                                 value={ipDetails.exam_panel_server_ip || ''}
                                 onChange={(e) => setIpDetails(prev => ({...prev, [e.target.name]: e.target.value}))}
-                                className="w-full h-12 bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 font-bold text-slate-800 outline-none focus:border-indigo-500 focus:bg-white transition-all shadow-sm"
+                                className="w-full h-12 bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all shadow-sm"
                             />
                         </div>
                     </div>
                     <button 
                         type="submit" 
                         disabled={saveIpPending}
-                        className="w-full h-12 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white font-black rounded-2xl shadow-lg shadow-cyan-500/30 hover:scale-[1.01] transition-all uppercase tracking-widest mt-2"
+                        className="w-full h-12 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black rounded-2xl shadow-lg shadow-blue-500/30 hover:scale-[1.01] transition-all uppercase tracking-widest mt-2"
                     >
                         {saveIpPending ? 'SAVING...' : 'SAVE CONFIGURATION'}
                     </button>
@@ -198,26 +202,26 @@ function AddNewStudent() {
                     <div className="relative">
                         <InputLabel name="Form Filling Server URL/IP" className="!text-[0.7rem] font-black text-slate-500 mb-1.5 uppercase" />
                         <div className="relative">
-                            <FaLink className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 z-10" />
+                            <FaLink className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 z-10" />
                             <input 
                                 type="url" 
                                 name="form_filling_server_ip"
                                 value={ipDetails.form_filling_server_ip || ''}
                                 onChange={(e) => setIpDetails(prev => ({...prev, [e.target.name]: e.target.value}))}
-                                className="w-full h-12 bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 font-bold text-slate-800 outline-none focus:border-cyan-500 focus:bg-white transition-all shadow-sm"
+                                className="w-full h-12 bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all shadow-sm"
                             />
                         </div>
                     </div>
                     <div className="relative">
                         <InputLabel name="Exam Panel Server IP" className="!text-[0.7rem] font-black text-slate-500 mb-1.5 uppercase" />
                         <div className="relative">
-                            <MdOutlineTerminal className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-500 text-xl z-10" />
+                            <MdOutlineTerminal className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 text-xl z-10" />
                             <input 
                                 type="text" 
                                 name="exam_panel_server_ip"
                                 value={ipDetails.exam_panel_server_ip || ''}
                                 onChange={(e) => setIpDetails(prev => ({...prev, [e.target.name]: e.target.value}))}
-                                className="w-full h-12 bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 font-bold text-slate-800 outline-none focus:border-indigo-500 focus:bg-white transition-all shadow-sm"
+                                className="w-full h-12 bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all shadow-sm"
                             />
                         </div>
                     </div>

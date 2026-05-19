@@ -1,0 +1,116 @@
+/* Generate Reports — Premium Glassmorphic Theme */
+.gr-root {
+    padding: 1.5rem 2rem;
+    background: #f5f7fb;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.gr-header-bar {
+    background: linear-gradient(135deg, #4F46E5 0%, #2563EB 100%);
+    color: white;
+    padding: 1.1rem 2rem;
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 15px 35px -10px rgba(79, 70, 229, 0.3);
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gr-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+}
+
+.gr-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.gr-card {
+    background: white;
+    border-radius: 1.5rem;
+    border: 1px solid #ECEFF4;
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 
+        0 8px 24px -8px rgba(0, 0, 0, 0.03),
+        0 1.5px 3px -1px rgba(0, 0, 0, 0.015);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gr-card:hover {
+    transform: translateY(-2px);
+    border-color: #4F46E5;
+    box-shadow: 
+        0 20px 30px -10px rgba(79, 70, 229, 0.08),
+        0 4px 12px -2px rgba(0, 0, 0, 0.02);
+}
+
+.gr-card-number {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #4F46E5;
+    background: #F0F2FF;
+    width: 3.5rem;
+    height: 3.5rem;
+    min-width: 3.5rem;
+    border-radius: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #DCE3FF;
+}
+
+.gr-card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.gr-card-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.gr-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.gr-meta-badge {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    color: #64748B;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.75rem;
+}
+
+.gr-meta-badge span {
+    color: #0F172A;
+    font-weight: 900;
+}
+
+.gr-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}

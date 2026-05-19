@@ -95,7 +95,7 @@ function SelectPostDropdown({ publishExamForm, serverIPAddresses, setPublishExam
                     className="!mb-0 !text-[0.725rem] font-black text-slate-500 uppercase tracking-widest"
                 />
                 <IoRefresh
-                    className={`cursor-pointer text-cyan-600 text-lg hover:text-cyan-800 transition-colors ${postsListQuery.isPending || postsListQuery.isRefetching
+                    className={`cursor-pointer text-blue-600 text-lg hover:text-blue-800 transition-colors ${postsListQuery.isPending || postsListQuery.isRefetching
                         ? 'animate-spin'
                         : ''
                         }`}
@@ -106,10 +106,10 @@ function SelectPostDropdown({ publishExamForm, serverIPAddresses, setPublishExam
             </div>
 
             <div ref={buttonDropdownRef} className="relative">
-                <MdWork className="absolute left-4 top-4 text-cyan-500 text-xl pointer-events-none z-10" />
+                <MdWork className="absolute left-4 top-4 text-blue-500 text-xl pointer-events-none z-10" />
                 <button 
                     type="button"
-                    className="cursor-pointer relative !w-full min-h-[3rem] rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-8 focus:border-cyan-500 focus:bg-white focus:ring-[5px] focus:ring-cyan-500/10 outline-none transition-all text-slate-800 disabled:opacity-50 text-left flex flex-wrap items-center gap-1 pb-1 pt-1"
+                    className="cursor-pointer relative !w-full min-h-[3rem] rounded-2xl border-[1.5px] border-slate-100 bg-slate-50 font-bold text-[0.95rem] pl-11 pr-8 focus:border-blue-500 focus:bg-white focus:ring-[5px] focus:ring-blue-500/10 outline-none transition-all text-slate-800 disabled:opacity-50 text-left flex flex-wrap items-center gap-1 pb-1 pt-1"
                     onClick={(e) => {
                         e.preventDefault();
                         setShowDropdown(!showDropdown);
@@ -125,7 +125,7 @@ function SelectPostDropdown({ publishExamForm, serverIPAddresses, setPublishExam
                     {postToPublishTest.length > 0 &&
                         postToPublishTest.map((postToPublish) => {
                             return (
-                                <span key={postToPublish.ca_post_id} className="bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-2 mt-1 mr-1 shadow-sm">
+                                <span key={postToPublish.ca_post_id} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-2 mt-1 mr-1 shadow-sm">
                                     <span>{postToPublish.ca_post_name}</span>
                                     <FaXmark
                                         className="cursor-pointer hover:text-rose-500 transition-colors"
@@ -154,7 +154,7 @@ function SelectPostDropdown({ publishExamForm, serverIPAddresses, setPublishExam
                         return (
                             <li
                                 key={post.ca_post_id}
-                                className="list-item relative px-4 py-2 hover:bg-cyan-50 cursor-pointer transition-colors font-medium text-[0.9rem] text-slate-700"
+                                className="list-item relative px-4 py-2 hover:bg-blue-50 cursor-pointer transition-colors font-medium text-[0.9rem] text-slate-700"
                                 onClick={(e) => {
                                     addPostToPublishHandler(post);
                                 }}>
