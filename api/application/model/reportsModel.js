@@ -1,56 +1,57 @@
-import db from '../config/db.connect.js';
+import db from "../config/db.connect.js";
 // import aouth from '../schemas/aouth.js';
 // import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
-
-export const DATES_LIST = 'dates';
-export const BATCH_LIST = 'batchs';
-export const POST_LIST = 'posts';
+const MASTER_DB = process.env.MASTER_DB_NAME;
+export const DATES_LIST = "dates";
+export const BATCH_LIST = "batchs";
+export const POST_LIST = "posts";
 
 const reportsModel = {
-    getReportForType: async (type) => {
-        let q;
-        if (type === DATES_LIST) {
-            q = `SELECT 
+  getReportForType: async (type) => {
+    let q;
+    if (type === DATES_LIST) {
+      q = `SELECT 
 					DATE_FORMAT(sl_exam_date,'%d-%m-%Y') as sl_exam_date  
 				FROM tn_student_list 
 				GROUP BY sl_exam_date`;
-            return await db.query(q);
-        }
+      return await db.query(q);
+    }
 
-        if (type === BATCH_LIST) {
-            q = `SELECT 
+    if (type === BATCH_LIST) {
+      q = `SELECT 
 					sl_batch_no 
 				FROM tn_student_list 
 				GROUP BY sl_batch_no`;
-            return await db.query(q);
-        }
+      return await db.query(q);
+    }
 
-        if (type === POST_LIST) {
-            q = `SELECT 
+    if (type === POST_LIST) {
+      q = `SELECT 
 					sl_post
 				FROM tn_student_list 
 				GROUP BY sl_post`;
-            return await db.query(q);
-        }
-    },
+      return await db.query(q);
+    }
+  },
 
-    getResultData: async (data) => {
-        const RESULT_BY_BATCH = 'Batch';
-        const RESULT_BY_POST = 'Post';
-        let where = '';
-        let q = '';
-        const { postName, examDate, viewResultBy, type, page, limit, offset } = data;
+  getResultData: async (data) => {
+    const RESULT_BY_BATCH = "Batch";
+    const RESULT_BY_POST = "Post";
+    let where = "";
+    let q = "";
+    const { postName, examDate, viewResultBy, type, page, limit, offset } =
+      data;
 
-        if (viewResultBy === RESULT_BY_POST) {
-            where = ` WHERE sl_post = '${postName}' `;
-        }
+    if (viewResultBy === RESULT_BY_POST) {
+      where = ` WHERE sl_post = '${postName}' `;
+    }
 
-        if (viewResultBy === RESULT_BY_BATCH) {
-            where = ` WHERE sl_post = '${postName}' AND DATE_FORMAT(sl_exam_date,'%d-%m-%Y') = '${examDate}' `;
-        }
+    if (viewResultBy === RESULT_BY_BATCH) {
+      where = ` WHERE sl_post = '${postName}' AND DATE_FORMAT(sl_exam_date,'%d-%m-%Y') = '${examDate}' `;
+    }
 
-        if (type === 'EXCEL') {
-            q = `SELECT *,
+    if (type === "EXCEL") {
+      q = `SELECT *,
 					CONCAT(sl_f_name,' ',sl_m_name,' ',sl_l_name) AS full_name,
                     UPPER(sl_catagory) AS sl_catagory,
 					DATE_FORMAT(sl_date_of_birth,'%d-%m-%Y') AS dob
@@ -60,8 +61,8 @@ const reportsModel = {
 					${where}
                     ORDER BY CAST(sfrs_marks_gain AS DECIMAL) DESC
 					`;
-        } else {
-            q = `SELECT JSON_OBJECT(
+    } else {
+      q = `SELECT JSON_OBJECT(
 					'pagination', JSON_OBJECT(
 						'total_rows', t.total_rows,
 						'page', ${page},
@@ -107,56 +108,56 @@ const reportsModel = {
 					${where}
 				) AS t;
 				`;
-        }
+    }
 
-        console.log(q, '=q');
+    console.log(q, "=q");
 
-        return await db.query(q);
-    },
+    return await db.query(q);
+  },
 
-    getExamServerIP: async () => {
-        return await db.aouth.findOne({
-            attributes: ['exam_server_ip'],
-            where: {
-                id: 1,
-            },
-            raw: true,
-        });
-    },
+  getExamServerIP: async () => {
+    return await db.aouth.findOne({
+      attributes: ["exam_server_ip"],
+      where: {
+        id: 1,
+      },
+      raw: true,
+    });
+  },
 
-    saveExamServerIP: async (ip) => {
-        return await db.aouth.update({ exam_server_ip: ip }, { where: { id: 1 } });
-    },
+  saveExamServerIP: async (ip) => {
+    return await db.aouth.update({ exam_server_ip: ip }, { where: { id: 1 } });
+  },
 
-    getPublishedTests: async (type) => {
-        let query = {};
-        if (type !== 'ALL') {
-            query = {
-                ptl_test_mode: type,
-            };
-        }
-        let allowedTypes = ['EXAM', 'MOCK'];
-        if (!allowedTypes.includes(type)) {
-            console.log(`Only types allowed are EXAM | MOCK`);
-            query = {};
-        }
+  getPublishedTests: async (type) => {
+    let query = {};
+    if (type !== "ALL") {
+      query = {
+        ptl_test_mode: type,
+      };
+    }
+    let allowedTypes = ["EXAM", "MOCK"];
+    if (!allowedTypes.includes(type)) {
+      console.log(`Only types allowed are EXAM | MOCK`);
+      query = {};
+    }
 
-        return await db.tm_publish_test_list.findAll(
-            {
-                where: query,
-            },
-            { raw: true },
-        );
-    },
+    return await db.tm_publish_test_list.findAll(
+      {
+        where: query,
+      },
+      { raw: true },
+    );
+  },
 
-    generateResult: async (publishedTestId, transact) => {
-        let where = '';
+  generateResult: async (publishedTestId, transact) => {
+    let where = "";
 
-        if (publishedTestId != 0) {
-            where += `main_test_list.id = ${publishedTestId}`;
-        }
+    if (publishedTestId != 0) {
+      where += `main_test_list.id = ${publishedTestId}`;
+    }
 
-        let query = `SELECT
+    let query = `SELECT
                  main_result.sfrs_publish_id as sfrs_publish_id,
                  main_result.student_id as  sfrs_student_id,
                  main_result.sfrs_student_roll_no as sfrs_student_roll_no,
@@ -214,11 +215,11 @@ const reportsModel = {
                  ) as main_result
                 GROUP BY main_result.student_id`;
 
-        return await db.query(query, { transaction: transact });
-    },
+    return await db.query(query, { transaction: transact });
+  },
 
-    deleteResultsData: async () => {
-        let query = `DELETE
+  deleteResultsData: async () => {
+    let query = `DELETE
 							set_1
 						FROM 
 							tm_student_final_result_set set_1 ,
@@ -227,11 +228,11 @@ const reportsModel = {
 							set_1.id < set_2.id AND (
 							set_1.sfrs_publish_id = set_2.sfrs_publish_id
 							AND set_1.sfrs_student_id = set_2.sfrs_student_id )`;
-        return await db.query(query);
-    },
+    return await db.query(query);
+  },
 
-    getTestDetails: async (testId) => {
-        let q = ` SELECT  
+  getTestDetails: async (testId) => {
+    let q = ` SELECT  
 					post_list.mtl_test_name as post_name,
 					test.mt_name as test_name,
 					test.ptl_active_date as test_date
@@ -240,11 +241,11 @@ const reportsModel = {
 					tm_master_test_list as post_list 
 				ON test.mt_pattern_type = post_list.id
 				WHERE test.id = ${testId} LIMIT 1`;
-        return await db.query(q);
-    },
+    return await db.query(q);
+  },
 
-    getTestReportsForExcel: async (testId) => {
-        let q = ` SELECT 
+  getTestReportsForExcel: async (testId) => {
+    let q = ` SELECT 
                       IFNULL(student_list.sl_f_name,'') as f_name ,
                       IFNULL(student_list.sl_m_name,'') as m_name ,
                       IFNULL(student_list.sl_l_name,'') as l_name ,
@@ -275,93 +276,94 @@ const reportsModel = {
                          main_test_list.id = ${testId}
                           GROUP BY student_paper.sfrs_student_id
                         ORDER BY roll_number`;
-        return await db.query(q);
-    },
+    return await db.query(q);
+  },
 
-    updatePercentileResult: async (data) => {
-        let q = `UPDATE tm_student_final_result_set
+  updatePercentileResult: async (data) => {
+    let q = `UPDATE tm_student_final_result_set
 					SET
 						srfs_percentile = CASE	
 					`;
-        let ids = [];
-        data.forEach((_el) => {
-            ids.push(_el.sfrs_student_id);
-            q += ` WHEN sfrs_student_id = ${_el.sfrs_student_id} THEN '${_el.srfs_percentile}'`;
-        });
+    let ids = [];
+    data.forEach((_el) => {
+      ids.push(_el.sfrs_student_id);
+      q += ` WHEN sfrs_student_id = ${_el.sfrs_student_id} THEN '${_el.srfs_percentile}'`;
+    });
 
-        q += ` END `;
-        q += ` WHERE sfrs_student_id IN (${[...ids]})`;
+    q += ` END `;
+    q += ` WHERE sfrs_student_id IN (${[...ids]})`;
 
-        return await db.query(q);
-    },
+    return await db.query(q);
+  },
 
-    getStudentActivityLogs: async (filters) => {
-        let whereClauses = [];
-        let params = [];
+  getStudentActivityLogs: async (filters) => {
+    let whereClauses = [];
+    let params = [];
 
-        // Apply filters if provided
-        if (filters && filters.searchBy && filters.searchValue) {
-            if (filters.searchBy === 'roll_no') {
-                whereClauses.push("eal.roll_no LIKE ?");
-                params.push(`%${filters.searchValue}%`);
-            } else if (filters.searchBy === 'name') {
-                whereClauses.push("eal.student_name LIKE ?");
-                params.push(`%${filters.searchValue}%`);
-            }
-        }
-        
-        if (filters && filters.batch) {
-            whereClauses.push("eal.batch_id = ?");
-            params.push(filters.batch);
-        }
-        if (filters && filters.exam_name) {
-            whereClauses.push("eal.exam_name LIKE ?");
-            params.push(`%${filters.exam_name}%`);
-        }
-        if (filters && filters.date) {
-            whereClauses.push("DATE(eal.created_at) = ?");
-            params.push(filters.date);
-        }
+    // Apply filters if provided
+    if (filters && filters.searchBy && filters.searchValue) {
+      if (filters.searchBy === "roll_no") {
+        whereClauses.push("eal.roll_no LIKE ?");
+        params.push(`%${filters.searchValue}%`);
+      } else if (filters.searchBy === "name") {
+        whereClauses.push("eal.student_name LIKE ?");
+        params.push(`%${filters.searchValue}%`);
+      }
+    }
 
-        let whereString = whereClauses.length > 0 ? 'WHERE ' + whereClauses.join(' AND ') : '';
+    if (filters && filters.batch) {
+      whereClauses.push("eal.batch_id = ?");
+      params.push(filters.batch);
+    }
+    if (filters && filters.exam_name) {
+      whereClauses.push("eal.exam_name LIKE ?");
+      params.push(`%${filters.exam_name}%`);
+    }
+    if (filters && filters.date) {
+      whereClauses.push("DATE(eal.created_at) = ?");
+      params.push(filters.date);
+    }
 
-        let q = `
+    let whereString =
+      whereClauses.length > 0 ? "WHERE " + whereClauses.join(" AND ") : "";
+
+    let q = `
             SELECT 
                 eal.*,
                 sl.sl_post AS post,
                 DATE_FORMAT(eal.created_at, '%d-%m-%Y %h:%i %p') AS date_time,
                 'Success' AS status 
-            FROM dv_exp_db.exam_activity_log AS eal
+            FROM ${MASTER_DB}.exam_activity_log AS eal
             LEFT JOIN tn_student_list AS sl ON eal.roll_no COLLATE utf8mb4_unicode_ci = sl.sl_roll_number COLLATE utf8mb4_unicode_ci
             ${whereString}
             ORDER BY eal.log_id ASC
         `;
 
-        try {
-            return await db.query(q, params);
-        } catch (error) {
-            console.error("Error in getStudentActivityLogs:", error);
-            return [[{ log_id: 'ERROR', message: error.message }]];
-        }
-    },
+    try {
+      return await db.query(q, params);
+    } catch (error) {
+      console.error("Error in getStudentActivityLogs:", error);
+      return [[{ log_id: "ERROR", message: error.message }]];
+    }
+  },
 
-    getActivityLogFilters: async () => {
-        try {
-            let qBatch = `SELECT DISTINCT batch_id FROM dv_exp_db.exam_activity_log WHERE batch_id IS NOT NULL ORDER BY batch_id ASC`;
-            let qExam = `SELECT DISTINCT exam_name FROM dv_exp_db.exam_activity_log WHERE exam_name IS NOT NULL AND exam_name != '' ORDER BY exam_name ASC`;
-            
-            const [batches] = await db.query(qBatch);
-            const [exams] = await db.query(qExam);
-            
-            return {
-                batches: batches.map(b => b.batch_id),
-                exams: exams.map(e => e.exam_name)
-            };
-        } catch (error) {
-            console.error("Error in getActivityLogFilters:", error);
-            return { batches: [], exams: [] };
-        }
-    },
+  getActivityLogFilters: async () => {
+    try {
+      let qBatch = `SELECT DISTINCT batch_id FROM ${MASTER_DB}.exam_activity_log WHERE batch_id IS NOT NULL ORDER BY batch_id ASC`;
+      let qExam = `SELECT DISTINCT exam_name FROM ${MASTER_DB}.exam_activity_log WHERE exam_name IS NOT NULL AND exam_name != '' ORDER BY exam_name ASC`;
+
+      const [batches] = await db.query(qBatch);
+      const [exams] = await db.query(qExam);
+
+      return {
+        batches: batches.map((b) => b.batch_id),
+        exams: exams.map((e) => e.exam_name),
+      };
+    } catch (error) {
+      console.error("Error in getActivityLogFilters:", error);
+      return { batches: [], exams: [] };
+    }
+  },
 };
 
 export default reportsModel;
