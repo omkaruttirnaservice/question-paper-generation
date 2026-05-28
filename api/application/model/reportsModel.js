@@ -1,7 +1,6 @@
 import db from "../config/db.connect.js";
 // import aouth from '../schemas/aouth.js';
 // import tm_publish_test_list from '../schemas/tm_publish_test_list.js';
-const MASTER_DB = process.env.MASTER_DB_NAME;
 export const DATES_LIST = "dates";
 export const BATCH_LIST = "batchs";
 export const POST_LIST = "posts";
@@ -333,7 +332,7 @@ const reportsModel = {
                 sl.sl_post AS post,
                 DATE_FORMAT(eal.created_at, '%d-%m-%Y %h:%i %p') AS date_time,
                 'Success' AS status 
-            FROM ${MASTER_DB}.exam_activity_log AS eal
+            FROM ${process.env.MASTER_DB_NAME}.exam_activity_log AS eal
             LEFT JOIN tn_student_list AS sl ON eal.roll_no COLLATE utf8mb4_unicode_ci = sl.sl_roll_number COLLATE utf8mb4_unicode_ci
             ${whereString}
             ORDER BY eal.log_id ASC
@@ -349,8 +348,8 @@ const reportsModel = {
 
   getActivityLogFilters: async () => {
     try {
-      let qBatch = `SELECT DISTINCT batch_id FROM ${MASTER_DB}.exam_activity_log WHERE batch_id IS NOT NULL ORDER BY batch_id ASC`;
-      let qExam = `SELECT DISTINCT exam_name FROM ${MASTER_DB}.exam_activity_log WHERE exam_name IS NOT NULL AND exam_name != '' ORDER BY exam_name ASC`;
+      let qBatch = `SELECT DISTINCT batch_id FROM ${process.env.MASTER_DB_NAME}.exam_activity_log WHERE batch_id IS NOT NULL ORDER BY batch_id ASC`;
+      let qExam = `SELECT DISTINCT exam_name FROM ${process.env.MASTER_DB_NAME}.exam_activity_log WHERE exam_name IS NOT NULL AND exam_name != '' ORDER BY exam_name ASC`;
 
       const [batches] = await db.query(qBatch);
       const [exams] = await db.query(qExam);
